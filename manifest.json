@@ -1,0 +1,20 @@
+{
+  "name": "Cadastro de Equipamentos — Templo Central",
+  "short_name": "Fichas AC",
+  "description": "Cadastro e ficha técnica de equipamentos de ar condicionado — Assembleia de Deus Templo Central, Equipe de Manutenção",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "display_override": ["standalone", "fullscreen", "minimal-ui"],
+  "orientation": "portrait-primary",
+  "id": "./index.html",
+  "background_color": "#0b5cab",
+  "theme_color": "#0b5cab",
+  "lang": "pt-BR",
+  "icons": [
+    { "src": "icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "icon-192-maskable.png", "sizes": "192x192", "type": "image/png", "purpose": "maskable" },
+    { "src": "icon-512-maskable.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}
