@@ -72,7 +72,9 @@ canvas.sig{width:100%;height:160px;border:2px dashed var(--bd);border-radius:10p
 #scan video{flex:1;width:100%;object-fit:cover}
 #scan .bar{padding:16px calc(16px + env(safe-area-inset-right)) calc(16px + env(safe-area-inset-bottom)) calc(16px + env(safe-area-inset-left));color:#fff;text-align:center}
 #scan .frame{position:absolute;left:15%;right:15%;top:25%;height:30%;border:3px solid #fff;border-radius:16px;pointer-events:none}
-.stick{position:fixed;left:0;right:0;bottom:0;background:#fff;border-top:1px solid var(--bd);padding:10px calc(14px + env(safe-area-inset-right)) calc(10px + env(safe-area-inset-bottom)) calc(14px + env(safe-area-inset-left));display:flex;gap:8px;z-index:6}
+.stick{position:fixed;left:0;right:0;bottom:0;background:#fff;border-top:1px solid var(--bd);padding:10px calc(14px + env(safe-area-inset-right)) calc(10px + env(safe-area-inset-bottom)) calc(14px + env(safe-area-inset-left));display:flex;flex-direction:column;gap:8px;z-index:6}
+.bellBtn{position:relative}
+.bellBadge{position:absolute;top:2px;right:2px;background:#e74c3c;color:#fff;border-radius:50%;min-width:16px;height:16px;font-size:10px;line-height:16px;text-align:center;padding:0 3px;font-weight:700}
 .stick .btn{margin:0}
 .toast{position:fixed;left:50%;bottom:90px;transform:translateX(-50%);background:#222;color:#fff;padding:10px 16px;border-radius:20px;font-size:14px;z-index:60;max-width:88vw}
 
@@ -207,6 +209,7 @@ canvas.sig{width:100%;height:160px;border:2px dashed var(--bd);border-radius:10p
     <img src="icon-192.png" alt="Logo">
     <div class="tx"><b id="title">Fichas de Equipamentos</b><small>Templo Central · Manutenção</small></div>
   </div>
+  <button id="btnBell" class="hide bellBtn" onclick="openAlertas()">🔔<span id="bellBadge" class="bellBadge hide">0</span></button>
   <button id="btnLogout" class="hide">Sair</button>
 </header>
 
@@ -239,14 +242,21 @@ canvas.sig{width:100%;height:160px;border:2px dashed var(--bd);border-radius:10p
     <div class="card"><h2>Equipe</h2><div id="equipeList"><small style="color:var(--mut)">Carregando…</small></div></div>
   </section>
 
+  <section id="alertasView" class="hide">
+    <div class="card"><h2>🔔 Fichas pendentes (não finalizadas)</h2><div id="alertasList"><small style="color:var(--mut)">Carregando…</small></div></div>
+  </section>
+
   <section id="formView" class="hide">
     <div id="form"></div>
   </section>
 </main>
 
 <div class="stick hide" id="stick">
-  <button class="btn g" onclick="goHome()">Salvar e sair</button>
-  <button class="btn" onclick="exportPdf()">📄 Exportar PDF</button>
+  <div class="row">
+    <button class="btn g" onclick="goHome()">Salvar e sair</button>
+    <button class="btn" onclick="exportPdf()">📄 Exportar PDF</button>
+  </div>
+  <button class="btn r" onclick="excluirFicha()">🗑️ Excluir ficha</button>
 </div>
 
 <div id="scan" class="hide">
@@ -505,6 +515,7 @@ onAuthStateChanged(auth, async (user)=>{
     perfil = snap.exists() ? {uid:user.uid, ...snap.data()} : {uid:user.uid, nome:user.email, sobrenome:'', funcao:'', telefone:'', email:user.email};
     $('#auth').classList.add('hide');
     $('#btnLogout').classList.remove('hide');
+    $('#btnBell').classList.remove('hide');
     $('#nomeLogado').textContent=perfil.nome+' '+perfil.sobrenome;
     $('#funcaoLogado').textContent=perfil.funcao||'—';
     $('#avatarIni').textContent=((perfil.nome[0]||'')+(perfil.sobrenome[0]||'')).toUpperCase();
@@ -514,6 +525,7 @@ onAuthStateChanged(auth, async (user)=>{
     perfil=null;
     $('#auth').classList.remove('hide');
     $('#btnLogout').classList.add('hide');
+    $('#btnBell').classList.add('hide');
     setTimeout(()=>$('#auth').classList.add('up'),900);
   }
 });
@@ -522,11 +534,13 @@ onAuthStateChanged(auth, async (user)=>{
    DADOS DO EQUIPAMENTO (Firestore)
 ======================================================== */
 const TIPOS=['Split hi-wall','Split piso-teto','Split cassete','Multi split','Janela','Self contained','Fancoil','Chiller','Câmara fria','Balcão/Geladeira','Outro'];
+const PARTES=['Compressor','Condensadora','Evaporadora','Placa eletrônica','Motor ventilador','Válvula','Outro componente'];
 const GASES=['R22','R410A','R32','R134a','R404A','R407C','R290','R600a','R1234yf','Outro'];
 const SECTIONS=[
  {t:'Identificação',f:[
+  {k:'tipoCadastro',l:'Tipo de cadastro',type:'pick',o:['Equipamento completo','Peça avulsa']},
+  {k:'tipo',l:'Tipo / peça',type:'select',o:d=>d.tipoCadastro==='Peça avulsa'?PARTES:TIPOS},
   {k:'modelo',l:'Modelo',type:'text'},
-  {k:'tipo',l:'Tipo',type:'select',o:TIPOS},
   {k:'gas',l:'Gás refrigerante',type:'select',o:GASES},
   {k:'fase',l:'Alimentação elétrica',type:'select',o:['Monofásico','Bifásico','Trifásico']},
   {k:'local',l:'Local / setor',type:'text'}]},
@@ -603,9 +617,10 @@ function view(name){
   $('#home').classList.toggle('hide',name!=='home');
   $('#formView').classList.toggle('hide',name!=='form');
   $('#equipeView').classList.toggle('hide',name!=='equipe');
+  $('#alertasView').classList.toggle('hide',name!=='alertas');
   $('#stick').classList.toggle('hide',name!=='form');
   $('#btnBack').classList.toggle('hide',name==='home');
-  $('#title').textContent=name==='home'?'Fichas de Equipamentos':(name==='equipe'?'Equipe de Manutenção':(cur?cur.id:''));
+  $('#title').textContent=name==='home'?'Fichas de Equipamentos':(name==='equipe'?'Equipe de Manutenção':(name==='alertas'?'Pendências':(cur?cur.id:'')));
   window.scrollTo(0,0);
 }
 window.view=view;
@@ -620,12 +635,37 @@ async function renderList(){
     $('#count').textContent='('+all.length+')';
     $('#list').innerHTML=all.length?all.map(r=>`<div class="item" onclick="openFicha('${r.id}')">
       ${r.fotos&&r.fotos[0]?`<img src="${r.fotos[0].dataUrl}">`:'<div class="ph"></div>'}
-      <div><b>${r.id}</b><small>${esc(r.d?.modelo||'sem modelo')} · ${esc(r.d?.tipo||'—')} ${r.d?.danificado==='Sim'?'· ⚠️ danificado':''}</small></div></div>`).join('')
+      <div><b>${r.id}</b><small>${esc(r.d?.modelo||'sem modelo')} · ${esc(r.d?.tipo||'—')}${r.d?.tipoCadastro==='Peça avulsa'?' · 🔧 peça':''} ${r.d?.danificado==='Sim'?'· ⚠️ danificado':''}${!r.final?' · ⏳ pendente':''}${r.usadoEm?' · usada em '+esc(r.usadoEm):''}</small></div></div>`).join('')
       :'<small style="color:var(--mut)">Nenhum equipamento ainda. Toque em "Novo equipamento".</small>';
+    updateBellBadge(all);
   }catch(e){
     $('#list').innerHTML='<small style="color:var(--no)">Não foi possível carregar (verifique conexão/configuração do Firebase).</small>';
   }
 }
+
+function updateBellBadge(all){
+  const pend=all.filter(r=>!r.final).length;
+  const b=$('#bellBadge');
+  if(pend>0){ b.textContent=pend>99?'99+':pend; b.classList.remove('hide'); }
+  else{ b.classList.add('hide'); }
+}
+
+async function openAlertas(){
+  view('alertas');
+  $('#alertasList').innerHTML='<small style="color:var(--mut)">Carregando…</small>';
+  try{
+    const all=await dbAll();
+    updateBellBadge(all);
+    const pend=all.filter(r=>!r.final);
+    $('#alertasList').innerHTML=pend.length?pend.map(r=>`<div class="item" onclick="openFicha('${r.id}')">
+      ${r.fotos&&r.fotos[0]?`<img src="${r.fotos[0].dataUrl}">`:'<div class="ph"></div>'}
+      <div><b>${r.id}</b><small>${esc(r.d?.modelo||'sem modelo')} · aberta em ${full(r.criado)}${r.criadoPor?' por '+esc(r.criadoPor):''}</small></div></div>`).join('')
+      :'<small style="color:var(--mut)">Nenhuma pendência — todas as fichas estão finalizadas. 🎉</small>';
+  }catch(e){
+    $('#alertasList').innerHTML='<small style="color:var(--no)">Não foi possível carregar as pendências.</small>';
+  }
+}
+window.openAlertas=openAlertas;
 
 async function openEquipe(){
   view('equipe');
@@ -645,7 +685,7 @@ window.openEquipe=openEquipe;
 
 async function newFicha(){
   const id=await nextId();
-  cur={id,criado:nowISO(),criadoEm:Date.now(),criadoPor:perfil.nome+' '+perfil.sobrenome,d:{},ts:{},fotos:[],log:[],assinUrl:'',final:'',finalPor:''};
+  cur={id,criado:nowISO(),criadoEm:Date.now(),criadoPor:perfil.nome+' '+perfil.sobrenome,d:{tipoCadastro:'Equipamento completo'},ts:{},fotos:[],log:[],assinUrl:'',final:'',finalPor:'',pecasVinculadas:[],usadoEm:''};
   logIt('Ficha criada');
   await dbPut(cur);
   renderForm();view('form');
@@ -656,6 +696,7 @@ async function openFicha(id){
   const r=await dbGet(id);
   if(!r){toast('Ficha não encontrada.');return}
   cur=r; if(!cur.fotos)cur.fotos=[]; if(!cur.log)cur.log=[]; if(!cur.d)cur.d={}; if(!cur.ts)cur.ts={};
+  if(!cur.pecasVinculadas)cur.pecasVinculadas=[]; if(cur.usadoEm===undefined)cur.usadoEm='';
   renderForm();view('form');
 }
 window.openFicha=openFicha;
@@ -674,13 +715,15 @@ function fieldHTML(f){
   const lab=`<label class="l">${f.l}${ts}</label>`;
   if(f.type==='text')return lab+`<input type="text" data-k="${f.k}" value="${esc(v)}">`;
   if(f.type==='area')return lab+`<textarea data-k="${f.k}">${esc(v)}</textarea>`;
-  if(f.type==='select')return lab+`<select data-k="${f.k}"><option value="">Selecione</option>${f.o.map(o=>`<option ${o===v?'selected':''}>${o}</option>`).join('')}</select>`;
+  if(f.type==='select'){const opts=typeof f.o==='function'?f.o(cur.d):f.o;return lab+`<select data-k="${f.k}"><option value="">Selecione</option>${opts.map(o=>`<option ${o===v?'selected':''}>${o}</option>`).join('')}</select>`}
+  if(f.type==='pick'){const opts=typeof f.o==='function'?f.o(cur.d):f.o;return lab+`<div class="seg" data-k="${f.k}">${opts.map(o=>`<button class="pick${o===v?' on':''}" data-v="${o}">${o}</button>`).join('')}</div>`}
   if(f.type==='yn')return lab+`<div class="seg" data-k="${f.k}"><button class="s ${v==='Sim'?'on':''}" data-v="Sim">Sim</button><button class="n ${v==='Não'?'on':''}" data-v="Não">Não</button></div>`;
   if(f.type==='chk'){const sel=v||[];return lab+`<div class="chk" data-k="${f.k}">${f.o(cur.d).map(o=>`<label class="${sel.includes(o)?'on':''}"><input type="checkbox" value="${o}" ${sel.includes(o)?'checked':''}>${o}</label>`).join('')}</div>`}
 }
 function renderForm(){
   const y=window.scrollY;
   let h=`<div class="card"><div class="idbadge">${cur.id}</div><small style="color:var(--mut)">Aberta em ${full(cur.criado)}${cur.criadoPor?' · por '+esc(cur.criadoPor):''}</small>
+   ${cur.usadoEm?`<div class="ok-msg" style="margin:6px 0 0">🔗 Esta peça está instalada no equipamento <b>${esc(cur.usadoEm)}</b>.</div>`:''}
    <div class="fotos" id="fotos">${cur.fotos.map((p,i)=>`<div><img src="${p.dataUrl}"><i onclick="delFoto(${i})">×</i></div>`).join('')}</div>
    <div class="row"><button class="btn g" onclick="document.getElementById('fileCam').click()">📷 Tirar foto</button><button class="btn g" onclick="document.getElementById('fileGal').click()">🖼️ Galeria</button></div>
    <input type="file" id="fileCam" accept="image/*" capture="environment" class="hide">
@@ -689,6 +732,14 @@ function renderForm(){
     const fs=s.f.filter(f=>!f.show||f.show(cur.d));
     h+=`<div class="card"><h2>${s.t}</h2>${fs.map(fieldHTML).join('')}</div>`;
   });
+  h+=`<div class="card"><h2>🔗 Peças vinculadas</h2>
+   <p style="font-size:13px;color:var(--mut);margin:0 0 10px">Use quando este equipamento recebeu uma peça avulsa que já tem cadastro próprio (ex.: um compressor com ID separado).</p>
+   <div class="row"><input type="text" id="buscaPeca" inputmode="numeric" placeholder="ID da peça (ex.: 9 ou EQ-0009)" style="flex:3"><button class="btn g" style="flex:1;margin:0" onclick="buscarPeca()">🔍 Buscar</button></div>
+   <div id="buscaPecaResult"></div>
+   <div id="pecasVinculadasList">${(cur.pecasVinculadas||[]).length?cur.pecasVinculadas.map((p,i)=>`<div class="item">
+     <div class="ph" style="display:flex;align-items:center;justify-content:center;font-size:22px">🔧</div>
+     <div style="flex:1"><b>${esc(p.id)}</b><small>${esc(p.tipo||'')}${p.modelo?' · '+esc(p.modelo):''}</small></div>
+     <button class="link" style="color:var(--no)" onclick="desvincularPeca(${i})">Remover</button></div>`).join(''):'<small style="color:var(--mut)">Nenhuma peça vinculada ainda.</small>'}</div></div>`;
   h+=`<div class="card"><h2>Técnico responsável</h2>
    <div style="display:flex;align-items:center;gap:10px">
     <div style="width:40px;height:40px;border-radius:50%;background:var(--pri2);display:flex;align-items:center;justify-content:center;font-weight:700;color:var(--pri)">${((perfil.nome[0]||'')+(perfil.sobrenome[0]||'')).toUpperCase()}</div>
@@ -753,6 +804,48 @@ async function addFotos(files){
 function delFoto(i){if(confirm('Remover esta foto?')){cur.fotos.splice(i,1);logIt('Foto removida');dbPut(cur);renderForm()}}
 window.delFoto=delFoto;
 
+/* peças avulsas vinculadas (ex.: compressor com ID próprio usado para montar outro equipamento) */
+async function buscarPeca(){
+  const raw=$('#buscaPeca').value.trim();
+  if(!raw){toast('Digite o ID da peça.');return}
+  const id=normId(raw);
+  if(id===cur.id){$('#buscaPecaResult').innerHTML='<div class="err">Esse é o ID do próprio equipamento.</div>';return}
+  const r=await dbGet(id);
+  if(!r){$('#buscaPecaResult').innerHTML='<div class="err">Nenhum cadastro encontrado com o ID '+id+'.</div>';return}
+  const jaVinculada=(cur.pecasVinculadas||[]).some(p=>p.id===id);
+  const avisoUso = r.usadoEm && r.usadoEm!==cur.id ? `<div class="err">⚠️ Essa peça já está vinculada ao equipamento ${esc(r.usadoEm)}.</div>` : '';
+  $('#buscaPecaResult').innerHTML=`<div class="item">
+    ${r.fotos&&r.fotos[0]?`<img src="${r.fotos[0].dataUrl}">`:'<div class="ph"></div>'}
+    <div style="flex:1"><b>${esc(r.id)}</b><small>${esc(r.d?.tipoCadastro||'—')} · ${esc(r.d?.tipo||'—')}${r.d?.modelo?' · '+esc(r.d.modelo):''}</small></div></div>
+    ${avisoUso}
+    <button class="btn ok" ${jaVinculada?'disabled':''} onclick="vincularPeca('${id}')">${jaVinculada?'Já vinculada':'Vincular a este equipamento'}</button>`;
+}
+window.buscarPeca=buscarPeca;
+
+async function vincularPeca(id){
+  const r=await dbGet(id);
+  if(!r)return;
+  cur.pecasVinculadas=cur.pecasVinculadas||[];
+  cur.pecasVinculadas.push({id:r.id, tipo:r.d?.tipo||'', modelo:r.d?.modelo||'', vinculadoEm:nowISO(), vinculadoPor:perfil.nome+' '+perfil.sobrenome});
+  logIt('Peça vinculada: '+r.id+(r.d?.tipo?' ('+r.d.tipo+')':''));
+  await dbPut(cur);
+  try{ r.usadoEm=cur.id; await dbPut(r); }catch(e){}
+  toast('Peça '+id+' vinculada.');
+  renderForm();
+}
+window.vincularPeca=vincularPeca;
+
+async function desvincularPeca(i){
+  const p=cur.pecasVinculadas[i];
+  if(!confirm('Remover o vínculo com a peça '+p.id+'?'))return;
+  cur.pecasVinculadas.splice(i,1);
+  logIt('Peça desvinculada: '+p.id);
+  await dbPut(cur);
+  try{ const r=await dbGet(p.id); if(r && r.usadoEm===cur.id){ r.usadoEm=''; await dbPut(r); } }catch(e){}
+  renderForm();
+}
+window.desvincularPeca=desvincularPeca;
+
 /* assinatura */
 let sigC,sigX,drawing=false;
 function initSig(){
@@ -775,6 +868,20 @@ function initSig(){
 function clearSig(){const r=sigC.getBoundingClientRect();sigX.clearRect(0,0,r.width,r.height);cur.assinUrl='';dbPut(cur)}
 window.clearSig=clearSig;
 
+async function excluirFicha(){
+  if(!cur)return;
+  if(!confirm('Excluir a ficha '+cur.id+' definitivamente? Essa ação não pode ser desfeita.'))return;
+  try{
+    await deleteDoc(doc(db,'equipamentos',cur.id));
+    toast('Ficha '+cur.id+' excluída.');
+    cur=null;
+    view('home');renderList();
+  }catch(e){
+    toast('Não foi possível excluir a ficha agora.');
+  }
+}
+window.excluirFicha=excluirFicha;
+
 async function finalizar(){
   if(!cur.assinUrl){toast('Falta a assinatura');return}
   cur.final=nowISO();cur.finalPor=perfil.nome+' '+perfil.sobrenome;
@@ -791,7 +898,9 @@ function exportPdf(){
     <div><div style="font-size:15px;font-weight:700;color:#0b5cab">Assembleia de Deus — Templo Central</div>
     <div style="font-size:11px;color:#555">Equipe de Manutenção · Cadastro de Equipamentos</div></div></div>
    <h1>Ficha de Equipamento — ${cur.id}</h1><div>Aberta em ${full(cur.criado)} · Emitida em ${full(nowISO())}</div>`;
+  if(cur.usadoEm)h+=`<div>🔗 Esta peça está instalada no equipamento <b>${esc(cur.usadoEm)}</b>.</div>`;
   if(cur.fotos.length)h+=`<h2>Fotos</h2><div class="ph">${cur.fotos.map(p=>`<img src="${p.dataUrl}">`).join('')}</div>`;
+  if(cur.pecasVinculadas&&cur.pecasVinculadas.length)h+=`<h2>Peças vinculadas</h2><table>${cur.pecasVinculadas.map(p=>`<tr><td>${esc(p.id)}</td><td>${esc(p.tipo||'')}${p.modelo?' · '+esc(p.modelo):''}</td><td class="h">${hm(p.vinculadoEm)}</td></tr>`).join('')}</table>`;
   SECTIONS.forEach(s=>{
     const rows=s.f.filter(f=>!f.show||f.show(d)).map(f=>{
       const v=d[f.k];const t=Array.isArray(v)?(v.length?v.join(', '):'Nenhuma'):(v||'—');
