@@ -1,0 +1,941 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+<meta name="theme-color" content="#0b5cab">
+<link rel="manifest" href="manifest.json">
+<link rel="icon" type="image/png" sizes="48x48" href="favicon-48.png">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Fichas AC">
+<title>Cadastro de Equipamentos — Templo Central</title>
+<style>
+:root{--bg:#f1f4f8;--card:#fff;--pri:#0b5cab;--pri2:#e7f0fa;--tx:#17212b;--mut:#6b7885;--bd:#d9e0e7;--ok:#1a8f4c;--no:#c0392b}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html{height:100%;overscroll-behavior-y:none}
+body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif;background:var(--bg);color:var(--tx);font-size:16px;min-height:100%;overscroll-behavior-y:none;-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
+input,textarea,select{-webkit-user-select:text;user-select:text}
+header{background:var(--pri);color:#fff;padding:calc(14px + env(safe-area-inset-top)) calc(16px + env(safe-area-inset-right)) 14px calc(16px + env(safe-area-inset-left));display:flex;align-items:center;gap:10px;position:sticky;top:0;z-index:5}
+header h1{font-size:18px;margin:0;flex:1}
+header button{background:rgba(255,255,255,.18);color:#fff;border:0;border-radius:8px;padding:8px 12px;font-size:15px}
+header .brand{display:flex;align-items:center;gap:10px;flex:1}
+header .brand img{width:34px;height:34px;object-fit:contain;border-radius:7px;background:#fff}
+header .brand .tx{display:flex;flex-direction:column;line-height:1.15}
+header .brand .tx b{font-size:14px}
+header .brand .tx small{font-size:11px;color:#cfe1f5;font-weight:400}
+main{padding:14px calc(14px + env(safe-area-inset-right)) 90px calc(14px + env(safe-area-inset-left));max-width:760px;margin:auto}
+.card{background:var(--card);border:1px solid var(--bd);border-radius:14px;padding:14px;margin-bottom:12px}
+.card h2{font-size:15px;margin:0 0 10px;color:var(--pri);text-transform:uppercase;letter-spacing:.4px}
+.big{display:flex;gap:12px;margin-bottom:12px}
+.big button{flex:1;border:0;border-radius:16px;background:var(--pri);color:#fff;padding:26px 10px;font-size:17px;font-weight:600;display:flex;flex-direction:column;align-items:center;gap:8px}
+.big button span{font-size:34px}
+.big button.alt{background:#0f7a5a}
+label.l{display:block;font-size:14px;font-weight:600;margin:12px 0 5px}
+label.l small{font-weight:400;color:var(--mut);margin-left:6px}
+input[type=text],input[type=email],input[type=tel],input[type=password],select,textarea{width:100%;padding:12px;border:1px solid var(--bd);border-radius:10px;font-size:16px;background:#fff;font-family:inherit}
+textarea{min-height:70px;resize:vertical}
+.seg{display:flex;gap:8px}
+.seg button{flex:1;padding:12px;border:1px solid var(--bd);background:#fff;border-radius:10px;font-size:16px}
+.seg button.on.s{background:var(--ok);border-color:var(--ok);color:#fff}
+.seg button.on.n{background:var(--no);border-color:var(--no);color:#fff}
+.seg button.on.pick{background:var(--pri);border-color:var(--pri);color:#fff}
+.chk{display:flex;flex-wrap:wrap;gap:8px}
+.chk label{border:1px solid var(--bd);border-radius:20px;padding:9px 14px;display:flex;gap:6px;align-items:center}
+.chk label.on{background:var(--pri2);border-color:var(--pri)}
+.btn{width:100%;padding:14px;border:0;border-radius:12px;background:var(--pri);color:#fff;font-size:16px;font-weight:600;margin-top:10px}
+.btn.g{background:#fff;color:var(--pri);border:1px solid var(--pri)}
+.btn.r{background:var(--no)}
+.btn.ok{background:var(--ok)}
+.btn[disabled]{opacity:.55}
+.row{display:flex;gap:8px}
+.row>*{flex:1}
+.item{display:flex;align-items:center;gap:12px;padding:10px;border-bottom:1px solid var(--bd)}
+.item:last-child{border:0}
+.item img,.item .ph{width:52px;height:52px;border-radius:10px;object-fit:cover;background:var(--pri2);flex:none}
+.item b{display:block}.item small{color:var(--mut)}
+.fotos{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:10px}
+.fotos div{position:relative}.fotos img{width:100%;aspect-ratio:1;object-fit:cover;border-radius:10px;background:var(--pri2)}
+.fotos i{position:absolute;top:4px;right:4px;background:rgba(0,0,0,.65);color:#fff;border-radius:50%;width:24px;height:24px;text-align:center;line-height:24px;font-style:normal}
+canvas.sig{width:100%;height:160px;border:2px dashed var(--bd);border-radius:10px;background:#fff;touch-action:none}
+.ts{color:var(--mut);font-size:12px;font-weight:400;margin-left:6px}
+.idbadge{font-size:22px;font-weight:700;color:var(--pri)}
+.hide{display:none!important}
+.err{color:var(--no);font-size:14px;margin-top:6px;min-height:18px}
+.ok-msg{color:var(--ok);font-size:14px;margin-top:6px;min-height:18px}
+.otp{display:flex;gap:8px;justify-content:center;margin:14px 0}
+.otp input{width:44px;height:52px;text-align:center;font-size:22px;padding:0}
+.link{color:var(--pri);font-weight:600;background:none;border:0;padding:6px;font-size:14px}
+#scan{position:fixed;inset:0;background:#000;z-index:20;display:flex;flex-direction:column}
+#scan video{flex:1;width:100%;object-fit:cover}
+#scan .bar{padding:16px calc(16px + env(safe-area-inset-right)) calc(16px + env(safe-area-inset-bottom)) calc(16px + env(safe-area-inset-left));color:#fff;text-align:center}
+#scan .frame{position:absolute;left:15%;right:15%;top:25%;height:30%;border:3px solid #fff;border-radius:16px;pointer-events:none}
+.stick{position:fixed;left:0;right:0;bottom:0;background:#fff;border-top:1px solid var(--bd);padding:10px calc(14px + env(safe-area-inset-right)) calc(10px + env(safe-area-inset-bottom)) calc(14px + env(safe-area-inset-left));display:flex;flex-direction:column;gap:8px;z-index:6}
+.bellBtn{position:relative}
+.bellBadge{position:absolute;top:2px;right:2px;background:#e74c3c;color:#fff;border-radius:50%;min-width:16px;height:16px;font-size:10px;line-height:16px;text-align:center;padding:0 3px;font-weight:700}
+.stick .btn{margin:0}
+.toast{position:fixed;left:50%;bottom:90px;transform:translateX(-50%);background:#222;color:#fff;padding:10px 16px;border-radius:20px;font-size:14px;z-index:60;max-width:88vw}
+
+/* ---------- auth / splash ---------- */
+#auth{position:fixed;inset:0;background:linear-gradient(180deg,#0b5cab 0%,#08427a 100%);z-index:100;display:flex;flex-direction:column;align-items:center;color:#fff;padding:calc(24px + env(safe-area-inset-top)) calc(20px + env(safe-area-inset-right)) calc(20px + env(safe-area-inset-bottom)) calc(20px + env(safe-area-inset-left));overflow-y:auto}
+#auth .logoWrap{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;transition:flex .5s ease,padding .5s ease;text-align:center}
+#auth.up .logoWrap{flex:0 0 auto;padding:6px 0 14px}
+#auth .logoWrap img{width:130px;transition:width .5s ease;filter:drop-shadow(0 6px 18px rgba(0,0,0,.35));border-radius:18px}
+#auth.up .logoWrap img{width:64px}
+#auth .logoWrap h2{margin:14px 0 2px;font-size:19px;transition:font-size .4s ease}
+#auth.up .logoWrap h2{font-size:15px;margin:10px 0 0}
+#auth .logoWrap p{margin:2px 0;color:#cfe1f5;font-size:13px}
+#auth.up .logoWrap p{display:none}
+#auth .panel{width:100%;max-width:400px;background:#fff;color:var(--tx);border-radius:20px 20px 0 0;padding:22px 18px calc(26px + env(safe-area-inset-bottom));opacity:0;transform:translateY(30px);transition:opacity .5s ease .15s, transform .5s ease .15s;margin-top:auto}
+#auth.up .panel{opacity:1;transform:translateY(0)}
+#auth .panel h3{margin:0 0 14px;font-size:17px;color:var(--pri)}
+#auth .foot{display:flex;justify-content:space-between;margin-top:14px}
+.spinner{display:inline-block;width:16px;height:16px;border:2px solid rgba(255,255,255,.5);border-top-color:#fff;border-radius:50%;animation:sp .7s linear infinite;vertical-align:-3px;margin-right:6px}
+@keyframes sp{to{transform:rotate(360deg)}}
+#recaptcha-container{position:fixed;bottom:-100px;left:-100px}
+</style>
+</head>
+<body>
+
+<!-- ===================== TELA DE LOGIN / CADASTRO ===================== -->
+<div id="auth">
+  <div class="logoWrap">
+    <img src="icon-512.png" alt="Assembleia de Deus Templo Central">
+    <h2>Assembleia de Deus — Templo Central</h2>
+    <p>Equipe de Manutenção · Cadastro de Equipamentos</p>
+  </div>
+
+  <div class="panel" id="panelLogin">
+    <h3>Entrar</h3>
+    <label class="l" style="margin-top:0">E-mail</label>
+    <input type="email" id="loginEmail" autocomplete="username" placeholder="seuemail@exemplo.com">
+    <label class="l">Senha</label>
+    <input type="password" id="loginSenha" autocomplete="current-password" placeholder="••••••••">
+    <div class="err" id="loginErr"></div>
+    <button class="btn" id="btnLogin">Entrar</button>
+    <div class="foot">
+      <button class="link" onclick="showPanel('reg')">Cadastrar-se</button>
+      <button class="link" onclick="showPanel('forgot')">Esqueci a senha</button>
+    </div>
+  </div>
+
+  <div class="panel hide" id="panelReg">
+    <h3>Criar cadastro</h3>
+    <div class="row">
+      <div><label class="l" style="margin-top:0">Nome</label><input type="text" id="regNome"></div>
+      <div><label class="l" style="margin-top:0">Sobrenome</label><input type="text" id="regSobrenome"></div>
+    </div>
+    <label class="l">Função</label>
+    <select id="regFuncao">
+      <option>Técnico</option>
+      <option>Mecânico</option>
+      <option>Auxiliar Técnico</option>
+    </select>
+    <label class="l">Telefone (com DDD)</label>
+    <input type="tel" id="regTelefone" placeholder="(81) 9xxxx-xxxx">
+    <label class="l">E-mail</label>
+    <input type="email" id="regEmail" autocomplete="username">
+    <label class="l">Senha</label>
+    <input type="password" id="regSenha" autocomplete="new-password" placeholder="mínimo 6 caracteres">
+    <label class="l">Confirmar senha</label>
+    <input type="password" id="regSenha2">
+    <label class="l">Confirmar cadastro por</label>
+    <div class="seg" id="regMetodo">
+      <button class="pick on" data-m="email">📧 E-mail</button>
+      <button class="pick" data-m="tel">📱 Telefone</button>
+    </div>
+    <div class="err" id="regErr"></div>
+    <button class="btn" id="btnRegContinuar">Continuar</button>
+    <div class="foot"><button class="link" onclick="showPanel('login')">← Já tenho cadastro</button></div>
+  </div>
+
+  <div class="panel hide" id="panelOtp">
+    <h3 id="otpTitulo">Confirme o código</h3>
+    <p style="font-size:14px;color:var(--mut);margin-top:0" id="otpSub"></p>
+    <div class="otp">
+      <input maxlength="1" inputmode="numeric"><input maxlength="1" inputmode="numeric">
+      <input maxlength="1" inputmode="numeric"><input maxlength="1" inputmode="numeric">
+      <input maxlength="1" inputmode="numeric"><input maxlength="1" inputmode="numeric">
+    </div>
+    <div class="err" id="otpErr"></div>
+    <div class="ok-msg" id="otpOk"></div>
+    <button class="btn" id="btnOtpConfirmar">Verificar código</button>
+    <div class="foot">
+      <button class="link" id="btnOtpReenviar">Reenviar código</button>
+      <button class="link" onclick="showPanel('login')">Cancelar</button>
+    </div>
+  </div>
+
+  <div class="panel hide" id="panelForgot">
+    <h3>Esqueci a senha</h3>
+    <div class="seg" id="forgotMetodo">
+      <button class="pick on" data-m="email">📧 Por e-mail</button>
+      <button class="pick" data-m="tel">📱 Por telefone</button>
+    </div>
+    <div id="forgotEmailBox">
+      <label class="l">E-mail cadastrado</label>
+      <input type="email" id="forgotEmail">
+      <button class="btn" id="btnForgotEmail">Enviar link de redefinição</button>
+    </div>
+    <div id="forgotTelBox" class="hide">
+      <label class="l">Telefone cadastrado</label>
+      <input type="tel" id="forgotTelefone" placeholder="(81) 9xxxx-xxxx">
+      <button class="btn" id="btnForgotTel">Enviar código por SMS</button>
+    </div>
+    <div class="err" id="forgotErr"></div>
+    <div class="ok-msg" id="forgotOk"></div>
+    <div class="foot"><button class="link" onclick="showPanel('login')">← Voltar ao login</button></div>
+  </div>
+
+  <div class="panel hide" id="panelNovaSenha">
+    <h3>Definir nova senha</h3>
+    <label class="l" style="margin-top:0">Nova senha</label>
+    <input type="password" id="novaSenha1">
+    <label class="l">Confirmar nova senha</label>
+    <input type="password" id="novaSenha2">
+    <div class="err" id="novaSenhaErr"></div>
+    <button class="btn" id="btnNovaSenha">Salvar nova senha</button>
+  </div>
+
+  <div id="recaptcha-container"></div>
+</div>
+
+<!-- ===================== APP ===================== -->
+<header>
+  <button id="btnBack" class="hide">← Voltar</button>
+  <div class="brand">
+    <img src="icon-192.png" alt="Logo">
+    <div class="tx"><b id="title">Fichas de Equipamentos</b><small>Templo Central · Manutenção</small></div>
+  </div>
+  <button id="btnBell" class="hide bellBtn" onclick="openAlertas()">🔔<span id="bellBadge" class="bellBadge hide">0</span></button>
+  <button id="btnLogout" class="hide">Sair</button>
+</header>
+
+<main>
+  <section id="home">
+    <div class="card" id="quemSou" style="display:flex;align-items:center;gap:10px">
+      <div style="width:40px;height:40px;border-radius:50%;background:var(--pri2);display:flex;align-items:center;justify-content:center;font-weight:700;color:var(--pri)" id="avatarIni"></div>
+      <div><b id="nomeLogado"></b><br><small style="color:var(--mut)" id="funcaoLogado"></small></div>
+    </div>
+    <div class="big">
+      <button onclick="openScanner()"><span>📷</span>Câmera<br><small style="font-weight:400">ler QR / código</small></button>
+      <button class="alt" onclick="document.getElementById('searchBox').focus()"><span>🔍</span>Pesquisar por ID</button>
+    </div>
+    <div class="card">
+      <label class="l" style="margin-top:0">ID do equipamento</label>
+      <div class="row" style="gap:8px">
+        <input id="searchBox" type="text" inputmode="numeric" placeholder="Ex.: 12 ou EQ-0012" style="flex:3">
+        <button class="btn" style="flex:1;margin:0" onclick="searchId()">Abrir</button>
+      </div>
+    </div>
+    <button class="btn ok" onclick="newFicha()">＋ Novo equipamento</button>
+    <div class="card" style="margin-top:14px">
+      <h2>Equipamentos cadastrados <span id="count"></span></h2>
+      <div id="list"><small style="color:var(--mut)">Carregando…</small></div>
+    </div>
+    <button class="btn g" onclick="openEquipe()">👥 Equipe de manutenção</button>
+  </section>
+
+  <section id="equipeView" class="hide">
+    <div class="card"><h2>Equipe</h2><div id="equipeList"><small style="color:var(--mut)">Carregando…</small></div></div>
+  </section>
+
+  <section id="alertasView" class="hide">
+    <div class="card"><h2>🔔 Fichas pendentes (não finalizadas)</h2><div id="alertasList"><small style="color:var(--mut)">Carregando…</small></div></div>
+  </section>
+
+  <section id="formView" class="hide">
+    <div id="form"></div>
+  </section>
+</main>
+
+<div class="stick hide" id="stick">
+  <div class="row">
+    <button class="btn g" onclick="goHome()">Salvar e sair</button>
+    <button class="btn" onclick="exportPdf()">📄 Exportar PDF</button>
+  </div>
+  <button class="btn r" onclick="excluirFicha()">🗑️ Excluir ficha</button>
+</div>
+
+<div id="scan" class="hide">
+  <video id="vid" playsinline muted></video>
+  <div class="frame"></div>
+  <div class="bar"><div id="scanMsg">Aponte para o QR code / código de barras do equipamento</div>
+    <button class="btn r" onclick="closeScanner()">Fechar câmera</button></div>
+</div>
+
+<div id="print"></div>
+
+<script type="module">
+import { firebaseConfig, emailjsConfig } from './firebase-config.js';
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import {
+  getAuth, onAuthStateChanged, createUserWithEmailAndPassword, signInWithEmailAndPassword,
+  signOut, sendPasswordResetEmail, RecaptchaVerifier, signInWithPhoneNumber, updatePassword
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+import {
+  initializeFirestore, persistentLocalCache, doc, getDoc, getDocs, setDoc, updateDoc,
+  collection, query, orderBy, runTransaction, serverTimestamp, deleteDoc, where
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+import {
+  getFunctions, httpsCallable
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-functions.js";
+
+// OBS: por enquanto as fotos e a assinatura são guardadas direto no Firestore
+// (em base64), porque o Firebase Storage exige o plano Blaze. Quando o Blaze
+// estiver ativo, dá para trocar para o Storage (fica mais leve e rápido) —
+// ver SETUP.md, seção "Migrando fotos para o Storage depois".
+
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = initializeFirestore(app, { localCache: persistentLocalCache() });
+const functions = getFunctions(app);
+
+// EmailJS (carregado via CDN abaixo, no fim do body)
+function emailjsReady(){ return typeof window.emailjs !== 'undefined'; }
+
+const $=s=>document.querySelector(s);
+const pad=n=>String(n).padStart(4,'0');
+const nowISO=()=>new Date().toISOString();
+const hm=i=>new Date(i).toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'});
+const full=i=>new Date(i).toLocaleString('pt-BR');
+const esc=s=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+function toast(m){const t=document.createElement('div');t.className='toast';t.textContent=m;document.body.appendChild(t);setTimeout(()=>t.remove(),2600)}
+window.toast=toast;
+
+/* ========================================================
+   AUTENTICAÇÃO
+======================================================== */
+let perfil=null; // {uid, nome, sobrenome, funcao, telefone, email}
+let pendingReg=null; // dados do cadastro em andamento aguardando código
+let pendingReset=null; // fluxo de "esqueci a senha" por telefone
+
+function showPanel(name){
+  ['login','reg','otp','forgot','novaSenha'].forEach(n=>{
+    document.getElementById('panel'+n[0].toUpperCase()+n.slice(1)).classList.toggle('hide', n!==name);
+  });
+}
+window.showPanel=showPanel;
+
+function randCode(){return String(Math.floor(100000+Math.random()*900000))}
+
+function otpValue(){return [...document.querySelectorAll('#panelOtp .otp input')].map(i=>i.value).join('')}
+function otpBind(){
+  const inputs=[...document.querySelectorAll('#panelOtp .otp input')];
+  inputs.forEach((inp,i)=>{
+    inp.oninput=()=>{ inp.value=inp.value.replace(/\D/g,'').slice(0,1); if(inp.value && inputs[i+1]) inputs[i+1].focus(); };
+    inp.onkeydown=e=>{ if(e.key==='Backspace' && !inp.value && inputs[i-1]) inputs[i-1].focus(); };
+  });
+}
+otpBind();
+
+// --------- LOGIN ---------
+$('#btnLogin').onclick=async ()=>{
+  const email=$('#loginEmail').value.trim(), senha=$('#loginSenha').value;
+  $('#loginErr').textContent='';
+  if(!email||!senha){$('#loginErr').textContent='Preencha e-mail e senha.';return}
+  $('#btnLogin').disabled=true; $('#btnLogin').innerHTML='<span class="spinner"></span>Entrando…';
+  try{
+    await signInWithEmailAndPassword(auth, email, senha);
+  }catch(e){
+    $('#loginErr').textContent=traduzErro(e);
+  }finally{
+    $('#btnLogin').disabled=false; $('#btnLogin').textContent='Entrar';
+  }
+};
+
+function traduzErro(e){
+  const c=e.code||'';
+  if(c.includes('wrong-password')||c.includes('invalid-credential'))return 'E-mail ou senha incorretos.';
+  if(c.includes('user-not-found'))return 'Não existe cadastro com esse e-mail.';
+  if(c.includes('email-already-in-use'))return 'Já existe cadastro com esse e-mail.';
+  if(c.includes('weak-password'))return 'Senha muito curta (mínimo 6 caracteres).';
+  if(c.includes('invalid-email'))return 'E-mail inválido.';
+  if(c.includes('invalid-phone-number'))return 'Telefone inválido — use (DDD) 9xxxx-xxxx.';
+  if(c.includes('too-many-requests'))return 'Muitas tentativas. Aguarde um pouco e tente de novo.';
+  return 'Não foi possível concluir: '+(e.message||c);
+}
+
+// --------- CADASTRO ---------
+document.querySelectorAll('#regMetodo button').forEach(b=>b.onclick=()=>{
+  document.querySelectorAll('#regMetodo button').forEach(x=>x.classList.remove('on'));
+  b.classList.add('on');
+});
+function telParaE164(t){
+  const n=t.replace(/\D/g,'');
+  if(n.startsWith('55'))return '+'+n;
+  return '+55'+n;
+}
+let recaptchaVerifier=null;
+function getRecaptcha(){
+  if(!recaptchaVerifier){
+    recaptchaVerifier=new RecaptchaVerifier(auth,'recaptcha-container',{size:'invisible'});
+  }
+  return recaptchaVerifier;
+}
+let confirmationResult=null;
+
+$('#btnRegContinuar').onclick=async ()=>{
+  const nome=$('#regNome').value.trim(), sobrenome=$('#regSobrenome').value.trim();
+  const funcao=$('#regFuncao').value, telefone=$('#regTelefone').value.trim();
+  const email=$('#regEmail').value.trim(), senha=$('#regSenha').value, senha2=$('#regSenha2').value;
+  const metodo=document.querySelector('#regMetodo button.on').dataset.m;
+  $('#regErr').textContent='';
+  if(!nome||!sobrenome||!telefone||!email||!senha){$('#regErr').textContent='Preencha todos os campos.';return}
+  if(senha.length<6){$('#regErr').textContent='Senha muito curta (mínimo 6 caracteres).';return}
+  if(senha!==senha2){$('#regErr').textContent='As senhas não coincidem.';return}
+  pendingReg={nome,sobrenome,funcao,telefone,email,senha,metodo};
+  $('#btnRegContinuar').disabled=true;$('#btnRegContinuar').innerHTML='<span class="spinner"></span>Enviando código…';
+  try{
+    if(metodo==='email'){
+      const code=randCode();
+      await setDoc(doc(db,'otpCodes',email.toLowerCase()),{code,criadoEm:Date.now(),expiraEm:Date.now()+10*60*1000});
+      if(emailjsReady()){
+        await window.emailjs.send(emailjsConfig.serviceId, emailjsConfig.templateId,
+          {to_email:email, codigo:code, nome:nome}, emailjsConfig.publicKey);
+      }
+      $('#otpTitulo').textContent='Confirme seu e-mail';
+      $('#otpSub').textContent='Enviamos um código de 6 dígitos para '+email;
+      showPanel('otp');
+    }else{
+      const phone=telParaE164(telefone);
+      confirmationResult=await signInWithPhoneNumber(auth, phone, getRecaptcha());
+      $('#otpTitulo').textContent='Confirme seu telefone';
+      $('#otpSub').textContent='Enviamos um SMS com o código para '+telefone;
+      showPanel('otp');
+    }
+    $('#otpErr').textContent='';$('#otpOk').textContent='';
+    setTimeout(()=>document.querySelector('#panelOtp .otp input').focus(),300);
+  }catch(e){
+    $('#regErr').textContent=traduzErro(e);
+  }finally{
+    $('#btnRegContinuar').disabled=false;$('#btnRegContinuar').textContent='Continuar';
+  }
+};
+
+$('#btnOtpReenviar').onclick=()=>{ if(pendingReg) $('#btnRegContinuar').click(); else if(pendingReset) $('#btnForgotTel').click(); };
+
+$('#btnOtpConfirmar').onclick=async ()=>{
+  const code=otpValue();
+  $('#otpErr').textContent='';
+  if(code.length!==6){$('#otpErr').textContent='Digite os 6 dígitos.';return}
+  $('#btnOtpConfirmar').disabled=true;$('#btnOtpConfirmar').innerHTML='<span class="spinner"></span>Verificando…';
+  try{
+    if(pendingReg){
+      const {nome,sobrenome,funcao,telefone,email,senha,metodo}=pendingReg;
+      if(metodo==='email'){
+        const snap=await getDoc(doc(db,'otpCodes',email.toLowerCase()));
+        if(!snap.exists() || snap.data().code!==code || Date.now()>snap.data().expiraEm){
+          $('#otpErr').textContent='Código incorreto ou expirado.'; return;
+        }
+        await deleteDoc(doc(db,'otpCodes',email.toLowerCase()));
+      }else{
+        // verificação por telefone: confirma o SMS (prova que o telefone é dele)
+        await confirmationResult.confirm(code);
+        await signOut(auth); // não mantemos essa sessão "telefone" — vamos criar a conta de e-mail/senha de verdade
+      }
+      const cred=await createUserWithEmailAndPassword(auth, email, senha);
+      await setDoc(doc(db,'users',cred.user.uid),{
+        nome,sobrenome,funcao,telefone,email,criadoEm:serverTimestamp()
+      });
+      toast('Cadastro concluído! Bem-vindo(a), '+nome+'.');
+      pendingReg=null;
+    }else if(pendingReset){
+      // recuperação de senha por telefone
+      await confirmationResult.confirm(code);
+      showPanel('novaSenha');
+    }
+  }catch(e){
+    $('#otpErr').textContent=traduzErro(e);
+  }finally{
+    $('#btnOtpConfirmar').disabled=false;$('#btnOtpConfirmar').textContent='Verificar código';
+  }
+};
+
+// --------- ESQUECI A SENHA ---------
+document.querySelectorAll('#forgotMetodo button').forEach(b=>b.onclick=()=>{
+  document.querySelectorAll('#forgotMetodo button').forEach(x=>x.classList.remove('on'));
+  b.classList.add('on');
+  $('#forgotEmailBox').classList.toggle('hide', b.dataset.m!=='email');
+  $('#forgotTelBox').classList.toggle('hide', b.dataset.m!=='tel');
+});
+
+$('#btnForgotEmail').onclick=async ()=>{
+  const email=$('#forgotEmail').value.trim();
+  $('#forgotErr').textContent='';$('#forgotOk').textContent='';
+  if(!email){$('#forgotErr').textContent='Digite seu e-mail.';return}
+  try{
+    await sendPasswordResetEmail(auth, email);
+    $('#forgotOk').textContent='Enviamos um link de redefinição para '+email+'. Verifique também o spam.';
+  }catch(e){ $('#forgotErr').textContent=traduzErro(e); }
+};
+
+$('#btnForgotTel').onclick=async ()=>{
+  const telefone=$('#forgotTelefone').value.trim();
+  $('#forgotErr').textContent='';
+  if(!telefone){$('#forgotErr').textContent='Digite o telefone cadastrado.';return}
+  try{
+    const phone=telParaE164(telefone);
+    confirmationResult=await signInWithPhoneNumber(auth, phone, getRecaptcha());
+    pendingReset={telefone};
+    $('#otpTitulo').textContent='Confirme seu telefone';
+    $('#otpSub').textContent='Enviamos um SMS com o código para '+telefone;
+    $('#otpErr').textContent='';$('#otpOk').textContent='';
+    showPanel('otp');
+  }catch(e){ $('#forgotErr').textContent=traduzErro(e); }
+};
+
+$('#btnNovaSenha').onclick=async ()=>{
+  const s1=$('#novaSenha1').value, s2=$('#novaSenha2').value;
+  $('#novaSenhaErr').textContent='';
+  if(s1.length<6){$('#novaSenhaErr').textContent='Mínimo 6 caracteres.';return}
+  if(s1!==s2){$('#novaSenhaErr').textContent='As senhas não coincidem.';return}
+  $('#btnNovaSenha').disabled=true;$('#btnNovaSenha').innerHTML='<span class="spinner"></span>Salvando…';
+  try{
+    const resetFn=httpsCallable(functions,'resetPasswordViaPhone');
+    await resetFn({telefone:pendingReset.telefone, novaSenha:s1});
+    toast('Senha redefinida! Faça login com a nova senha.');
+    pendingReset=null;
+    await signOut(auth);
+    showPanel('login');
+  }catch(e){
+    $('#novaSenhaErr').textContent='Não foi possível salvar (função na nuvem indisponível). Detalhe: '+(e.message||'');
+  }finally{
+    $('#btnNovaSenha').disabled=false;$('#btnNovaSenha').textContent='Salvar nova senha';
+  }
+};
+
+$('#btnLogout').onclick=()=>signOut(auth);
+
+onAuthStateChanged(auth, async (user)=>{
+  if(user){
+    const snap=await getDoc(doc(db,'users',user.uid));
+    perfil = snap.exists() ? {uid:user.uid, ...snap.data()} : {uid:user.uid, nome:user.email, sobrenome:'', funcao:'', telefone:'', email:user.email};
+    $('#auth').classList.add('hide');
+    $('#btnLogout').classList.remove('hide');
+    $('#btnBell').classList.remove('hide');
+    $('#nomeLogado').textContent=perfil.nome+' '+perfil.sobrenome;
+    $('#funcaoLogado').textContent=perfil.funcao||'—';
+    $('#avatarIni').textContent=((perfil.nome[0]||'')+(perfil.sobrenome[0]||'')).toUpperCase();
+    view('home');
+    renderList();
+  }else{
+    perfil=null;
+    $('#auth').classList.remove('hide');
+    $('#btnLogout').classList.add('hide');
+    $('#btnBell').classList.add('hide');
+    setTimeout(()=>$('#auth').classList.add('up'),900);
+  }
+});
+
+/* ========================================================
+   DADOS DO EQUIPAMENTO (Firestore)
+======================================================== */
+const TIPOS=['Split hi-wall','Split piso-teto','Split cassete','Multi split','Janela','Self contained','Fancoil','Chiller','Câmara fria','Balcão/Geladeira','Outro'];
+const PARTES=['Compressor','Condensadora','Evaporadora','Placa eletrônica','Motor ventilador','Válvula','Outro componente'];
+const GASES=['R22','R410A','R32','R134a','R404A','R407C','R290','R600a','R1234yf','Outro'];
+const SECTIONS=[
+ {t:'Identificação',f:[
+  {k:'tipoCadastro',l:'Tipo de cadastro',type:'pick',o:['Equipamento completo','Peça avulsa']},
+  {k:'tipo',l:'Tipo / peça',type:'select',o:d=>d.tipoCadastro==='Peça avulsa'?PARTES:TIPOS},
+  {k:'modelo',l:'Modelo',type:'text'},
+  {k:'gas',l:'Gás refrigerante',type:'select',o:GASES},
+  {k:'fase',l:'Alimentação elétrica',type:'select',o:['Monofásico','Bifásico','Trifásico']},
+  {k:'local',l:'Local / setor',type:'text'}]},
+ {t:'Condição geral',f:[
+  {k:'danificado',l:'Equipamento danificado?',type:'yn'},
+  {k:'defeito',l:'Qual defeito?',type:'area',show:d=>d.danificado==='Sim'}]},
+ {t:'Manutenção realizada',f:[
+  {k:'preventiva',l:'Manutenção preventiva',type:'yn'},
+  {k:'corretiva',l:'Manutenção corretiva',type:'yn'},
+  {k:'higienizacao',l:'Higienização',type:'yn'},
+  {k:'limpeza_sistema',l:'Limpeza do sistema',type:'yn'},
+  {k:'cond_manut',l:'Manutenção na condensadora',type:'yn'},
+  {k:'manut_obs',l:'Observações da manutenção',type:'area'}]},
+ {t:'Compressor',f:[
+  {k:'comp_modelo',l:'Modelo do compressor',type:'text'},
+  {k:'comp_fluido',l:'Fluido refrigerante do compressor',type:'select',o:GASES},
+  {k:'comp_testado',l:'Compressor testado?',type:'yn'},
+  {k:'comp_megado',l:'Compressor megado?',type:'yn'},
+  {k:'comp_mega_val',l:'Valor do megômetro (MΩ)',type:'text',show:d=>d.comp_megado==='Sim'},
+  {k:'oleo',l:'Trocou o óleo?',type:'yn'}]},
+ {t:'Vazamentos',f:[
+  {k:'vaz_valvula',l:'Vazamento na válvula?',type:'yn'},
+  {k:'vaz_serpentina',l:'Vazamento na serpentina?',type:'yn'},
+  {k:'vaz_obs',l:'Local / detalhes do vazamento',type:'area',show:d=>d.vaz_valvula==='Sim'||d.vaz_serpentina==='Sim'}]},
+ {t:'Carenagem',f:[
+  {k:'carenagem',l:'Estado da carenagem',type:'select',o:['Boa','Regular','Ruim','Amassada','Enferrujada','Faltando partes']},
+  {k:'carenagem_obs',l:'Observações',type:'text'}]},
+ {t:'Peças faltando',f:[
+  {k:'pecas',l:'Marque o que está faltando',type:'chk',o:d=>['Válvula','Capacitor','Ventilador/hélice','Placa','Contator','Sensor','Controle remoto','Outras'].filter(x=>!(x==='Capacitor'&&d.fase==='Trifásico'))},
+  {k:'pecas_obs',l:'Quais outras peças?',type:'text'}]},
+ {t:'Parte elétrica',f:[
+  {k:'eletrica',l:'Elétrica organizada?',type:'select',o:['Organizada','Regular','Desorganizada','Gambiarra / improvisada']},
+  {k:'contatores',l:'Estado dos contatores',type:'select',o:['Bom','Regular','Ruim','Queimado','Não possui']},
+  {k:'placa',l:'Estado da placa',type:'select',o:['Boa','Regular','Ruim','Queimada','Não possui']},
+  {k:'eletrica_obs',l:'Observações',type:'area'}]}
+];
+const LABELS={};SECTIONS.forEach(s=>s.f.forEach(f=>LABELS[f.k]=f.l));
+
+async function dbAll(){
+  const q=query(collection(db,'equipamentos'), orderBy('criadoEm','desc'));
+  const snap=await getDocs(q);
+  return snap.docs.map(d=>({id:d.id, ...d.data()}));
+}
+async function dbGet(id){
+  const snap=await getDoc(doc(db,'equipamentos',id));
+  return snap.exists() ? {id, ...snap.data()} : null;
+}
+async function dbPut(rec){
+  const {id, ...data} = rec;
+  await setDoc(doc(db,'equipamentos',id), data, {merge:false});
+}
+async function nextId(){
+  const counterRef=doc(db,'counters','equipamentos');
+  const n=await runTransaction(db, async (tx)=>{
+    const snap=await tx.get(counterRef);
+    const cur=snap.exists()? snap.data().next : 1;
+    tx.set(counterRef,{next:cur+1});
+    return cur;
+  });
+  return 'EQ-'+pad(n);
+}
+
+/* ---------- estado ---------- */
+let cur=null;
+function logIt(x){cur.log.push({t:nowISO(),x,quem:(perfil?perfil.nome+' '+perfil.sobrenome:'')})}
+async function setVal(k,v,disp){
+  cur.d[k]=v;cur.ts[k]=nowISO();
+  logIt(LABELS[k]+': '+(disp??(Array.isArray(v)?v.join(', ')||'nenhuma':v||'—')));
+  await dbPut(cur);
+}
+
+/* ---------- navegação ---------- */
+function view(name){
+  $('#home').classList.toggle('hide',name!=='home');
+  $('#formView').classList.toggle('hide',name!=='form');
+  $('#equipeView').classList.toggle('hide',name!=='equipe');
+  $('#alertasView').classList.toggle('hide',name!=='alertas');
+  $('#stick').classList.toggle('hide',name!=='form');
+  $('#btnBack').classList.toggle('hide',name==='home');
+  $('#title').textContent=name==='home'?'Fichas de Equipamentos':(name==='equipe'?'Equipe de Manutenção':(name==='alertas'?'Pendências':(cur?cur.id:'')));
+  window.scrollTo(0,0);
+}
+window.view=view;
+async function goHome(){cur=null;view('home');renderList()}
+window.goHome=goHome;
+$('#btnBack').onclick=goHome;
+
+async function renderList(){
+  $('#list').innerHTML='<small style="color:var(--mut)">Carregando…</small>';
+  try{
+    const all=await dbAll();
+    $('#count').textContent='('+all.length+')';
+    $('#list').innerHTML=all.length?all.map(r=>`<div class="item" onclick="openFicha('${r.id}')">
+      ${r.fotos&&r.fotos[0]?`<img src="${r.fotos[0].dataUrl}">`:'<div class="ph"></div>'}
+      <div><b>${r.id}</b><small>${esc(r.d?.modelo||'sem modelo')} · ${esc(r.d?.tipo||'—')}${r.d?.tipoCadastro==='Peça avulsa'?' · 🔧 peça':''} ${r.d?.danificado==='Sim'?'· ⚠️ danificado':''}${!r.final?' · ⏳ pendente':''}${r.usadoEm?' · usada em '+esc(r.usadoEm):''}</small></div></div>`).join('')
+      :'<small style="color:var(--mut)">Nenhum equipamento ainda. Toque em "Novo equipamento".</small>';
+    updateBellBadge(all);
+  }catch(e){
+    $('#list').innerHTML='<small style="color:var(--no)">Não foi possível carregar (verifique conexão/configuração do Firebase).</small>';
+  }
+}
+
+function updateBellBadge(all){
+  const pend=all.filter(r=>!r.final).length;
+  const b=$('#bellBadge');
+  if(pend>0){ b.textContent=pend>99?'99+':pend; b.classList.remove('hide'); }
+  else{ b.classList.add('hide'); }
+}
+
+async function openAlertas(){
+  view('alertas');
+  $('#alertasList').innerHTML='<small style="color:var(--mut)">Carregando…</small>';
+  try{
+    const all=await dbAll();
+    updateBellBadge(all);
+    const pend=all.filter(r=>!r.final);
+    $('#alertasList').innerHTML=pend.length?pend.map(r=>`<div class="item" onclick="openFicha('${r.id}')">
+      ${r.fotos&&r.fotos[0]?`<img src="${r.fotos[0].dataUrl}">`:'<div class="ph"></div>'}
+      <div><b>${r.id}</b><small>${esc(r.d?.modelo||'sem modelo')} · aberta em ${full(r.criado)}${r.criadoPor?' por '+esc(r.criadoPor):''}</small></div></div>`).join('')
+      :'<small style="color:var(--mut)">Nenhuma pendência — todas as fichas estão finalizadas. 🎉</small>';
+  }catch(e){
+    $('#alertasList').innerHTML='<small style="color:var(--no)">Não foi possível carregar as pendências.</small>';
+  }
+}
+window.openAlertas=openAlertas;
+
+async function openEquipe(){
+  view('equipe');
+  $('#equipeList').innerHTML='<small style="color:var(--mut)">Carregando…</small>';
+  try{
+    const snap=await getDocs(collection(db,'users'));
+    const rows=snap.docs.map(d=>d.data());
+    $('#equipeList').innerHTML=rows.length?rows.map(u=>`<div class="item">
+      <div style="width:40px;height:40px;border-radius:50%;background:var(--pri2);display:flex;align-items:center;justify-content:center;font-weight:700;color:var(--pri)">${((u.nome?.[0]||'')+(u.sobrenome?.[0]||'')).toUpperCase()}</div>
+      <div><b>${esc(u.nome)} ${esc(u.sobrenome)}</b><small>${esc(u.funcao||'—')} · ${esc(u.telefone||'')} · ${esc(u.email||'')}</small></div></div>`).join('')
+      :'<small style="color:var(--mut)">Ninguém cadastrado ainda.</small>';
+  }catch(e){
+    $('#equipeList').innerHTML='<small style="color:var(--no)">Não foi possível carregar a equipe.</small>';
+  }
+}
+window.openEquipe=openEquipe;
+
+async function newFicha(){
+  const id=await nextId();
+  cur={id,criado:nowISO(),criadoEm:Date.now(),criadoPor:perfil.nome+' '+perfil.sobrenome,d:{tipoCadastro:'Equipamento completo'},ts:{},fotos:[],log:[],assinUrl:'',final:'',finalPor:'',pecasVinculadas:[],usadoEm:''};
+  logIt('Ficha criada');
+  await dbPut(cur);
+  renderForm();view('form');
+}
+window.newFicha=newFicha;
+async function openFicha(id){
+  toast('Abrindo '+id+'…');
+  const r=await dbGet(id);
+  if(!r){toast('Ficha não encontrada.');return}
+  cur=r; if(!cur.fotos)cur.fotos=[]; if(!cur.log)cur.log=[]; if(!cur.d)cur.d={}; if(!cur.ts)cur.ts={};
+  if(!cur.pecasVinculadas)cur.pecasVinculadas=[]; if(cur.usadoEm===undefined)cur.usadoEm='';
+  renderForm();view('form');
+}
+window.openFicha=openFicha;
+function normId(v){v=v.trim().toUpperCase();const n=v.replace(/\D/g,'');return n?'EQ-'+pad(parseInt(n)):v}
+async function searchId(){
+  const raw=$('#searchBox').value;if(!raw.trim())return;
+  const id=normId(raw);
+  await openFicha(id);
+}
+window.searchId=searchId;
+$('#searchBox').addEventListener('keydown',e=>{if(e.key==='Enter')searchId()});
+
+/* ---------- formulário ---------- */
+function fieldHTML(f){
+  const v=cur.d[f.k],ts=cur.ts[f.k]?`<span class="ts">${hm(cur.ts[f.k])}</span>`:'';
+  const lab=`<label class="l">${f.l}${ts}</label>`;
+  if(f.type==='text')return lab+`<input type="text" data-k="${f.k}" value="${esc(v)}">`;
+  if(f.type==='area')return lab+`<textarea data-k="${f.k}">${esc(v)}</textarea>`;
+  if(f.type==='select'){const opts=typeof f.o==='function'?f.o(cur.d):f.o;return lab+`<select data-k="${f.k}"><option value="">Selecione</option>${opts.map(o=>`<option ${o===v?'selected':''}>${o}</option>`).join('')}</select>`}
+  if(f.type==='pick'){const opts=typeof f.o==='function'?f.o(cur.d):f.o;return lab+`<div class="seg" data-k="${f.k}">${opts.map(o=>`<button class="pick${o===v?' on':''}" data-v="${o}">${o}</button>`).join('')}</div>`}
+  if(f.type==='yn')return lab+`<div class="seg" data-k="${f.k}"><button class="s ${v==='Sim'?'on':''}" data-v="Sim">Sim</button><button class="n ${v==='Não'?'on':''}" data-v="Não">Não</button></div>`;
+  if(f.type==='chk'){const sel=v||[];return lab+`<div class="chk" data-k="${f.k}">${f.o(cur.d).map(o=>`<label class="${sel.includes(o)?'on':''}"><input type="checkbox" value="${o}" ${sel.includes(o)?'checked':''}>${o}</label>`).join('')}</div>`}
+}
+function renderForm(){
+  const y=window.scrollY;
+  let h=`<div class="card"><div class="idbadge">${cur.id}</div><small style="color:var(--mut)">Aberta em ${full(cur.criado)}${cur.criadoPor?' · por '+esc(cur.criadoPor):''}</small>
+   ${cur.usadoEm?`<div class="ok-msg" style="margin:6px 0 0">🔗 Esta peça está instalada no equipamento <b>${esc(cur.usadoEm)}</b>.</div>`:''}
+   <div class="fotos" id="fotos">${cur.fotos.map((p,i)=>`<div><img src="${p.dataUrl}"><i onclick="delFoto(${i})">×</i></div>`).join('')}</div>
+   <div class="row"><button class="btn g" onclick="document.getElementById('fileCam').click()">📷 Tirar foto</button><button class="btn g" onclick="document.getElementById('fileGal').click()">🖼️ Galeria</button></div>
+   <input type="file" id="fileCam" accept="image/*" capture="environment" class="hide">
+   <input type="file" id="fileGal" accept="image/*" multiple class="hide"></div>`;
+  SECTIONS.forEach(s=>{
+    const fs=s.f.filter(f=>!f.show||f.show(cur.d));
+    h+=`<div class="card"><h2>${s.t}</h2>${fs.map(fieldHTML).join('')}</div>`;
+  });
+  h+=`<div class="card"><h2>🔗 Peças vinculadas</h2>
+   <p style="font-size:13px;color:var(--mut);margin:0 0 10px">Use quando este equipamento recebeu uma peça avulsa que já tem cadastro próprio (ex.: um compressor com ID separado).</p>
+   <div class="row"><input type="text" id="buscaPeca" inputmode="numeric" placeholder="ID da peça (ex.: 9 ou EQ-0009)" style="flex:3"><button class="btn g" style="flex:1;margin:0" onclick="buscarPeca()">🔍 Buscar</button></div>
+   <div id="buscaPecaResult"></div>
+   <div id="pecasVinculadasList">${(cur.pecasVinculadas||[]).length?cur.pecasVinculadas.map((p,i)=>`<div class="item">
+     <div class="ph" style="display:flex;align-items:center;justify-content:center;font-size:22px">🔧</div>
+     <div style="flex:1"><b>${esc(p.id)}</b><small>${esc(p.tipo||'')}${p.modelo?' · '+esc(p.modelo):''}</small></div>
+     <button class="link" style="color:var(--no)" onclick="desvincularPeca(${i})">Remover</button></div>`).join(''):'<small style="color:var(--mut)">Nenhuma peça vinculada ainda.</small>'}</div></div>`;
+  h+=`<div class="card"><h2>Técnico responsável</h2>
+   <div style="display:flex;align-items:center;gap:10px">
+    <div style="width:40px;height:40px;border-radius:50%;background:var(--pri2);display:flex;align-items:center;justify-content:center;font-weight:700;color:var(--pri)">${((perfil.nome[0]||'')+(perfil.sobrenome[0]||'')).toUpperCase()}</div>
+    <div><b>${esc(perfil.nome)} ${esc(perfil.sobrenome)}</b><br><small style="color:var(--mut)">${esc(perfil.funcao||'—')}</small></div>
+   </div>
+   <label class="l">Assinatura</label><canvas class="sig" id="sig"></canvas>
+   <button class="btn g" onclick="clearSig()">Limpar assinatura</button>
+   <button class="btn ok" onclick="finalizar()">✔ Finalizar ficha (registrar hora)</button>
+   <div id="finTxt" style="margin-top:8px;color:var(--mut);font-size:14px">${cur.final?'Finalizada em '+full(cur.final)+(cur.finalPor?' por '+esc(cur.finalPor):''):''}</div></div>
+   <div class="card"><h2>Histórico de procedimentos</h2><div id="logv" style="font-size:14px">${cur.log.slice().reverse().map(l=>`<div style="padding:4px 0;border-bottom:1px solid var(--bd)"><b>${hm(l.t)}</b> · ${esc(l.x)}${l.quem?' <small style=\"color:var(--mut)\">('+esc(l.quem)+')</small>':''}</div>`).join('')}</div></div>`;
+  $('#form').innerHTML=h;
+  bindForm();initSig();window.scrollTo(0,y);
+}
+function bindForm(){
+  const F=$('#form');
+  F.querySelectorAll('input[data-k],textarea[data-k]').forEach(el=>{
+    el.oninput=()=>{cur.d[el.dataset.k]=el.value};
+    el.onchange=()=>{setVal(el.dataset.k,el.value).then(refreshLog)};
+  });
+  F.querySelectorAll('select[data-k]').forEach(el=>el.onchange=()=>{setVal(el.dataset.k,el.value).then(renderForm)});
+  F.querySelectorAll('.seg').forEach(g=>g.querySelectorAll('button').forEach(b=>b.onclick=()=>{setVal(g.dataset.k,b.dataset.v).then(renderForm)}));
+  F.querySelectorAll('.chk').forEach(g=>g.querySelectorAll('input').forEach(i=>i.onchange=()=>{
+    const v=[...g.querySelectorAll('input:checked')].map(x=>x.value);setVal(g.dataset.k,v).then(renderForm)}));
+  document.getElementById('fileCam').onchange=e=>addFotos(e.target.files);
+  document.getElementById('fileGal').onchange=e=>addFotos(e.target.files);
+}
+function refreshLog(){const l=$('#logv');if(l)l.innerHTML=cur.log.slice().reverse().map(l=>`<div style="padding:4px 0;border-bottom:1px solid var(--bd)"><b>${hm(l.t)}</b> · ${esc(l.x)}${l.quem?' <small style=\"color:var(--mut)\">('+esc(l.quem)+')</small>':''}</div>`).join('')}
+
+/* fotos — guardadas em base64 direto no Firestore (sem Storage, que exige o
+   plano Blaze). Por isso a compressão aqui é mais forte que o normal, para
+   caber no limite de 1MB por ficha do Firestore. */
+function compress(file){return new Promise(res=>{
+  const img=new Image(),u=URL.createObjectURL(file);
+  img.onload=()=>{const m=700,s=Math.min(1,m/Math.max(img.width,img.height));
+    const c=document.createElement('canvas');c.width=img.width*s;c.height=img.height*s;
+    c.getContext('2d').drawImage(img,0,0,c.width,c.height);URL.revokeObjectURL(u);res(c.toDataURL('image/jpeg',.55))};
+  img.src=u})}
+function tamanhoAtualKB(){
+  return Math.round((JSON.stringify(cur).length)/1024);
+}
+async function addFotos(files){
+  toast('Processando foto(s)…');
+  for(const f of files){
+    if(tamanhoAtualKB()>800){
+      toast('Ficha ficou grande demais para guardar mais fotos aqui (limite temporário sem o Storage). Remova alguma foto antiga ou finalize a ficha.');
+      break;
+    }
+    try{
+      const dataUrl=await compress(f);
+      cur.fotos.push({dataUrl,t:nowISO()});
+      logIt('Foto adicionada');
+    }catch(e){ toast('Falha ao processar uma foto.'); }
+  }
+  try{
+    await dbPut(cur);
+  }catch(e){
+    toast('Não deu para salvar — a ficha ficou grande demais. Removendo a última foto.');
+    cur.fotos.pop();
+  }
+  renderForm();
+}
+function delFoto(i){if(confirm('Remover esta foto?')){cur.fotos.splice(i,1);logIt('Foto removida');dbPut(cur);renderForm()}}
+window.delFoto=delFoto;
+
+/* peças avulsas vinculadas (ex.: compressor com ID próprio usado para montar outro equipamento) */
+async function buscarPeca(){
+  const raw=$('#buscaPeca').value.trim();
+  if(!raw){toast('Digite o ID da peça.');return}
+  const id=normId(raw);
+  if(id===cur.id){$('#buscaPecaResult').innerHTML='<div class="err">Esse é o ID do próprio equipamento.</div>';return}
+  const r=await dbGet(id);
+  if(!r){$('#buscaPecaResult').innerHTML='<div class="err">Nenhum cadastro encontrado com o ID '+id+'.</div>';return}
+  const jaVinculada=(cur.pecasVinculadas||[]).some(p=>p.id===id);
+  const avisoUso = r.usadoEm && r.usadoEm!==cur.id ? `<div class="err">⚠️ Essa peça já está vinculada ao equipamento ${esc(r.usadoEm)}.</div>` : '';
+  $('#buscaPecaResult').innerHTML=`<div class="item">
+    ${r.fotos&&r.fotos[0]?`<img src="${r.fotos[0].dataUrl}">`:'<div class="ph"></div>'}
+    <div style="flex:1"><b>${esc(r.id)}</b><small>${esc(r.d?.tipoCadastro||'—')} · ${esc(r.d?.tipo||'—')}${r.d?.modelo?' · '+esc(r.d.modelo):''}</small></div></div>
+    ${avisoUso}
+    <button class="btn ok" ${jaVinculada?'disabled':''} onclick="vincularPeca('${id}')">${jaVinculada?'Já vinculada':'Vincular a este equipamento'}</button>`;
+}
+window.buscarPeca=buscarPeca;
+
+async function vincularPeca(id){
+  const r=await dbGet(id);
+  if(!r)return;
+  cur.pecasVinculadas=cur.pecasVinculadas||[];
+  cur.pecasVinculadas.push({id:r.id, tipo:r.d?.tipo||'', modelo:r.d?.modelo||'', vinculadoEm:nowISO(), vinculadoPor:perfil.nome+' '+perfil.sobrenome});
+  logIt('Peça vinculada: '+r.id+(r.d?.tipo?' ('+r.d.tipo+')':''));
+  await dbPut(cur);
+  try{ r.usadoEm=cur.id; await dbPut(r); }catch(e){}
+  toast('Peça '+id+' vinculada.');
+  renderForm();
+}
+window.vincularPeca=vincularPeca;
+
+async function desvincularPeca(i){
+  const p=cur.pecasVinculadas[i];
+  if(!confirm('Remover o vínculo com a peça '+p.id+'?'))return;
+  cur.pecasVinculadas.splice(i,1);
+  logIt('Peça desvinculada: '+p.id);
+  await dbPut(cur);
+  try{ const r=await dbGet(p.id); if(r && r.usadoEm===cur.id){ r.usadoEm=''; await dbPut(r); } }catch(e){}
+  renderForm();
+}
+window.desvincularPeca=desvincularPeca;
+
+/* assinatura */
+let sigC,sigX,drawing=false;
+function initSig(){
+  sigC=$('#sig');const r=sigC.getBoundingClientRect(),dpr=window.devicePixelRatio||1;
+  sigC.width=r.width*dpr;sigC.height=r.height*dpr;sigX=sigC.getContext('2d');sigX.scale(dpr,dpr);
+  sigX.lineWidth=2.4;sigX.lineCap='round';sigX.strokeStyle='#000';
+  if(cur.assinUrl){const i=new Image();i.onload=()=>sigX.drawImage(i,0,0,r.width,r.height);i.src=cur.assinUrl}
+  const pos=e=>{const b=sigC.getBoundingClientRect();return[e.clientX-b.left,e.clientY-b.top]};
+  sigC.onpointerdown=e=>{drawing=true;sigC.setPointerCapture(e.pointerId);sigX.beginPath();sigX.moveTo(...pos(e))};
+  sigC.onpointermove=e=>{if(drawing){sigX.lineTo(...pos(e));sigX.stroke()}};
+  sigC.onpointerup=async ()=>{
+    if(drawing){
+      drawing=false;
+      // assinatura guardada como base64 direto no Firestore (sem Storage)
+      cur.assinUrl=sigC.toDataURL('image/png');
+      try{ await dbPut(cur); }catch(e){ toast('Não foi possível salvar a assinatura agora.'); }
+    }
+  };
+}
+function clearSig(){const r=sigC.getBoundingClientRect();sigX.clearRect(0,0,r.width,r.height);cur.assinUrl='';dbPut(cur)}
+window.clearSig=clearSig;
+
+async function excluirFicha(){
+  if(!cur)return;
+  if(!confirm('Excluir a ficha '+cur.id+' definitivamente? Essa ação não pode ser desfeita.'))return;
+  try{
+    await deleteDoc(doc(db,'equipamentos',cur.id));
+    toast('Ficha '+cur.id+' excluída.');
+    cur=null;
+    view('home');renderList();
+  }catch(e){
+    toast('Não foi possível excluir a ficha agora.');
+  }
+}
+window.excluirFicha=excluirFicha;
+
+async function finalizar(){
+  if(!cur.assinUrl){toast('Falta a assinatura');return}
+  cur.final=nowISO();cur.finalPor=perfil.nome+' '+perfil.sobrenome;
+  logIt('Ficha finalizada por '+cur.finalPor);
+  await dbPut(cur);renderForm();toast('Ficha finalizada ✔');
+}
+window.finalizar=finalizar;
+
+/* ---------- PDF ---------- */
+function exportPdf(){
+  const d=cur.d;
+  let h=`<div style="display:flex;align-items:center;gap:14px;border-bottom:3px solid #0b5cab;padding-bottom:8px;margin-bottom:8px">
+    <img src="icon-512.png" style="width:60px;height:auto;border-radius:8px">
+    <div><div style="font-size:15px;font-weight:700;color:#0b5cab">Assembleia de Deus — Templo Central</div>
+    <div style="font-size:11px;color:#555">Equipe de Manutenção · Cadastro de Equipamentos</div></div></div>
+   <h1>Ficha de Equipamento — ${cur.id}</h1><div>Aberta em ${full(cur.criado)} · Emitida em ${full(nowISO())}</div>`;
+  if(cur.usadoEm)h+=`<div>🔗 Esta peça está instalada no equipamento <b>${esc(cur.usadoEm)}</b>.</div>`;
+  if(cur.fotos.length)h+=`<h2>Fotos</h2><div class="ph">${cur.fotos.map(p=>`<img src="${p.dataUrl}">`).join('')}</div>`;
+  if(cur.pecasVinculadas&&cur.pecasVinculadas.length)h+=`<h2>Peças vinculadas</h2><table>${cur.pecasVinculadas.map(p=>`<tr><td>${esc(p.id)}</td><td>${esc(p.tipo||'')}${p.modelo?' · '+esc(p.modelo):''}</td><td class="h">${hm(p.vinculadoEm)}</td></tr>`).join('')}</table>`;
+  SECTIONS.forEach(s=>{
+    const rows=s.f.filter(f=>!f.show||f.show(d)).map(f=>{
+      const v=d[f.k];const t=Array.isArray(v)?(v.length?v.join(', '):'Nenhuma'):(v||'—');
+      return `<tr><td>${f.l}</td><td>${esc(t)}</td><td class="h">${cur.ts[f.k]?hm(cur.ts[f.k]):''}</td></tr>`}).join('');
+    h+=`<h2>${s.t}</h2><table>${rows}</table>`;
+  });
+  h+=`<h2>Registro de procedimentos</h2><table>${cur.log.map(l=>`<tr><td class="h" style="text-align:left;width:20%">${full(l.t)}</td><td colspan="2">${esc(l.x)}${l.quem?' — '+esc(l.quem):''}</td></tr>`).join('')}</table>`;
+  h+=`<h2>Técnico responsável</h2><div class="sig"><b>${esc(perfil.nome+' '+perfil.sobrenome)} (${esc(perfil.funcao||'')})</b><br>${cur.assinUrl?`<img src="${cur.assinUrl}">`:'<br><br>______________________'}<br>${cur.final?'Finalizada em '+full(cur.final):'Data/hora: '+full(nowISO())}</div>`;
+  $('#print').innerHTML=h;
+  const old=document.title;document.title='Ficha_'+cur.id;
+  setTimeout(()=>{window.print();document.title=old},300);
+}
+window.exportPdf=exportPdf;
+
+/* ---------- câmera (leitor de QR / código de barras) ---------- */
+let stream,scanning=false;
+async function openScanner(){
+  if(!('BarcodeDetector' in window)){toast('Leitor não suportado neste navegador — use a pesquisa por ID');return}
+  try{
+    stream=await navigator.mediaDevices.getUserMedia({video:{facingMode:'environment'}});
+    const v=$('#vid');v.srcObject=stream;await v.play();$('#scan').classList.remove('hide');scanning=true;
+    const det=new BarcodeDetector();
+    const loop=async()=>{
+      if(!scanning)return;
+      try{const c=await det.detect(v);if(c.length){const val=c[0].rawValue;closeScanner();$('#searchBox').value=val;searchId();return}}catch(e){}
+      setTimeout(loop,250)};
+    loop();
+  }catch(e){toast('Não foi possível abrir a câmera')}
+}
+window.openScanner=openScanner;
+function closeScanner(){scanning=false;stream&&stream.getTracks().forEach(t=>t.stop());$('#scan').classList.add('hide')}
+window.closeScanner=closeScanner;
+</script>
+
+<!-- EmailJS: usado só para enviar o código de 6 dígitos por e-mail -->
+<script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+</body>
+</html>
