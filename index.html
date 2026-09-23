@@ -99,14 +99,20 @@ canvas.sig{width:100%;height:160px;border:2px dashed var(--bd);border-radius:10p
 /* ---------- ficha impressa / PDF ---------- */
 #print{display:none}
 #print h1{font-size:19px;margin:10px 0 4px;color:#111}
-#print h2{font-size:14px;color:var(--pri);margin:16px 0 6px;padding-bottom:3px;border-bottom:1px solid #ddd}
-#print table{width:100%;border-collapse:collapse;font-size:12.5px;margin-bottom:4px}
-#print td{padding:4px 6px;border-bottom:1px solid #eee;vertical-align:top}
-#print td.h{color:#888;font-size:11px;white-space:nowrap;width:78px}
-#print .ph{display:flex;flex-wrap:wrap;gap:6px;margin:4px 0 10px}
-#print .ph img{width:105px;height:105px;object-fit:cover;border-radius:6px;border:1px solid #ddd}
+#print .bloco{page-break-inside:avoid;break-inside:avoid;margin-bottom:6px}
+#print h2{font-size:13px;color:var(--pri);margin:10px 0 4px;padding-bottom:2px;border-bottom:1px solid #ddd}
+#print table{width:100%;border-collapse:collapse;font-size:11.5px;margin-bottom:2px}
+#print tr{page-break-inside:avoid;break-inside:avoid}
+#print td{padding:3px 6px;border-bottom:1px solid #eee;vertical-align:top}
+#print td.h{color:#888;font-size:10.5px;white-space:nowrap;width:70px}
+#print .secWrap{display:flex;gap:10px;align-items:flex-start}
+#print .secWrap .secTable{flex:1;min-width:0}
+#print .ph{display:flex;flex-wrap:wrap;gap:4px;margin:3px 0 2px;max-width:150px}
+#print .ph img{width:46px;height:46px;object-fit:cover;border-radius:4px;border:1px solid #ddd}
+#print .phGeral{display:flex;flex-wrap:wrap;gap:5px;margin:3px 0 6px}
+#print .phGeral img{width:64px;height:64px;object-fit:cover;border-radius:5px;border:1px solid #ddd}
 #print .sig{margin-top:6px}
-#print .sig img{max-width:220px;display:block;margin:6px 0;border-bottom:1px solid #999}
+#print .sig img{max-width:200px;display:block;margin:4px 0;border-bottom:1px solid #999}
 @media print{
   html,body{background:#fff}
   header,.stick,#auth,#scan,main>section{display:none!important}
@@ -252,8 +258,17 @@ canvas.sig{width:100%;height:160px;border:2px dashed var(--bd);border-radius:10p
     <button class="btn ok" onclick="newFicha()">＋ Novo equipamento</button>
     <div class="card" style="margin-top:14px">
       <h2>Equipamentos cadastrados <span id="count"></span></h2>
+      <input type="text" id="filtroTexto" placeholder="🔍 Filtrar por modelo, local, série, congregação..." oninput="aplicarFiltro()" style="margin-bottom:10px">
+      <div class="chk" style="margin-bottom:10px">
+        <label class="on" onclick="filtroChip(this,'todos')">Todos</label>
+        <label onclick="filtroChip(this,'pendentes')">⏳ Pendentes</label>
+        <label onclick="filtroChip(this,'danificados')">⚠️ Danificados</label>
+        <label onclick="filtroChip(this,'pecas')">🔧 Peças avulsas</label>
+        <label onclick="filtroChip(this,'transito')">🚚 Em trânsito</label>
+      </div>
       <div id="list"><small style="color:var(--mut)">Carregando…</small></div>
     </div>
+    <button class="btn g" onclick="exportarTudoCSV()">📊 Exportar tudo (CSV/Excel)</button>
     <button class="btn g" onclick="openEquipe()">👥 Equipe de manutenção</button>
   </section>
 
@@ -286,6 +301,7 @@ canvas.sig{width:100%;height:160px;border:2px dashed var(--bd);border-radius:10p
 </div>
 
 <div id="print"></div>
+<datalist id="listaCongregacoes"></datalist>
 
 <script type="module">
 import { firebaseConfig, emailjsConfig } from './firebase-config.js';
@@ -554,7 +570,49 @@ onAuthStateChanged(auth, async (user)=>{
 ======================================================== */
 const TIPOS=['Split hi-wall','Split piso-teto','Split cassete','Multi split','Janela','Self contained','Fancoil','Chiller','Câmara fria','Balcão/Geladeira','Outro'];
 const PARTES=['Compressor','Condensadora','Evaporadora','Placa eletrônica','Motor ventilador','Válvula','Outro componente'];
+/* Quando é "Peça avulsa", cada tipo de peça só mostra as seções e os itens de
+   checklist que fazem sentido pra ela (evita aparecer campo de compressor numa
+   ficha de evaporadora, por exemplo). Seções que não estão no mapa (Identificação,
+   Condição geral, Manutenção realizada, Peças faltando) aparecem sempre. */
+const SECOES_POR_PARTE={
+  'Compressor':['Compressor'],
+  'Condensadora':['Vazamentos','Carenagem','Parte elétrica'],
+  'Evaporadora':['Vazamentos','Carenagem','Parte elétrica'],
+  'Placa eletrônica':['Parte elétrica'],
+  'Motor ventilador':['Parte elétrica'],
+  'Válvula':['Vazamentos'],
+  'Outro componente':['Vazamentos','Carenagem','Parte elétrica']
+};
+const MAPA_SECOES={'Compressor':1,'Vazamentos':1,'Carenagem':1,'Parte elétrica':1};
+function secaoAplicavel(tituloSecao,d){
+  if(d.tipoCadastro!=='Peça avulsa')return true;
+  if(!MAPA_SECOES[tituloSecao])return true;
+  if(!d.tipo)return true;
+  return (SECOES_POR_PARTE[d.tipo]||[]).includes(tituloSecao);
+}
+const PECAS_POR_PARTE={
+  'Compressor':['Capacitor','Contator','Sensor','Outras'],
+  'Condensadora':['Ventilador/hélice','Capacitor','Contator','Placa','Sensor','Outras'],
+  'Evaporadora':['Ventilador/hélice','Placa','Sensor','Controle remoto','Outras'],
+  'Placa eletrônica':['Placa','Contator','Sensor','Controle remoto','Outras'],
+  'Motor ventilador':['Ventilador/hélice','Capacitor','Contator','Outras'],
+  'Válvula':['Válvula','Outras'],
+  'Outro componente':['Válvula','Capacitor','Ventilador/hélice','Placa','Contator','Sensor','Controle remoto','Outras']
+};
 const GASES=['R22','R410A','R32','R134a','R404A','R407C','R290','R600a','R1234yf','Outro'];
+// Lista-semente de congregações (opcional). Peça pro Filipe mandar a lista oficial
+// da IEADPE e cole os nomes aqui — o app já soma automaticamente os nomes que a
+// equipe for digitando nas fichas, então essa lista cresce sozinha com o uso.
+const CONGREGACOES_SEED=[];
+function atualizarListaCongregacoes(all){
+  const nomes=new Set(CONGREGACOES_SEED);
+  (all||[]).forEach(r=>{
+    if(r.d?.congOrigem)nomes.add(r.d.congOrigem);
+    if(r.d?.congDestino)nomes.add(r.d.congDestino);
+  });
+  const dl=document.getElementById('listaCongregacoes');
+  if(dl)dl.innerHTML=[...nomes].sort((a,b)=>a.localeCompare(b,'pt-BR')).map(n=>`<option value="${esc(n)}">`).join('');
+}
 const SECTIONS=[
  {t:'Identificação',f:[
   {k:'tipoCadastro',l:'Tipo de cadastro',type:'pick',o:['Equipamento completo','Peça avulsa']},
@@ -562,9 +620,10 @@ const SECTIONS=[
   {k:'modelo',l:'Modelo',type:'text'},
   {k:'gas',l:'Gás refrigerante',type:'select',o:GASES},
   {k:'fase',l:'Alimentação elétrica',type:'select',o:['Monofásico','Bifásico','Trifásico']},
-  {k:'local',l:'Local / setor',type:'text'},
-  {k:'congOrigem',l:'Veio de qual congregação?',type:'text'},
-  {k:'congDestino',l:'Vai para qual congregação?',type:'text'}]},
+  {k:'capacidade',l:'Capacidade (BTU/TR)',type:'text'},
+  {k:'numSerie',l:'Número de série / patrimônio',type:'text'},
+  {k:'congOrigem',l:'Veio de qual congregação?',type:'text',list:'listaCongregacoes'},
+  {k:'congDestino',l:'Vai para qual congregação?',type:'text',list:'listaCongregacoes'}]},
  {t:'Condição geral',f:[
   {k:'danificado',l:'Equipamento danificado?',type:'yn'},
   {k:'defeito',l:'Qual defeito?',type:'area',show:d=>d.danificado==='Sim'}]},
@@ -574,14 +633,20 @@ const SECTIONS=[
   {k:'higienizacao',l:'Higienização',type:'yn'},
   {k:'limpeza_sistema',l:'Limpeza do sistema',type:'yn'},
   {k:'cond_manut',l:'Manutenção na condensadora',type:'yn'},
-  {k:'manut_obs',l:'Observações da manutenção',type:'area'}]},
+  {k:'manut_obs',l:'Observações da manutenção',type:'area'},
+  {k:'proximaManut',l:'Próxima manutenção prevista',type:'date'}]},
  {t:'Compressor',f:[
   {k:'comp_modelo',l:'Modelo do compressor',type:'text'},
   {k:'comp_fluido',l:'Fluido refrigerante do compressor',type:'select',o:GASES},
   {k:'comp_testado',l:'Compressor testado?',type:'yn'},
   {k:'comp_megado',l:'Compressor megado?',type:'yn'},
   {k:'comp_mega_val',l:'Valor do megômetro (MΩ)',type:'text',show:d=>d.comp_megado==='Sim'},
-  {k:'oleo',l:'Trocou o óleo?',type:'yn'}]},
+  {k:'oleo',l:'Trocou o óleo?',type:'yn'},
+  {k:'pressaoAlta',l:'Pressão alta (psi/bar)',type:'text'},
+  {k:'pressaoBaixa',l:'Pressão baixa (psi/bar)',type:'text'},
+  {k:'correnteMedida',l:'Corrente elétrica medida (A)',type:'text'},
+  {k:'superaquecimento',l:'Superaquecimento (°C)',type:'text'},
+  {k:'subresfriamento',l:'Sub-resfriamento (°C)',type:'text'}]},
  {t:'Vazamentos',f:[
   {k:'vaz_valvula',l:'Vazamento na válvula?',type:'yn'},
   {k:'vaz_serpentina',l:'Vazamento na serpentina?',type:'yn'},
@@ -590,7 +655,12 @@ const SECTIONS=[
   {k:'carenagem',l:'Estado da carenagem',type:'select',o:['Boa','Regular','Ruim','Amassada','Enferrujada','Faltando partes']},
   {k:'carenagem_obs',l:'Observações',type:'text'}]},
  {t:'Peças faltando',f:[
-  {k:'pecas',l:'Marque o que está faltando',type:'chk',o:d=>['Válvula','Capacitor','Ventilador/hélice','Placa','Contator','Sensor','Controle remoto','Outras'].filter(x=>!(x==='Capacitor'&&d.fase==='Trifásico'))},
+  {k:'pecas',l:'Marque o que está faltando',type:'chk',o:d=>{
+    let base=['Válvula','Capacitor','Ventilador/hélice','Placa','Contator','Sensor','Controle remoto','Outras'];
+    if(d.fase==='Trifásico')base=base.filter(x=>x!=='Capacitor');
+    if(d.tipoCadastro==='Peça avulsa'&&d.tipo&&PECAS_POR_PARTE[d.tipo])base=base.filter(x=>PECAS_POR_PARTE[d.tipo].includes(x));
+    return base;
+  }},
   {k:'pecas_obs',l:'Quais outras peças?',type:'text'}]},
  {t:'Parte elétrica',f:[
   {k:'eletrica',l:'Elétrica organizada?',type:'select',o:['Organizada','Regular','Desorganizada','Gambiarra / improvisada']},
@@ -603,7 +673,9 @@ const LABELS={};SECTIONS.forEach(s=>s.f.forEach(f=>LABELS[f.k]=f.l));
 async function dbAll(){
   const q=query(collection(db,'equipamentos'), orderBy('criadoEm','desc'));
   const snap=await getDocs(q);
-  return snap.docs.map(d=>({id:d.id, ...d.data()}));
+  const all=snap.docs.map(d=>({id:d.id, ...d.data()}));
+  atualizarListaCongregacoes(all);
+  return all;
 }
 async function dbGet(id){
   const snap=await getDoc(doc(db,'equipamentos',id));
@@ -650,20 +722,73 @@ async function goHome(){cur=null;view('home');renderList()}
 window.goHome=goHome;
 $('#btnBack').onclick=goHome;
 
+function itemEquipHTML(r){
+  return `<div class="item" onclick="openFicha('${r.id}')">
+      ${r.fotos&&r.fotos[0]?`<img src="${r.fotos[0].dataUrl}">`:'<div class="ph"></div>'}
+      <div><b>${r.id}</b><small>${esc(r.d?.modelo||'sem modelo')} · ${esc(r.d?.tipo||'—')}${r.d?.tipoCadastro==='Peça avulsa'?' · 🔧 peça':''} ${r.d?.danificado==='Sim'?'· ⚠️ danificado':''}${!r.final?' · ⏳ pendente':''}${r.usadoEm?' · usada em '+esc(r.usadoEm):''}${r.d?.congDestino?' · 🚚 vai p/ '+esc(r.d.congDestino):''}</small></div></div>`;
+}
+let equipCache=[];
+let filtroStatus='todos';
 async function renderList(){
   $('#list').innerHTML='<small style="color:var(--mut)">Carregando…</small>';
   try{
-    const all=await dbAll();
-    $('#count').textContent='('+all.length+')';
-    $('#list').innerHTML=all.length?all.map(r=>`<div class="item" onclick="openFicha('${r.id}')">
-      ${r.fotos&&r.fotos[0]?`<img src="${r.fotos[0].dataUrl}">`:'<div class="ph"></div>'}
-      <div><b>${r.id}</b><small>${esc(r.d?.modelo||'sem modelo')} · ${esc(r.d?.tipo||'—')}${r.d?.tipoCadastro==='Peça avulsa'?' · 🔧 peça':''} ${r.d?.danificado==='Sim'?'· ⚠️ danificado':''}${!r.final?' · ⏳ pendente':''}${r.usadoEm?' · usada em '+esc(r.usadoEm):''}${r.d?.congDestino?' · 🚚 vai p/ '+esc(r.d.congDestino):''}</small></div></div>`).join('')
-      :'<small style="color:var(--mut)">Nenhum equipamento ainda. Toque em "Novo equipamento".</small>';
-    updateBellBadge(all);
+    equipCache=await dbAll();
+    updateBellBadge(equipCache);
+    aplicarFiltro();
   }catch(e){
     $('#list').innerHTML='<small style="color:var(--no)">Não foi possível carregar (verifique conexão/configuração do Firebase).</small>';
   }
 }
+function filtroChip(el,f){
+  document.querySelectorAll('#home .chk label').forEach(l=>l.classList.remove('on'));
+  el.classList.add('on');
+  filtroStatus=f;
+  aplicarFiltro();
+}
+window.filtroChip=filtroChip;
+function aplicarFiltro(){
+  const txt=($('#filtroTexto')?.value||'').toLowerCase().trim();
+  let list=equipCache;
+  if(filtroStatus==='pendentes')list=list.filter(r=>!r.final);
+  else if(filtroStatus==='danificados')list=list.filter(r=>r.d?.danificado==='Sim');
+  else if(filtroStatus==='pecas')list=list.filter(r=>r.d?.tipoCadastro==='Peça avulsa');
+  else if(filtroStatus==='transito')list=list.filter(r=>r.d?.congDestino);
+  if(txt){
+    list=list.filter(r=>[r.id,r.d?.modelo,r.d?.tipo,r.d?.local,r.d?.numSerie,r.d?.congOrigem,r.d?.congDestino]
+      .some(v=>(v||'').toLowerCase().includes(txt)));
+  }
+  $('#count').textContent='('+list.length+' de '+equipCache.length+')';
+  $('#list').innerHTML=list.length?list.map(itemEquipHTML).join('')
+    :'<small style="color:var(--mut)">Nenhum equipamento encontrado com esse filtro.</small>';
+}
+window.aplicarFiltro=aplicarFiltro;
+
+function csvEscape(v){const s=String(v??'');return /[",;\n]/.test(s)?'"'+s.replace(/"/g,'""')+'"':s}
+async function exportarTudoCSV(){
+  toast('Preparando exportação…');
+  try{
+    const all=await dbAll();
+    const cols=['ID','Tipo de cadastro','Tipo/peça','Modelo','Nº série/patrimônio','Capacidade','Gás','Fase','Local/setor','Veio de','Vai para','Danificado','Defeito','Situação','Criado por','Criado em','Finalizado em','Finalizado por','Usada em'];
+    const linhas=all.map(r=>{
+      const d=r.d||{};
+      return [r.id,d.tipoCadastro||'',d.tipo||'',d.modelo||'',d.numSerie||'',d.capacidade||'',d.gas||'',d.fase||'',
+        d.local||'',d.congOrigem||'',d.congDestino||'',d.danificado||'',d.defeito||'',r.final?'Finalizada':'Pendente',
+        r.criadoPor||'',r.criado?full(r.criado):'',r.final?full(r.final):'',r.finalPor||'',r.usadoEm||''
+      ].map(csvEscape).join(';');
+    });
+    const csv='﻿'+cols.join(';')+'\n'+linhas.join('\n');
+    const blob=new Blob([csv],{type:'text/csv;charset=utf-8'});
+    const url=URL.createObjectURL(blob);
+    const a=document.createElement('a');
+    a.href=url;a.download='equipamentos_'+new Date().toISOString().slice(0,10)+'.csv';
+    document.body.appendChild(a);a.click();a.remove();
+    URL.revokeObjectURL(url);
+    toast('Exportação pronta — veja os downloads do celular.');
+  }catch(e){
+    toast('Não foi possível exportar agora.');
+  }
+}
+window.exportarTudoCSV=exportarTudoCSV;
 
 function updateBellBadge(all){
   const pend=all.filter(r=>!r.final).length;
@@ -741,7 +866,8 @@ function fieldHTML(f,ro){
     let disp=Array.isArray(v)?(v.length?v.join(', '):'Nenhuma'):(v||'—');
     return lab+`<div style="padding:9px 0;color:var(--tx)">${esc(disp)}</div>`;
   }
-  if(f.type==='text')return lab+`<input type="text" data-k="${f.k}" value="${esc(v)}">`;
+  if(f.type==='text')return lab+`<input type="text" data-k="${f.k}" value="${esc(v)}" ${f.list?`list="${f.list}" autocomplete="off"`:''}>`;
+  if(f.type==='date')return lab+`<input type="date" data-k="${f.k}" value="${esc(v)}">`;
   if(f.type==='area')return lab+`<textarea data-k="${f.k}">${esc(v)}</textarea>`;
   if(f.type==='select'){const opts=typeof f.o==='function'?f.o(cur.d):f.o;return lab+`<select data-k="${f.k}"><option value="">Selecione</option>${opts.map(o=>`<option ${o===v?'selected':''}>${o}</option>`).join('')}</select>`}
   if(f.type==='pick'){const opts=typeof f.o==='function'?f.o(cur.d):f.o;return lab+`<div class="seg" data-k="${f.k}">${opts.map(o=>`<button class="pick${o===v?' on':''}" data-v="${o}">${o}</button>`).join('')}</div>`}
@@ -756,22 +882,22 @@ function renderForm(){
   const y=window.scrollY;
   const ro=!podeEditarFicha();
   let h=`<div class="card"><div class="idbadge">${cur.id}</div><small style="color:var(--mut)">Aberta em ${full(cur.criado)}${cur.criadoPor?' · por '+esc(cur.criadoPor):''}</small>
+   <button class="btn g" style="margin-top:8px" onclick="gerarEtiqueta()">🏷️ Gerar etiqueta (QR code)</button>
    ${cur.usadoEm?`<div class="ok-msg" style="margin:6px 0 0">🔗 Esta peça está instalada no equipamento <b>${esc(cur.usadoEm)}</b>.</div>`:''}
    ${ro?`<div class="err" style="margin:8px 0 0">🔒 Ficha criada por <b>${esc(cur.criadoPor||'—')}</b>. Você pode visualizar, mas só quem criou pode editar ou excluir.</div>`:''}
    <label class="l" style="margin-top:10px">Fotos gerais do equipamento</label>
    <div class="fotos" id="fotos">${cur.fotos.map((p,i)=>`<div><img src="${p.dataUrl}">${ro?'':`<i onclick="delFoto(${i})">×</i>`}</div>`).join('')}</div>
-   ${ro?'':`<div class="row"><button class="btn g" onclick="document.getElementById('fileCam').click()">📷 Tirar foto</button><button class="btn g" onclick="document.getElementById('fileGal').click()">🖼️ Galeria</button></div>
-   <input type="file" id="fileCam" accept="image/*" capture="environment" class="hide">
-   <input type="file" id="fileGal" accept="image/*" multiple class="hide">`}</div>`;
+   ${ro?'':`<button class="btn g" onclick="document.getElementById('fileGeral').click()">📷 Adicionar foto(s)</button>
+   <input type="file" id="fileGeral" accept="image/*" multiple class="hide">`}</div>`;
   SECTIONS.forEach((s,idx)=>{
+    if(!secaoAplicavel(s.t,cur.d))return;
     const fs=s.f.filter(f=>!f.show||f.show(cur.d));
     const fotosSec=(cur.fotosPorSecao&&cur.fotosPorSecao[s.t])||[];
     h+=`<div class="card"><h2>${s.t}</h2>${fs.map(f=>fieldHTML(f,ro)).join('')}
      <label class="l">Fotos deste item</label>
      <div class="fotos" id="fotosSec_${idx}">${fotosSec.map((p,i)=>`<div><img src="${p.dataUrl}">${ro?'':`<i onclick="delFotoSec(${idx},${i})">×</i>`}</div>`).join('')}</div>
-     ${ro?'':`<div class="row" style="margin-top:6px"><button class="btn g" onclick="document.getElementById('fileCamSec_${idx}').click()">📷 Foto</button><button class="btn g" onclick="document.getElementById('fileGalSec_${idx}').click()">🖼️ Galeria</button></div>
-     <input type="file" id="fileCamSec_${idx}" data-sec="${idx}" accept="image/*" capture="environment" class="hide">
-     <input type="file" id="fileGalSec_${idx}" data-sec="${idx}" accept="image/*" multiple class="hide">`}
+     ${ro?'':`<button class="btn g" style="margin-top:6px" onclick="document.getElementById('fileSec_${idx}').click()">📷 Adicionar foto(s)</button>
+     <input type="file" id="fileSec_${idx}" data-sec="${idx}" accept="image/*" multiple class="hide">`}
     </div>`;
   });
   h+=`<div class="card"><h2>🔗 Peças vinculadas</h2>
@@ -807,8 +933,7 @@ function bindForm(ro){
   F.querySelectorAll('.seg').forEach(g=>g.querySelectorAll('button').forEach(b=>b.onclick=()=>{setVal(g.dataset.k,b.dataset.v).then(renderForm)}));
   F.querySelectorAll('.chk').forEach(g=>g.querySelectorAll('input').forEach(i=>i.onchange=()=>{
     const v=[...g.querySelectorAll('input:checked')].map(x=>x.value);setVal(g.dataset.k,v).then(renderForm)}));
-  document.getElementById('fileCam')?.addEventListener('change',e=>addFotos(e.target.files));
-  document.getElementById('fileGal')?.addEventListener('change',e=>addFotos(e.target.files));
+  document.getElementById('fileGeral')?.addEventListener('change',e=>addFotos(e.target.files));
   F.querySelectorAll('input[type=file][data-sec]').forEach(el=>{
     el.onchange=e=>addFotosSecao(parseInt(el.dataset.sec),e.target.files);
   });
@@ -976,12 +1101,33 @@ window.excluirFicha=excluirFicha;
 
 async function finalizar(){
   if(!podeEditarFicha()){toast('Só quem criou esta ficha pode finalizá-la.');return}
-  if(!cur.assinUrl){toast('Falta a assinatura');return}
+  const faltando=[];
+  if(!cur.d.modelo)faltando.push('Modelo');
+  if(!cur.d.tipo)faltando.push('Tipo/peça');
+  if(!cur.assinUrl)faltando.push('Assinatura');
+  if(faltando.length){toast('Preencha antes de finalizar: '+faltando.join(', '));return}
   cur.final=nowISO();cur.finalPor=perfil.nome+' '+perfil.sobrenome;
   logIt('Ficha finalizada por '+cur.finalPor);
   await dbPut(cur);renderForm();toast('Ficha finalizada ✔');
 }
 window.finalizar=finalizar;
+
+/* ---------- etiqueta com QR code (pra colar no equipamento e escanear depois) ---------- */
+function gerarEtiqueta(){
+  if(typeof QRCode==='undefined'){toast('Gerador de QR ainda não carregou — verifique a internet e tente de novo em instantes.');return}
+  QRCode.toDataURL(cur.id, {width:280, margin:1}, (err,url)=>{
+    if(err){toast('Não foi possível gerar o QR code.');return}
+    $('#print').innerHTML=`<div style="text-align:center;padding:30px 10px">
+      <img src="icon-512.png" style="width:36px;height:36px;border-radius:6px;margin-bottom:8px">
+      <div style="font-size:11px;color:#555;margin-bottom:14px">Assembleia de Deus — Templo Central</div>
+      <img src="${url}" style="width:220px;height:220px">
+      <div style="font-size:26px;font-weight:700;margin-top:10px;letter-spacing:1px">${esc(cur.id)}</div>
+    </div>`;
+    const old=document.title;document.title='Etiqueta_'+cur.id;
+    setTimeout(()=>{window.print();document.title=old},300);
+  });
+}
+window.gerarEtiqueta=gerarEtiqueta;
 
 /* ---------- PDF ---------- */
 function exportPdf(){
@@ -992,18 +1138,20 @@ function exportPdf(){
     <div style="font-size:11px;color:#555">Equipe de Manutenção · Cadastro de Equipamentos</div></div></div>
    <h1>Ficha de Equipamento — ${cur.id}</h1><div>Aberta em ${full(cur.criado)} · Emitida em ${full(nowISO())}</div>`;
   if(cur.usadoEm)h+=`<div>🔗 Esta peça está instalada no equipamento <b>${esc(cur.usadoEm)}</b>.</div>`;
-  if(cur.fotos.length)h+=`<h2>Fotos gerais do equipamento</h2><div class="ph">${cur.fotos.map(p=>`<img src="${p.dataUrl}">`).join('')}</div>`;
-  if(cur.pecasVinculadas&&cur.pecasVinculadas.length)h+=`<h2>Peças vinculadas</h2><table>${cur.pecasVinculadas.map(p=>`<tr><td>${esc(p.id)}</td><td>${esc(p.tipo||'')}${p.modelo?' · '+esc(p.modelo):''}</td><td class="h">${hm(p.vinculadoEm)}</td></tr>`).join('')}</table>`;
+  if(cur.fotos.length)h+=`<div class="bloco"><h2>Fotos gerais do equipamento</h2><div class="phGeral">${cur.fotos.map(p=>`<img src="${p.dataUrl}">`).join('')}</div></div>`;
+  if(cur.pecasVinculadas&&cur.pecasVinculadas.length)h+=`<div class="bloco"><h2>Peças vinculadas</h2><table>${cur.pecasVinculadas.map(p=>`<tr><td>${esc(p.id)}</td><td>${esc(p.tipo||'')}${p.modelo?' · '+esc(p.modelo):''}</td><td class="h">${hm(p.vinculadoEm)}</td></tr>`).join('')}</table></div>`;
   SECTIONS.forEach(s=>{
+    if(!secaoAplicavel(s.t,d))return;
     const rows=s.f.filter(f=>!f.show||f.show(d)).map(f=>{
       const v=d[f.k];const t=Array.isArray(v)?(v.length?v.join(', '):'Nenhuma'):(v||'—');
       return `<tr><td>${f.l}</td><td>${esc(t)}</td><td class="h">${cur.ts[f.k]?hm(cur.ts[f.k]):''}</td></tr>`}).join('');
-    h+=`<h2>${s.t}</h2><table>${rows}</table>`;
     const fotosSec=(cur.fotosPorSecao&&cur.fotosPorSecao[s.t])||[];
-    if(fotosSec.length)h+=`<div class="ph">${fotosSec.map(p=>`<img src="${p.dataUrl}">`).join('')}</div>`;
+    const tabela=`<div class="secTable"><h2>${s.t}</h2><table>${rows}</table></div>`;
+    const fotos=fotosSec.length?`<div class="ph">${fotosSec.map(p=>`<img src="${p.dataUrl}">`).join('')}</div>`:'';
+    h+=`<div class="bloco"><div class="secWrap">${tabela}${fotos}</div></div>`;
   });
-  h+=`<h2>Registro de procedimentos</h2><table>${cur.log.map(l=>`<tr><td class="h" style="text-align:left;width:20%">${full(l.t)}</td><td colspan="2">${esc(l.x)}${l.quem?' — '+esc(l.quem):''}</td></tr>`).join('')}</table>`;
-  h+=`<h2>Técnico responsável</h2><div class="sig"><b>${esc(perfil.nome+' '+perfil.sobrenome)} (${esc(perfil.funcao||'')})</b><br>${cur.assinUrl?`<img src="${cur.assinUrl}">`:'<br><br>______________________'}<br>${cur.final?'Finalizada em '+full(cur.final):'Data/hora: '+full(nowISO())}</div>`;
+  h+=`<div class="bloco"><h2>Registro de procedimentos</h2><table>${cur.log.map(l=>`<tr><td class="h" style="text-align:left;width:20%">${full(l.t)}</td><td colspan="2">${esc(l.x)}${l.quem?' — '+esc(l.quem):''}</td></tr>`).join('')}</table></div>`;
+  h+=`<div class="bloco"><h2>Técnico responsável</h2><div class="sig"><b>${esc(perfil.nome+' '+perfil.sobrenome)} (${esc(perfil.funcao||'')})</b><br>${cur.assinUrl?`<img src="${cur.assinUrl}">`:'<br><br>______________________'}<br>${cur.final?'Finalizada em '+full(cur.final):'Data/hora: '+full(nowISO())}</div></div>`;
   $('#print').innerHTML=h;
   const old=document.title;document.title='Ficha_'+cur.id;
   setTimeout(()=>{window.print();document.title=old},300);
@@ -1032,5 +1180,7 @@ window.closeScanner=closeScanner;
 
 <!-- EmailJS: usado só para enviar o código de 6 dígitos por e-mail -->
 <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+<!-- QRCode: usado só para gerar a etiqueta com o ID do equipamento -->
+<script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js"></script>
 </body>
 </html>
