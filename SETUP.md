@@ -44,10 +44,15 @@ publicar é igual ao que você já fez no GitHub Pages.
 2. Na aba **Sign-in method**, ative:
    - **E-mail/senha** → Ativar → Salvar.
    - **Telefone** → Ativar → Salvar.
+   - **Google** → Ativar → escolha um **e-mail de suporte do projeto**
+     (pode ser o seu mesmo) → Salvar. (Isso ativa o botão "Entrar com
+     Google" que já vem pronto no app.)
 3. Ainda em Authentication, na aba **Settings → Domínios autorizados**,
    confira se o domínio onde você vai publicar o app está na lista
    (o `firebaseapp.com` do projeto já vem autorizado; se for publicar no
    GitHub Pages, adicione ali o domínio, ex.: `seu-usuario.github.io`).
+   **Esse mesmo domínio vale para o login do Google** — não precisa
+   configurar nada a mais.
 
 ## 4. Ativar o Firestore (banco de dados)
 
@@ -69,9 +74,16 @@ service cloud.firestore {
       allow create, update: if request.auth != null && request.auth.uid == userId;
     }
 
-    // Fichas de equipamento: qualquer pessoa logada da equipe pode ver e editar.
+    // Fichas de equipamento: qualquer pessoa logada da equipe pode VER e CRIAR.
+    // Editar/excluir só é permitido para quem criou a ficha (campo criadoPorUid).
+    // Fichas antigas, criadas antes dessa regra existir (sem criadoPorUid),
+    // continuam editáveis por qualquer um, para não travar dados já existentes.
     match /equipamentos/{eqId} {
-      allow read, write: if request.auth != null;
+      allow read: if request.auth != null;
+      allow create: if request.auth != null;
+      allow update, delete: if request.auth != null &&
+        (!('criadoPorUid' in resource.data) || resource.data.criadoPorUid == '' ||
+         resource.data.criadoPorUid == request.auth.uid);
     }
 
     // Contador usado para gerar o ID sequencial (EQ-0001, EQ-0002...).
