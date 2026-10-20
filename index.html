@@ -245,6 +245,26 @@ canvas.sig{width:100%;height:160px;border:2px dashed var(--bd);border-radius:10p
     <button class="btn" id="btnNovaSenha">Salvar nova senha</button>
   </div>
 
+  <div class="panel hide" id="panelGoogleCadastro">
+    <h3>Quase lá!</h3>
+    <p style="font-size:14px;color:var(--mut);margin-top:0">Confirme seus dados pra concluir o cadastro com a conta <b id="gEmail"></b>.</p>
+    <div class="row">
+      <div><label class="l" style="margin-top:0">Nome</label><input type="text" id="gNome"></div>
+      <div><label class="l" style="margin-top:0">Sobrenome</label><input type="text" id="gSobrenome"></div>
+    </div>
+    <label class="l">Função</label>
+    <select id="gFuncao">
+      <option>Técnico</option>
+      <option>Mecânico</option>
+      <option>Auxiliar Técnico</option>
+    </select>
+    <label class="l">Telefone (com DDD)</label>
+    <input type="tel" id="gTelefone" placeholder="(81) 9xxxx-xxxx">
+    <div class="err" id="gErr"></div>
+    <button class="btn" id="btnGoogleCadastro">Concluir cadastro</button>
+    <div class="foot"><button class="link" onclick="cancelarGoogleCadastro()">Cancelar e sair</button></div>
+  </div>
+
   <div id="recaptcha-container"></div>
 </div>
 
@@ -335,7 +355,7 @@ import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/fireba
 import {
   getAuth, onAuthStateChanged, createUserWithEmailAndPassword, signInWithEmailAndPassword,
   signOut, sendPasswordResetEmail, RecaptchaVerifier, signInWithPhoneNumber, updatePassword,
-  GoogleAuthProvider, signInWithRedirect, getRedirectResult
+  GoogleAuthProvider, signInWithPopup, signInWithRedirect, getRedirectResult
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 import {
   initializeFirestore, persistentLocalCache, doc, getDoc, getDocs, setDoc, updateDoc,
@@ -375,7 +395,7 @@ let pendingReg=null; // dados do cadastro em andamento aguardando código
 let pendingReset=null; // fluxo de "esqueci a senha" por telefone
 
 function showPanel(name){
-  ['login','reg','otp','forgot','novaSenha'].forEach(n=>{
+  ['login','reg','otp','forgot','novaSenha','googleCadastro'].forEach(n=>{
     document.getElementById('panel'+n[0].toUpperCase()+n.slice(1)).classList.toggle('hide', n!==name);
   });
 }
@@ -424,21 +444,49 @@ function traduzErro(e){
 }
 
 // --------- LOGIN COM GOOGLE ---------
-$('#btnGoogle').onclick=()=>{
+// Usa popup (mais confiável dentro do app instalado na tela inicial) com
+// redirect como alternativa só se o popup for bloqueado pelo navegador.
+$('#btnGoogle').onclick=async ()=>{
   $('#loginErr').textContent='';
-  signInWithRedirect(auth, new GoogleAuthProvider());
-};
-getRedirectResult(auth).then(async result=>{
-  if(!result || !result.user)return;
-  const u=result.user;
-  const ref=doc(db,'users',u.uid);
-  const snap=await getDoc(ref);
-  if(!snap.exists()){
-    const partes=(u.displayName||'').trim().split(/\s+/);
-    const nome=partes[0]||u.email, sobrenome=partes.slice(1).join(' ');
-    await setDoc(ref,{nome,sobrenome,funcao:'',telefone:u.phoneNumber||'',email:u.email,criadoEm:serverTimestamp()});
+  const btn=$('#btnGoogle'); const original=btn.innerHTML;
+  btn.disabled=true; btn.innerHTML='<span class="spinner"></span>Abrindo o Google…';
+  try{
+    await signInWithPopup(auth, new GoogleAuthProvider());
+    // onAuthStateChanged cuida do resto (entrar ou pedir cadastro)
+  }catch(e){
+    if(e.code==='auth/popup-blocked'||e.code==='auth/operation-not-supported-in-this-environment'){
+      signInWithRedirect(auth, new GoogleAuthProvider());
+      return;
+    }
+    const m=traduzErro(e); if(m){$('#loginErr').textContent=m; toast(m)}
+    btn.disabled=false; btn.innerHTML=original;
   }
-}).catch(e=>{ const m=traduzErro(e); if(m)$('#loginErr').textContent=m; });
+};
+// cobre o caso em que o navegador precisou usar redirect (fallback acima)
+getRedirectResult(auth).catch(e=>{ const m=traduzErro(e); if(m)$('#loginErr').textContent=m; });
+
+function cancelarGoogleCadastro(){ signOut(auth); }
+window.cancelarGoogleCadastro=cancelarGoogleCadastro;
+
+$('#btnGoogleCadastro').onclick=async ()=>{
+  const nome=$('#gNome').value.trim(), sobrenome=$('#gSobrenome').value.trim();
+  const funcao=$('#gFuncao').value, telefone=$('#gTelefone').value.trim();
+  const err=$('#gErr'); err.textContent='';
+  if(!nome){err.textContent='Preencha pelo menos o nome.';return}
+  const user=auth.currentUser;
+  if(!user){err.textContent='Sessão expirou — toque em "Entrar com Google" de novo.';return}
+  const btn=$('#btnGoogleCadastro');
+  btn.disabled=true; btn.innerHTML='<span class="spinner"></span>Salvando…';
+  try{
+    await setDoc(doc(db,'users',user.uid),{nome,sobrenome,funcao,telefone,email:user.email,criadoEm:serverTimestamp()});
+    perfil={uid:user.uid,nome,sobrenome,funcao,telefone,email:user.email};
+    entrarNoApp();
+  }catch(e){
+    err.textContent='Não foi possível salvar agora. Tente novamente.';
+  }finally{
+    btn.disabled=false; btn.textContent='Concluir cadastro';
+  }
+};
 
 // --------- CADASTRO ---------
 document.querySelectorAll('#regMetodo button').forEach(b=>b.onclick=()=>{
@@ -591,23 +639,37 @@ $('#btnNovaSenha').onclick=async ()=>{
 
 $('#btnLogout').onclick=()=>signOut(auth);
 
+function entrarNoApp(){
+  $('#auth').classList.add('hide');
+  $('#btnLogout').classList.remove('hide');
+  $('#btnBell').classList.remove('hide');
+  $('#nomeLogado').textContent=perfil.nome+' '+perfil.sobrenome;
+  $('#funcaoLogado').textContent=perfil.funcao||'—';
+  $('#avatarIni').textContent=((perfil.nome[0]||'')+(perfil.sobrenome[0]||'')).toUpperCase();
+  view('home');
+  renderList();
+}
+
 onAuthStateChanged(auth, async (user)=>{
   if(user){
     const snap=await getDoc(doc(db,'users',user.uid));
     if(snap.exists()){
       perfil={uid:user.uid, ...snap.data()};
+      entrarNoApp();
+    }else if(user.providerData.some(p=>p.providerId==='google.com')){
+      // primeiro login com Google: falta função/telefone — pede antes de entrar
+      $('#auth').classList.remove('hide');
+      $('#auth').classList.add('up');
+      showPanel('googleCadastro');
+      const partes=(user.displayName||'').trim().split(/\s+/);
+      $('#gNome').value=partes[0]||'';
+      $('#gSobrenome').value=partes.slice(1).join(' ');
+      $('#gEmail').textContent=user.email||'';
     }else{
       const partes=(user.displayName||user.email||'').trim().split(/\s+/);
       perfil={uid:user.uid, nome:partes[0]||user.email, sobrenome:partes.slice(1).join(' '), funcao:'', telefone:'', email:user.email};
+      entrarNoApp();
     }
-    $('#auth').classList.add('hide');
-    $('#btnLogout').classList.remove('hide');
-    $('#btnBell').classList.remove('hide');
-    $('#nomeLogado').textContent=perfil.nome+' '+perfil.sobrenome;
-    $('#funcaoLogado').textContent=perfil.funcao||'—';
-    $('#avatarIni').textContent=((perfil.nome[0]||'')+(perfil.sobrenome[0]||'')).toUpperCase();
-    view('home');
-    renderList();
   }else{
     perfil=null;
     $('#auth').classList.remove('hide');
