@@ -94,6 +94,30 @@ canvas.sig{width:100%;height:160px;border:2px dashed var(--bd);border-radius:10p
 #updateBanner{position:fixed;left:0;right:0;top:0;background:var(--warn);color:#fff;padding:10px 14px calc(10px + env(safe-area-inset-top));text-align:center;font-size:13.5px;z-index:80;display:flex;gap:10px;align-items:center;justify-content:center;flex-wrap:wrap;box-shadow:0 2px 10px rgba(0,0,0,.2)}
 #updateBanner button{background:#fff;color:var(--warn);border:0;border-radius:8px;padding:6px 12px;font-weight:700;font-size:13px}
 
+/* ---------- menu inferior ---------- */
+#bottomNav{position:fixed;left:0;right:0;bottom:0;background:#fff;border-top:1px solid var(--bd);display:flex;padding:6px calc(4px + env(safe-area-inset-right)) calc(6px + env(safe-area-inset-bottom)) calc(4px + env(safe-area-inset-left));z-index:6}
+#bottomNav button{flex:1;background:none;border:0;display:flex;flex-direction:column;align-items:center;gap:2px;color:var(--mut);font-size:10px;padding:6px 2px;border-radius:10px}
+#bottomNav button span.navIc{font-size:19px}
+#bottomNav button.on{color:var(--pri);font-weight:700}
+.quick3{display:flex;gap:9px;margin-bottom:12px}
+.quick3 div{flex:1;background:var(--card);border-radius:14px;box-shadow:var(--shadow);padding:13px 4px;text-align:center}
+.quick3 .ic{font-size:22px;display:block;margin-bottom:5px}
+.quick3 span.lab{font-size:11.5px;font-weight:700;color:var(--tx)}
+.tileGrid{display:grid;grid-template-columns:1fr 1fr;gap:9px}
+.tileGrid div{background:var(--card);border-radius:14px;box-shadow:var(--shadow);padding:14px 6px;text-align:center;position:relative}
+.tileGrid .ic{font-size:21px;display:block;margin-bottom:6px;color:var(--pri)}
+.tileGrid span.lab{font-size:11.5px;font-weight:600;color:var(--tx)}
+.tileGrid .warn .ic{color:var(--warn)}
+.tileGrid .info{position:absolute;top:7px;left:8px;width:17px;height:17px;border-radius:50%;background:var(--pri2);color:var(--pri);font:700 11px/17px Georgia,serif;font-style:italic;text-align:center}
+.tileGrid .badge{position:absolute;top:8px;right:9px;background:var(--no);color:#fff;font-size:9px;font-weight:700;border-radius:8px;padding:1px 5px}
+.menuList{background:var(--card);border-radius:14px;box-shadow:var(--shadow);overflow:hidden;margin-top:12px}
+.menuRow{display:flex;align-items:center;gap:12px;padding:14px;border-bottom:1px solid var(--bd);font-size:14px;color:var(--tx);font-weight:600}
+.menuRow:last-child{border:0}
+.menuRow .ic{font-size:19px;width:22px;text-align:center}
+.menuRow .arrow{margin-left:auto;color:var(--mut);font-weight:400}
+.menuRow.sair{color:var(--no)}
+header .iconBtn{position:relative}
+
 /* ---------- auth / splash ---------- */
 #auth{position:fixed;inset:0;background:linear-gradient(180deg,#0b5cab 0%,#08427a 100%);z-index:100;display:flex;flex-direction:column;align-items:center;color:#fff;padding:calc(24px + env(safe-area-inset-top)) calc(20px + env(safe-area-inset-right)) calc(20px + env(safe-area-inset-bottom)) calc(20px + env(safe-area-inset-left));overflow-y:auto}
 #auth .logoWrap{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;transition:flex .5s ease,padding .5s ease;text-align:center}
@@ -104,6 +128,34 @@ canvas.sig{width:100%;height:160px;border:2px dashed var(--bd);border-radius:10p
 #auth.up .logoWrap h2{font-size:15px;margin:10px 0 0}
 #auth .logoWrap p{margin:2px 0;color:#cfe1f5;font-size:13px}
 #auth.up .logoWrap p{display:none}
+/* aviso "em desenvolvimento" */
+#devModal{position:fixed;inset:0;background:rgba(10,25,40,.55);z-index:150;display:flex;align-items:center;justify-content:center;padding:24px}
+#devModal .box{background:#fff;border-radius:18px;max-width:340px;width:100%;padding:22px 20px 18px;text-align:center;box-shadow:0 12px 40px rgba(0,0,0,.3);animation:txtUp .25s ease both}
+#devModal .ic{font-size:34px}
+#devModal h3{margin:6px 0 2px;font-size:17px;color:var(--tx)}
+#devModal .tag{display:inline-block;background:var(--warn2);color:var(--warn);font-size:11.5px;font-weight:700;border-radius:20px;padding:3px 10px;margin:6px 0 10px}
+#devModal p{font-size:13.5px;color:var(--mut);margin:0 0 16px;line-height:1.45}
+/* animação da tela de entrada */
+@keyframes logoIn{0%{opacity:0;transform:scale(.55) rotate(-8deg)}60%{opacity:1;transform:scale(1.08) rotate(2deg)}100%{opacity:1;transform:scale(1) rotate(0)}}
+@keyframes logoGlow{0%,100%{filter:drop-shadow(0 6px 18px rgba(0,0,0,.35))}50%{filter:drop-shadow(0 0 26px rgba(160,205,255,.85))}}
+@keyframes txtUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
+@keyframes barRun{0%{transform:translateX(-110%)}100%{transform:translateX(260%)}}
+#splash img{animation:logoIn .9s cubic-bezier(.2,.8,.3,1) both,logoGlow 2.6s ease-in-out .9s infinite}
+#splash h2{animation:txtUp .6s ease .55s both}
+#splash p{animation:txtUp .6s ease .8s both}
+#splash .splashBar{width:120px;height:3px;border-radius:3px;background:rgba(255,255,255,.2);overflow:hidden;margin-top:22px;animation:txtUp .5s ease 1s both}
+#splash .splashBar i{display:block;width:45%;height:100%;background:#fff;border-radius:3px;animation:barRun 1.2s ease-in-out infinite}
+#splash{position:fixed;inset:0;z-index:200;background:linear-gradient(180deg,#0b5cab 0%,#08427a 100%);color:#fff;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:20px;overflow:hidden}
+#splash img{width:130px;border-radius:18px;filter:drop-shadow(0 6px 18px rgba(0,0,0,.35))}
+#splash h2{margin:14px 0 2px;font-size:19px}
+#splash p{margin:2px 0;color:#cfe1f5;font-size:13px}
+@keyframes logoZoom{0%{transform:scale(1)}100%{transform:scale(26)}}
+@keyframes fadeOutQ{to{opacity:0}}
+@keyframes splashGone{0%,60%{opacity:1}100%{opacity:0}}
+#splash.exit{animation:splashGone .85s ease forwards;pointer-events:none}
+#splash.exit img{animation:logoZoom .85s cubic-bezier(.65,0,.9,.4) forwards}
+#splash.exit h2,#splash.exit p,#splash.exit .splashBar{animation:fadeOutQ .3s ease forwards}
+@media (prefers-reduced-motion:reduce){#splash img,#splash h2,#splash p,#splash .splashBar,#splash .splashBar i{animation:none}#splash.exit{animation:fadeOutQ .3s ease forwards}#splash.exit img{animation:none}}
 #auth .panel{width:100%;max-width:400px;background:#fff;color:var(--tx);border-radius:20px 20px 0 0;padding:22px 18px calc(26px + env(safe-area-inset-bottom));opacity:0;transform:translateY(30px);transition:opacity .5s ease .15s, transform .5s ease .15s;margin-top:auto}
 #auth.up .panel{opacity:1;transform:translateY(0)}
 #auth .panel h3{margin:0 0 14px;font-size:17px;color:var(--pri)}
@@ -141,6 +193,15 @@ canvas.sig{width:100%;height:160px;border:2px dashed var(--bd);border-radius:10p
 <body>
 
 <!-- ===================== TELA DE LOGIN / CADASTRO ===================== -->
+<div id="devModal" class="hide" onclick="if(event.target===this)fecharDev()">
+  <div class="box"><div class="ic" id="devIc"></div><h3 id="devTit"></h3><div class="tag">🚧 Em desenvolvimento</div><p id="devTxt"></p><button class="btn" style="margin:0" onclick="fecharDev()">Entendi</button></div>
+</div>
+<div id="splash">
+  <img src="icon-512.png" alt="Assembleia de Deus Templo Central">
+  <h2>Assembleia de Deus — Templo Central</h2>
+  <p>Equipe de Manutenção · Cadastro de Equipamentos</p>
+  <div class="splashBar"><i></i></div>
+</div>
 <div id="auth">
   <div class="logoWrap">
     <img src="icon-512.png" alt="Assembleia de Deus Templo Central">
@@ -277,8 +338,8 @@ canvas.sig{width:100%;height:160px;border:2px dashed var(--bd);border-radius:10p
     <img src="icon-192.png" alt="Logo">
     <div class="tx"><b id="title">Fichas de Equipamentos</b><small>Templo Central · Manutenção</small></div>
   </div>
+  <button id="btnPerfil" class="hide iconBtn" onclick="view('menu')">👤</button>
   <button id="btnBell" class="hide bellBtn" onclick="openAlertas()">🔔<span id="bellBadge" class="bellBadge hide">0</span></button>
-  <button id="btnLogout" class="hide">Sair</button>
 </header>
 
 <main>
@@ -292,9 +353,10 @@ canvas.sig{width:100%;height:160px;border:2px dashed var(--bd);border-radius:10p
       <div class="warn"><b id="statPend">—</b><small>pendentes</small></div>
       <div class="ok"><b id="statMes">—</b><small>este mês</small></div>
     </div>
-    <div class="big">
-      <button onclick="openScanner()"><span>📷</span>Câmera<br><small style="font-weight:400">ler QR / código</small></button>
-      <button class="alt" onclick="document.getElementById('searchBox').focus()"><span>🔍</span>Pesquisar por ID</button>
+    <div class="quick3">
+      <div onclick="newFicha()"><span class="ic">➕</span><span class="lab">Novo<br>equipamento</span></div>
+      <div onclick="openScanner()"><span class="ic">📷</span><span class="lab">Ler QR<br>/ código</span></div>
+      <div onclick="document.getElementById('searchBox').focus()"><span class="ic">🔍</span><span class="lab">Pesquisar<br>ID</span></div>
     </div>
     <div class="card">
       <label class="l" style="margin-top:0">ID do equipamento</label>
@@ -303,21 +365,47 @@ canvas.sig{width:100%;height:160px;border:2px dashed var(--bd);border-radius:10p
         <button class="btn" style="flex:1;margin:0" onclick="searchId()">Abrir</button>
       </div>
     </div>
-    <button class="btn ok" onclick="newFicha()">＋ Novo equipamento</button>
-    <div class="card" style="margin-top:14px">
+    <h2 style="font-size:15.5px;margin:18px 0 10px;font-weight:700"><span style="display:inline-block;width:4px;height:14px;background:var(--pri);border-radius:2px;margin-right:8px;vertical-align:-1px"></span>Acesso rápido</h2>
+    <div class="tileGrid">
+      <div class="warn" onclick="irParaOS('pendentes')"><i class="info" onclick="event.stopPropagation();avisoDev('pendentes',true)">i</i><span class="badge hide" id="tileBadgePend">0</span><span class="ic">⏳</span><span class="lab">Pendentes</span></div>
+      <div onclick="irParaOS('danificados')"><i class="info" onclick="event.stopPropagation();avisoDev('danificados',true)">i</i><span class="ic">⚠️</span><span class="lab">Danificados</span></div>
+      <div onclick="irParaOS('pecas')"><i class="info" onclick="event.stopPropagation();avisoDev('pecas',true)">i</i><span class="ic">🔧</span><span class="lab">Peças avulsas</span></div>
+      <div onclick="irParaOS('transito')"><i class="info" onclick="event.stopPropagation();avisoDev('transito',true)">i</i><span class="ic">🚚</span><span class="lab">Em trânsito</span></div>
+      <div onclick="view('regua')"><i class="info" onclick="event.stopPropagation();avisoDev('regua',true)">i</i><span class="ic">📏</span><span class="lab">Régua P-T</span></div>
+      <div onclick="abrirBuscaTec('manual')"><span class="ic">📖</span><span class="lab">Manuais de<br>equipamentos</span></div>
+      <div onclick="view('qrTool')"><i class="info" onclick="event.stopPropagation();avisoDev('qr',true)">i</i><span class="ic">🏷️</span><span class="lab">Criar QR code</span></div>
+      <div onclick="abrirBuscaTec('compressor')"><span class="ic">🧊</span><span class="lab">Compressor</span></div>
+    </div>
+  </section>
+
+  <section id="osView" class="hide">
+    <div class="card">
       <h2>Equipamentos cadastrados <span id="count"></span></h2>
       <input type="text" id="filtroTexto" placeholder="🔍 Filtrar por modelo, local, série, congregação..." oninput="aplicarFiltro()" style="margin-bottom:10px">
       <div class="chk" style="margin-bottom:10px">
-        <label class="on" onclick="filtroChip(this,'todos')">Todos</label>
-        <label onclick="filtroChip(this,'pendentes')">⏳ Pendentes</label>
-        <label onclick="filtroChip(this,'danificados')">⚠️ Danificados</label>
-        <label onclick="filtroChip(this,'pecas')">🔧 Peças avulsas</label>
-        <label onclick="filtroChip(this,'transito')">🚚 Em trânsito</label>
+        <label class="on" data-f="todos" onclick="filtroChip(this,'todos')">Todos</label>
+        <label data-f="pendentes" onclick="filtroChip(this,'pendentes')">⏳ Pendentes</label>
+        <label data-f="danificados" onclick="filtroChip(this,'danificados')">⚠️ Danificados</label>
+        <label data-f="pecas" onclick="filtroChip(this,'pecas')">🔧 Peças avulsas</label>
+        <label data-f="transito" onclick="filtroChip(this,'transito')">🚚 Em trânsito</label>
       </div>
       <div id="list"><small style="color:var(--mut)">Carregando…</small></div>
     </div>
-    <button class="btn g" onclick="exportarTudoCSV()">📊 Exportar tudo (CSV/Excel)</button>
-    <button class="btn g" onclick="openEquipe()">👥 Equipe de manutenção</button>
+  </section>
+
+  <section id="menuView" class="hide">
+    <div class="card" style="display:flex;align-items:center;gap:10px">
+      <div style="width:40px;height:40px;border-radius:50%;background:var(--pri2);display:flex;align-items:center;justify-content:center;font-weight:700;color:var(--pri)" id="avatarMenu"></div>
+      <div><b id="nomeMenu"></b><br><small style="color:var(--mut)" id="funcaoMenu"></small></div>
+    </div>
+    <div class="menuList">
+      <div class="menuRow" onclick="avisoDev('vistorias')"><span class="ic">🏛️</span>Vistorias de congregação<span class="arrow">›</span></div>
+      <div class="menuRow" onclick="avisoDev('descarte')"><span class="ic">♻️</span>Descarte de equipamento<span class="arrow">›</span></div>
+      <div class="menuRow" onclick="openEquipe()"><span class="ic">👥</span>Equipe de manutenção<span class="arrow">›</span></div>
+      <div class="menuRow" onclick="exportarTudoCSV()"><span class="ic">📊</span>Exportar tudo (CSV/Excel)<span class="arrow">›</span></div>
+      <div class="menuRow" onclick="avisoDev('config')"><span class="ic">⚙️</span>Configurações<span class="arrow">›</span></div>
+      <button class="menuRow sair" id="btnLogout" style="width:100%;border:0;background:none;text-align:left;cursor:pointer"><span class="ic">🚪</span>Sair<span class="arrow">›</span></button>
+    </div>
   </section>
 
   <section id="equipeView" class="hide">
@@ -328,10 +416,73 @@ canvas.sig{width:100%;height:160px;border:2px dashed var(--bd);border-radius:10p
     <div class="card"><h2>🔔 Fichas pendentes (não finalizadas)</h2><div id="alertasList"><small style="color:var(--mut)">Carregando…</small></div></div>
   </section>
 
+  <section id="reguaView" class="hide">
+    <div class="card">
+      <h2>Régua P-T</h2>
+      <p style="font-size:13px;color:var(--mut);margin-top:0">Pressão ↔ temperatura de saturação, calculado a partir de dados termodinâmicos reais (NIST RefProp) por refrigerante.</p>
+      <label class="l" style="margin-top:0">Refrigerante</label>
+      <select id="rgGas"></select>
+      <label class="l">Quero calcular</label>
+      <div class="chk" id="rgModo">
+        <label class="on" data-m="p2t">Tenho a pressão</label>
+        <label data-m="t2p">Tenho a temperatura</label>
+      </div>
+      <div id="rgEntradaP">
+        <label class="l">Pressão manométrica</label>
+        <div class="row" style="gap:8px">
+          <input id="rgPressao" type="number" inputmode="decimal" placeholder="Ex.: 120" style="flex:2">
+          <select id="rgUnidP" style="flex:1"><option value="psig">psig</option><option value="barg">bar(g)</option></select>
+        </div>
+      </div>
+      <div id="rgEntradaT" class="hide">
+        <label class="l">Temperatura</label>
+        <div class="row" style="gap:8px">
+          <input id="rgTemp" type="number" inputmode="decimal" placeholder="Ex.: 10" style="flex:2">
+          <select id="rgUnidT" style="flex:1"><option value="c">°C</option><option value="f">°F</option></select>
+        </div>
+      </div>
+      <button class="btn" onclick="calcularReguaPT()">Calcular</button>
+      <div id="rgResultado" style="margin-top:14px"></div>
+      <div id="rgGlideNote" class="hide" style="margin-top:8px;font-size:12.5px;color:var(--warn)">⚠️ Este é um refrigerante de mistura (blend) com glide — a temperatura real varia entre o início e o fim da troca de fase. O valor mostrado é uma aproximação (ponto médio).</div>
+    </div>
+  </section>
+
+  <section id="qrToolView" class="hide">
+    <div class="card">
+      <h2>Criar QR code</h2>
+      <p style="font-size:13px;color:var(--mut);margin-top:0">Digite o ID do equipamento pra gerar a etiqueta com QR code, pra imprimir ou compartilhar.</p>
+      <label class="l" style="margin-top:0">ID do equipamento</label>
+      <div class="row" style="gap:8px">
+        <input id="qrIdInput" type="text" inputmode="numeric" placeholder="Ex.: 12 ou EQ-0012" style="flex:3">
+        <button class="btn" style="flex:1;margin:0" onclick="buscarParaQr()">Buscar</button>
+      </div>
+      <div id="qrToolResult" style="margin-top:12px"></div>
+    </div>
+  </section>
+
+  <section id="buscaTecView" class="hide">
+    <div class="card">
+      <h2 id="btTitulo">Manuais de equipamentos</h2>
+      <p id="btSub" style="font-size:13px;color:var(--mut);margin-top:0">Digite o modelo pra buscar o manual em PDF.</p>
+      <div class="row" style="gap:8px">
+        <input id="btModeloInput" type="text" placeholder="Ex.: Springer Midea 12000 BTU" style="flex:3">
+        <button class="btn" style="flex:1;margin:0" onclick="buscarTecnico()">Buscar</button>
+      </div>
+      <div id="btResult" style="margin-top:12px"></div>
+    </div>
+  </section>
+
   <section id="formView" class="hide">
     <div id="form"></div>
   </section>
 </main>
+
+<nav id="bottomNav" class="hide">
+  <button id="navInicio" onclick="view('home')"><span class="navIc">🏠</span>Início</button>
+  <button id="navOS" onclick="irParaOS('todos')"><span class="navIc">📋</span>Ordem de Serviço</button>
+  <button id="navAlertas" onclick="openAlertas()"><span class="navIc">🔔</span>Alertas</button>
+  <button id="navMenu" onclick="view('menu')"><span class="navIc">☰</span>Menu</button>
+</nav>
 
 <div class="stick hide" id="stick">
   <div class="row">
@@ -641,15 +792,30 @@ $('#btnNovaSenha').onclick=async ()=>{
 
 $('#btnLogout').onclick=()=>signOut(auth);
 
+const SPLASH_T0=Date.now(); let splashFechada=false;
+function fecharSplash(){
+  if(splashFechada)return; splashFechada=true;
+  const resta=Math.max(0,2400-(Date.now()-SPLASH_T0));
+  setTimeout(()=>{
+    const sp=$('#splash'); if(!sp)return;
+    sp.classList.add('exit');
+    setTimeout(()=>sp.remove(),950);
+  },resta);
+}
+setTimeout(fecharSplash,9000);
 function entrarNoApp(){
   $('#auth').classList.add('hide');
-  $('#btnLogout').classList.remove('hide');
+  $('#btnPerfil').classList.remove('hide');
   $('#btnBell').classList.remove('hide');
   $('#nomeLogado').textContent=perfil.nome+' '+perfil.sobrenome;
   $('#funcaoLogado').textContent=perfil.funcao||'—';
   $('#avatarIni').textContent=((perfil.nome[0]||'')+(perfil.sobrenome[0]||'')).toUpperCase();
+  $('#nomeMenu').textContent=$('#nomeLogado').textContent;
+  $('#funcaoMenu').textContent=perfil.funcao||'—';
+  $('#avatarMenu').textContent=$('#avatarIni').textContent;
   view('home');
   renderList();
+  fecharSplash();
 }
 
 onAuthStateChanged(auth, async (user)=>{
@@ -667,6 +833,7 @@ onAuthStateChanged(auth, async (user)=>{
       $('#gNome').value=partes[0]||'';
       $('#gSobrenome').value=partes.slice(1).join(' ');
       $('#gEmail').textContent=user.email||'';
+      fecharSplash();
     }else{
       const partes=(user.displayName||user.email||'').trim().split(/\s+/);
       perfil={uid:user.uid, nome:partes[0]||user.email, sobrenome:partes.slice(1).join(' '), funcao:'', telefone:'', email:user.email};
@@ -675,9 +842,11 @@ onAuthStateChanged(auth, async (user)=>{
   }else{
     perfil=null;
     $('#auth').classList.remove('hide');
-    $('#btnLogout').classList.add('hide');
+    $('#btnPerfil').classList.add('hide');
     $('#btnBell').classList.add('hide');
-    setTimeout(()=>$('#auth').classList.add('up'),900);
+    $('#bottomNav').classList.add('hide');
+    $('#auth').classList.add('up');
+    fecharSplash();
   }
 });
 
@@ -823,18 +992,28 @@ async function setVal(k,v,disp){
 }
 
 /* ---------- navegação ---------- */
+const TITULOS={home:'Fichas de Equipamentos',os:'Ordem de Serviço',menu:'Menu',equipe:'Equipe de Manutenção',alertas:'Pendências',regua:'Régua P-T',qrTool:'Criar QR code',buscaTec:'Busca técnica'};
+const VIEWS={home:'#home',os:'#osView',menu:'#menuView',equipe:'#equipeView',alertas:'#alertasView',regua:'#reguaView',qrTool:'#qrToolView',buscaTec:'#buscaTecView',form:'#formView'};
+const NAV_DE={home:'navInicio',os:'navOS',alertas:'navAlertas',menu:'navMenu'};
 function view(name){
-  $('#home').classList.toggle('hide',name!=='home');
-  $('#formView').classList.toggle('hide',name!=='form');
-  $('#equipeView').classList.toggle('hide',name!=='equipe');
-  $('#alertasView').classList.toggle('hide',name!=='alertas');
+  Object.entries(VIEWS).forEach(([k,sel])=>$(sel).classList.toggle('hide',k!==name));
   $('#stick').classList.toggle('hide',name!=='form');
-  $('#btnBack').classList.toggle('hide',name==='home');
-  $('#title').textContent=name==='home'?'Fichas de Equipamentos':(name==='equipe'?'Equipe de Manutenção':(name==='alertas'?'Pendências':(cur?cur.id:'')));
+  const principal=['home','os','menu','alertas'].includes(name);
+  $('#btnBack').classList.toggle('hide',name==='home'||name==='os'||name==='menu');
+  $('#bottomNav').classList.toggle('hide',name==='form'||!perfil);
+  document.querySelectorAll('#bottomNav button').forEach(b=>b.classList.toggle('on',b.id===NAV_DE[name]));
+  $('#title').textContent=name==='form'?(cur?cur.id:''):(TITULOS[name]||'');
+  document.body.style.paddingBottom=(name==='form'||!perfil)?'':'72px';
   window.scrollTo(0,0);
 }
 window.view=view;
 async function goHome(){cur=null;view('home');renderList()}
+function irParaOS(f){
+  const el=document.querySelector('#osView .chk label[data-f="'+(f||'todos')+'"]');
+  view('os');
+  if(el)filtroChip(el,f||'todos');
+}
+window.irParaOS=irParaOS;
 window.goHome=goHome;
 $('#btnBack').onclick=goHome;
 
@@ -867,10 +1046,11 @@ function renderStats(list){
   }).length;
   if($('#statTotal'))$('#statTotal').textContent=total;
   if($('#statPend'))$('#statPend').textContent=pend;
+  const tb=$('#tileBadgePend');if(tb){tb.textContent=pend;tb.classList.toggle('hide',!pend)}
   if($('#statMes'))$('#statMes').textContent=mes;
 }
 function filtroChip(el,f){
-  document.querySelectorAll('#home .chk label').forEach(l=>l.classList.remove('on'));
+  document.querySelectorAll('#osView .chk label').forEach(l=>l.classList.remove('on'));
   el.classList.add('on');
   filtroStatus=f;
   aplicarFiltro();
@@ -987,6 +1167,179 @@ async function searchId(){
 }
 window.searchId=searchId;
 $('#searchBox').addEventListener('keydown',e=>{if(e.key==='Enter')searchId()});
+
+/* ========================================================
+   RÉGUA P-T  (Antoine: ln(P_abs[bar]) = A1 + A2/(T[°C]+A3))
+   Constantes: Danfoss (geradas a partir de dados NIST RefProp 10.0)
+======================================================== */
+const PT_GASES={
+  'R22':[9.748,-2017.2,247.8,0],'R32':[10.271,-2059.6,252.1,0],'R134a':[9.936,-2147.9,242.3,0],
+  'R404A':[9.715,-1946.4,245.8,0.5],'R407C':[10.072,-2059.7,241.1,5.9],'R410A':[10.086,-1990.0,248.7,0.1],
+  'R290':[9.400,-1990.7,253.9,0],'R600a':[9.322,-2203.9,248.2,0],'R1234yf':[9.644,-2108.3,248.2,0],
+  'R507A':[9.770,-1974.6,248.8,0],'R513A':[9.664,-2055.8,242.3,0],'R448A':[9.993,-2021.4,242.2,5.4],
+  'R449A':[9.975,-2019.7,242.4,5.0],'R452A':[9.922,-2023.5,247.1,3.7],'R454B':[10.043,-1996.0,248.1,1.2],
+  'R12':[9.421,-2069.6,249.5,0],'R502':[9.459,-1894.1,245.4,0.1],'R744 (CO₂)':[10.661,-1904.5,267.9,0]
+};
+const ATM_BAR=1.01325, BAR_PSI=14.5037738;
+let rgModo='p2t';
+(function initRegua(){
+  const sel=$('#rgGas');
+  sel.innerHTML=Object.keys(PT_GASES).map(g=>`<option>${g}</option>`).join('');
+  sel.value='R410A';
+  document.querySelectorAll('#rgModo label').forEach(l=>l.onclick=()=>{
+    document.querySelectorAll('#rgModo label').forEach(x=>x.classList.remove('on'));
+    l.classList.add('on');rgModo=l.dataset.m;
+    $('#rgEntradaP').classList.toggle('hide',rgModo!=='p2t');
+    $('#rgEntradaT').classList.toggle('hide',rgModo!=='t2p');
+    $('#rgResultado').innerHTML='';
+  });
+})();
+function ptTemp(k,pAbsBar){const[a1,a2,a3]=PT_GASES[k];return a2/(Math.log(pAbsBar)-a1)-a3}
+function ptPress(k,tC){const[a1,a2,a3]=PT_GASES[k];return Math.exp(a1+a2/(tC+a3))}
+function rgBox(t,v,sub){return `<div style="background:var(--pri2);border-radius:12px;padding:12px;margin-bottom:8px"><small style="color:var(--mut)">${t}</small><div style="font-size:24px;font-weight:700;color:var(--pri)">${v}</div>${sub?`<small style="color:var(--mut)">${sub}</small>`:''}</div>`}
+function calcularReguaPT(){
+  const g=$('#rgGas').value, glide=PT_GASES[g][3], out=$('#rgResultado');
+  $('#rgGlideNote').classList.toggle('hide',glide<1);
+  if(rgModo==='p2t'){
+    const v=parseFloat($('#rgPressao').value);
+    if(isNaN(v)){toast('Digite a pressão.');return}
+    const bar=$('#rgUnidP').value==='psig'?v/BAR_PSI:v;
+    const abs=bar+ATM_BAR;
+    if(abs<=0.05){toast('Pressão fora da faixa.');return}
+    const tC=ptTemp(g,abs);
+    out.innerHTML=rgBox('Temperatura de saturação · '+g,tC.toFixed(1)+' °C',(tC*9/5+32).toFixed(1)+' °F')
+      +`<small style="color:var(--mut)">Pressão absoluta usada: ${abs.toFixed(2)} bar (${(abs*BAR_PSI).toFixed(1)} psia)</small>`;
+  }else{
+    let v=parseFloat($('#rgTemp').value);
+    if(isNaN(v)){toast('Digite a temperatura.');return}
+    const tC=$('#rgUnidT').value==='f'?(v-32)*5/9:v;
+    if(tC+PT_GASES[g][2]<=5){toast('Temperatura fora da faixa.');return}
+    const abs=ptPress(g,tC), man=abs-ATM_BAR;
+    out.innerHTML=rgBox('Pressão manométrica · '+g,(man*BAR_PSI).toFixed(1)+' psig',man.toFixed(2)+' bar(g)')
+      +`<small style="color:var(--mut)">Pressão absoluta: ${abs.toFixed(2)} bar (${(abs*BAR_PSI).toFixed(1)} psia) · a ${tC.toFixed(1)} °C</small>`;
+  }
+}
+window.calcularReguaPT=calcularReguaPT;
+
+/* ========================================================
+   CRIAR QR CODE (ferramenta avulsa)
+======================================================== */
+function etiquetaHTML(id,url){
+  return `<div style="text-align:center;padding:30px 10px">
+    <img src="icon-512.png" style="width:36px;height:36px;border-radius:6px;margin-bottom:8px">
+    <div style="font-size:11px;color:#555;margin-bottom:14px">Assembleia de Deus — Templo Central</div>
+    <img src="${url}" style="width:220px;height:220px">
+    <div style="font-size:26px;font-weight:700;margin-top:10px;letter-spacing:1px">${esc(id)}</div></div>`;
+}
+let qrAtual=null;
+function buscarParaQr(){
+  const raw=$('#qrIdInput').value;if(!raw.trim()){toast('Digite o ID.');return}
+  if(typeof QRCode==='undefined'){toast('Gerador de QR ainda não carregou — verifique a internet.');return}
+  const id=normId(raw);
+  QRCode.toDataURL(id,{width:560,margin:1},async(err,url)=>{
+    if(err){toast('Não foi possível gerar o QR code.');return}
+    qrAtual={id,url};
+    let existe=true;try{existe=!!(await dbGet(id))}catch(e){}
+    $('#qrToolResult').innerHTML=`<div style="text-align:center">
+      <img src="${url}" style="width:220px;height:220px">
+      <div style="font-size:24px;font-weight:700;letter-spacing:1px">${esc(id)}</div>
+      ${existe?'':'<small style="color:var(--warn)">⚠️ Esse ID ainda não está cadastrado.</small>'}
+      <div class="row" style="gap:8px;margin-top:12px">
+        <button class="btn" style="margin:0" onclick="imprimirQrAtual()">🖨️ Imprimir</button>
+        <button class="btn g" style="margin:0" onclick="compartilharQrAtual()">📤 Compartilhar</button>
+      </div></div>`;
+  });
+}
+window.buscarParaQr=buscarParaQr;
+function imprimirQrAtual(){
+  if(!qrAtual)return;
+  $('#print').innerHTML=etiquetaHTML(qrAtual.id,qrAtual.url);
+  const old=document.title;document.title='Etiqueta_'+qrAtual.id;
+  setTimeout(()=>{window.print();document.title=old},300);
+}
+window.imprimirQrAtual=imprimirQrAtual;
+async function compartilharQrAtual(){
+  if(!qrAtual)return;
+  try{
+    const blob=await (await fetch(qrAtual.url)).blob();
+    const file=new File([blob],'QR_'+qrAtual.id+'.png',{type:'image/png'});
+    if(navigator.canShare&&navigator.canShare({files:[file]})){
+      await navigator.share({files:[file],title:'QR '+qrAtual.id,text:'Equipamento '+qrAtual.id});
+    }else{
+      const a=document.createElement('a');a.href=qrAtual.url;a.download='QR_'+qrAtual.id+'.png';
+      document.body.appendChild(a);a.click();a.remove();toast('Imagem salva nos downloads.');
+    }
+  }catch(e){if(e&&e.name!=='AbortError')toast('Não foi possível compartilhar.')}
+}
+window.compartilharQrAtual=compartilharQrAtual;
+$('#qrIdInput').addEventListener('keydown',e=>{if(e.key==='Enter')buscarParaQr()});
+
+/* ========================================================
+   MANUAIS / COMPRESSOR (Google Custom Search via Cloud Function)
+   Preencha BUSCA_TEC_URL com a URL da função "buscaTecnica" depois do deploy.
+======================================================== */
+const BUSCA_TEC_URL='';
+const DEV_INFO={
+  manual:['📖','Manuais de equipamentos','Você digita o modelo do equipamento e o app procura o manual em PDF na internet e mostra na própria tela, sem baixar.'],
+  compressor:['🧊','Compressor','Você digita o modelo do compressor e o app procura a ficha técnica em PDF e mostra na própria tela, sem baixar.'],
+  vistorias:['🏛️','Vistorias de congregação','Registro das vistorias feitas em cada congregação, com histórico.'],
+  descarte:['♻️','Descarte de equipamento','Controle dos equipamentos baixados e descartados, com motivo e data.'],
+  config:['⚙️','Configurações','Ajustes do aplicativo e da sua conta.'],
+  pendentes:['⏳','Pendentes','Lista as fichas que foram abertas e ainda não foram finalizadas, pra você não esquecer nenhuma.'],
+  danificados:['⚠️','Danificados','Mostra só os equipamentos marcados como danificados, com o defeito registrado.'],
+  pecas:['🔧','Peças avulsas','Mostra as peças cadastradas separadas (compressor, evaporadora, placa etc.), fora de um equipamento completo.'],
+  transito:['🚚','Em trânsito','Mostra os equipamentos que têm congregação de destino, ou seja, que estão indo de um lugar pra outro.'],
+  regua:['📏','Régua P-T','Converte pressão em temperatura de saturação (e o contrário) pro gás escolhido, com cálculo real em psig, bar ou °C/°F.'],
+  qr:['🏷️','Criar QR code','Gera a etiqueta com QR code de qualquer ID de equipamento, pra imprimir ou compartilhar.']
+};
+function avisoDev(k,ok){
+  const d=DEV_INFO[k];if(!d)return;
+  const tg=document.querySelector('#devModal .tag');tg.textContent=ok?'✅ Funcionando':'🚧 Em desenvolvimento';tg.style.cssText=ok?'background:#e3f4ea;color:var(--ok)':'';
+  $('#devIc').textContent=d[0];$('#devTit').textContent=d[1];$('#devTxt').textContent=d[2];
+  $('#devModal').classList.remove('hide');
+}
+function fecharDev(){$('#devModal').classList.add('hide')}
+window.avisoDev=avisoDev;window.fecharDev=fecharDev;
+let btModo='manual';
+function abrirBuscaTec(modo){
+  if(!BUSCA_TEC_URL){avisoDev(modo);return}
+  btModo=modo;
+  $('#btTitulo').textContent=modo==='manual'?'Manuais de equipamentos':'Compressor — ficha técnica';
+  $('#btSub').textContent=modo==='manual'?'Digite o modelo do equipamento pra buscar o manual em PDF.':'Digite o modelo do compressor pra buscar a ficha técnica em PDF.';
+  $('#btModeloInput').placeholder=modo==='manual'?'Ex.: Springer Midea 12000 BTU':'Ex.: Embraco EMI 60HER';
+  $('#btResult').innerHTML='';
+  view('buscaTec');
+}
+window.abrirBuscaTec=abrirBuscaTec;
+async function buscarTecnico(){
+  const q=$('#btModeloInput').value.trim();
+  if(!q){toast('Digite o modelo.');return}
+  const box=$('#btResult');
+  if(!BUSCA_TEC_URL){box.innerHTML='<small style="color:var(--warn)">Busca ainda não configurada (falta a chave do Google). Assim que for configurada, os PDFs aparecem aqui.</small>';return}
+  box.innerHTML='<small style="color:var(--mut)">Buscando…</small>';
+  try{
+    const tk=await auth.currentUser.getIdToken();
+    const r=await fetch(BUSCA_TEC_URL+'?modo='+btModo+'&q='+encodeURIComponent(q),{headers:{Authorization:'Bearer '+tk}});
+    if(!r.ok)throw new Error(r.status);
+    const j=await r.json();
+    const it=j.items||[];
+    box.innerHTML=it.length?it.map((x,i)=>`<div class="item" onclick="abrirPdfInApp(${i})"><div class="ph" style="display:flex;align-items:center;justify-content:center">📄</div><div><b style="font-size:13px">${esc(x.title)}</b><small>${esc(x.displayLink||'')} — ${esc((x.snippet||'').slice(0,90))}</small></div></div>`).join('')
+      :'<small style="color:var(--mut)">Nenhum PDF encontrado pra esse modelo. Tente outro nome/código.</small>';
+    window._btItens=it;
+  }catch(e){box.innerHTML='<small style="color:var(--no)">Não foi possível buscar agora.</small>'}
+}
+window.buscarTecnico=buscarTecnico;
+function abrirPdfInApp(i){
+  const x=(window._btItens||[])[i];if(!x)return;
+  const u=x.link;
+  $('#btResult').innerHTML=`<div class="row" style="gap:8px;margin-bottom:8px">
+      <button class="btn g" style="margin:0" onclick="buscarTecnico()">← Resultados</button>
+      <a class="btn" style="margin:0;text-align:center;text-decoration:none" href="${esc(u)}" target="_blank" rel="noopener">Abrir fora</a></div>
+    <iframe src="https://docs.google.com/gview?embedded=1&url=${encodeURIComponent(u)}" style="width:100%;height:70vh;border:1px solid var(--bd);border-radius:12px;background:#fff"></iframe>`;
+}
+window.abrirPdfInApp=abrirPdfInApp;
+$('#btModeloInput').addEventListener('keydown',e=>{if(e.key==='Enter')buscarTecnico()});
+
 
 /* ---------- formulário ---------- */
 function fieldHTML(f,ro){
