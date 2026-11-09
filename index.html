@@ -143,6 +143,25 @@ header .iconBtn{position:relative}
 #novModal li{display:flex;gap:10px;padding:8px 0;border-bottom:1px solid var(--bd);font-size:13.5px;color:var(--tx);line-height:1.4}
 #novModal li:last-child{border:0}
 #novModal li .e{font-size:19px;width:24px;text-align:center}
+#fotoSheet{position:fixed;inset:0;background:rgba(10,25,40,.55);z-index:150;display:flex;align-items:flex-end;justify-content:center}
+#fotoSheet .sheet{background:#fff;width:100%;max-width:480px;border-radius:20px 20px 0 0;padding:18px 16px calc(18px + env(safe-area-inset-bottom));animation:txtUp .25s ease both}
+#fotoSheet .sheet b{display:block;text-align:center;font-size:15px;margin-bottom:4px}
+/* vistoria */
+.vchips{display:flex;flex-wrap:wrap;gap:6px}
+.vchip{padding:8px 12px;border:1px solid var(--bd);background:#fff;border-radius:20px;font-size:13.5px;color:var(--tx)}
+.vchip.on{background:var(--pri);border-color:var(--pri);color:#fff}
+.vchip.on.bad{background:var(--no);border-color:var(--no)}
+.vchip.on.good{background:var(--ok);border-color:var(--ok)}
+details.vmaq{background:var(--card);border-radius:16px;box-shadow:var(--shadow);margin-bottom:12px;border:1px solid rgba(11,92,171,.08)}
+details.vmaq>summary{padding:14px;font-weight:700;font-size:15px;color:var(--pri);list-style:none}
+details.vmaq>summary::-webkit-details-marker{display:none}
+details.vmaq>summary::after{content:'▾';float:right;color:var(--mut)}
+details.vmaq[open]>summary::after{content:'▴'}
+details.vmaq .body{padding:0 14px 14px}
+.vgrid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px}
+.vgrid label{font-size:12px;color:var(--mut);font-weight:600;display:block;margin-bottom:3px}
+.vgrid input{padding:10px!important}
+.vsub{font-size:12.5px;font-weight:700;color:var(--mut);text-transform:uppercase;letter-spacing:.4px;margin:16px 0 6px}
 /* animação da tela de entrada */
 @keyframes logoIn{0%{opacity:0;transform:scale(.55) rotate(-8deg)}60%{opacity:1;transform:scale(1.08) rotate(2deg)}100%{opacity:1;transform:scale(1) rotate(0)}}
 @keyframes logoGlow{0%,100%{filter:drop-shadow(0 6px 18px rgba(0,0,0,.35))}50%{filter:drop-shadow(0 0 26px rgba(160,205,255,.85))}}
@@ -201,6 +220,13 @@ header .iconBtn{position:relative}
 <body>
 
 <!-- ===================== TELA DE LOGIN / CADASTRO ===================== -->
+<div id="fotoSheet" class="hide" onclick="if(event.target===this)fecharFotoSheet()">
+  <div class="sheet"><b>Adicionar foto</b>
+    <button class="btn" onclick="fotoOrigem('camera')">📷 Tirar foto agora</button>
+    <button class="btn g" onclick="fotoOrigem('galeria')">🖼️ Escolher da galeria</button>
+    <button class="btn g" style="border-color:var(--bd);color:var(--mut)" onclick="fecharFotoSheet()">Cancelar</button>
+  </div>
+</div>
 <div id="novModal" class="hide">
   <div class="box"><h3>🎉 Aplicativo atualizado!</h3><div class="sub">Veja o que há de novo</div><ul id="novLista"></ul><button class="btn" style="margin:0" onclick="fecharNovidades()">Entendi</button></div>
 </div>
@@ -410,7 +436,7 @@ header .iconBtn{position:relative}
       <div><b id="nomeMenu"></b><br><small style="color:var(--mut)" id="funcaoMenu"></small></div>
     </div>
     <div class="menuList">
-      <div class="menuRow" onclick="avisoDev('vistorias')"><span class="ic">🏛️</span>Vistorias de congregação<span class="arrow">›</span></div>
+      <div class="menuRow" onclick="abrirVistorias()"><span class="ic">🏛️</span>Vistorias de congregação<span class="arrow">›</span></div>
       <div class="menuRow" onclick="avisoDev('descarte')"><span class="ic">♻️</span>Descarte de equipamento<span class="arrow">›</span></div>
       <div class="menuRow" onclick="openEquipe()"><span class="ic">👥</span>Equipe de manutenção<span class="arrow">›</span></div>
       <div class="menuRow" onclick="exportarTudoCSV()"><span class="ic">📊</span>Exportar tudo (CSV/Excel)<span class="arrow">›</span></div>
@@ -482,6 +508,13 @@ header .iconBtn{position:relative}
       <div id="btResult" style="margin-top:12px"></div>
     </div>
   </section>
+
+  <section id="vistoriasView" class="hide">
+    <button class="btn" style="margin-top:0" onclick="novaVistoria()">＋ Nova vistoria</button>
+    <div class="card" style="margin-top:12px"><h2>Vistorias de congregação</h2><div id="vistList"><small style="color:var(--mut)">Carregando…</small></div></div>
+  </section>
+
+  <section id="vistFormView" class="hide"><div id="vistForm"></div></section>
 
   <section id="formView" class="hide">
     <div id="form"></div>
@@ -865,8 +898,8 @@ onAuthStateChanged(auth, async (user)=>{
 /* ========================================================
    DADOS DO EQUIPAMENTO (Firestore)
 ======================================================== */
-const TIPOS=['Split hi-wall','Split piso-teto','Split cassete','Multi split','Janela','Self contained','Fancoil','Chiller','Câmara fria','Balcão/Geladeira','Outro'];
-const PARTES=['Compressor','Condensadora','Evaporadora','Placa eletrônica','Motor ventilador','Válvula','Outro componente'];
+const TIPOS=['Split hi-wall','Split piso-teto','Split cassete','Multi split','Janela','Self contained','Fancoil','Chiller','Câmara fria','Balcão/Geladeira','Cortina de ar','Outro'];
+const PARTES=['Compressor','Condensadora','Evaporadora','Cortina de ar','Placa eletrônica','Motor ventilador','Válvula','Outro componente'];
 /* Quando é "Peça avulsa", cada tipo de peça só mostra as seções e os itens de
    checklist que fazem sentido pra ela (evita aparecer campo de compressor numa
    ficha de evaporadora, por exemplo). Seções que não estão no mapa (Identificação,
@@ -875,6 +908,7 @@ const SECOES_POR_PARTE={
   'Compressor':['Compressor'],
   'Condensadora':['Vazamentos','Carenagem','Parte elétrica'],
   'Evaporadora':['Vazamentos','Carenagem','Parte elétrica'],
+  'Cortina de ar':['Carenagem','Parte elétrica'],
   'Placa eletrônica':['Parte elétrica'],
   'Motor ventilador':['Parte elétrica'],
   'Válvula':['Vazamentos'],
@@ -891,6 +925,7 @@ const PECAS_POR_PARTE={
   'Compressor':['Capacitor','Contator','Sensor','Outras'],
   'Condensadora':['Ventilador/hélice','Capacitor','Contator','Placa','Sensor','Outras'],
   'Evaporadora':['Ventilador/hélice','Placa','Sensor','Controle remoto','Outras'],
+  'Cortina de ar':['Ventilador/hélice','Capacitor','Placa','Sensor','Controle remoto','Outras'],
   'Placa eletrônica':['Placa','Contator','Sensor','Controle remoto','Outras'],
   'Motor ventilador':['Ventilador/hélice','Capacitor','Contator','Outras'],
   'Válvula':['Válvula','Outras'],
@@ -1004,18 +1039,20 @@ async function setVal(k,v,disp){
 }
 
 /* ---------- navegação ---------- */
-const TITULOS={home:'Fichas de Equipamentos',os:'Ordem de Serviço',menu:'Menu',equipe:'Equipe de Manutenção',alertas:'Pendências',regua:'Régua P-T',qrTool:'Criar QR code',buscaTec:'Busca técnica'};
-const VIEWS={home:'#home',os:'#osView',menu:'#menuView',equipe:'#equipeView',alertas:'#alertasView',regua:'#reguaView',qrTool:'#qrToolView',buscaTec:'#buscaTecView',form:'#formView'};
-const NAV_DE={home:'navInicio',os:'navOS',alertas:'navAlertas',menu:'navMenu'};
+const TITULOS={home:'Fichas de Equipamentos',os:'Ordem de Serviço',menu:'Menu',equipe:'Equipe de Manutenção',alertas:'Pendências',vistorias:'Vistorias de congregação',vistForm:'Vistoria',regua:'Régua P-T',qrTool:'Criar QR code',buscaTec:'Busca técnica'};
+const VIEWS={home:'#home',os:'#osView',menu:'#menuView',equipe:'#equipeView',alertas:'#alertasView',vistorias:'#vistoriasView',vistForm:'#vistFormView',regua:'#reguaView',qrTool:'#qrToolView',buscaTec:'#buscaTecView',form:'#formView'};
+const NAV_DE={home:'navInicio',os:'navOS',alertas:'navAlertas',menu:'navMenu',vistorias:'navMenu',equipe:'navMenu'};
+let viewAtual='home';
 function view(name){
+  viewAtual=name;
   Object.entries(VIEWS).forEach(([k,sel])=>$(sel).classList.toggle('hide',k!==name));
   $('#stick').classList.toggle('hide',name!=='form');
   const principal=['home','os','menu','alertas'].includes(name);
   $('#btnBack').classList.toggle('hide',name==='home'||name==='os'||name==='menu');
-  $('#bottomNav').classList.toggle('hide',name==='form'||!perfil);
+  $('#bottomNav').classList.toggle('hide',name==='form'||name==='vistForm'||!perfil);
   document.querySelectorAll('#bottomNav button').forEach(b=>b.classList.toggle('on',b.id===NAV_DE[name]));
   $('#title').textContent=name==='form'?(cur?cur.id:''):(TITULOS[name]||'');
-  document.body.style.paddingBottom=(name==='form'||!perfil)?'':'72px';
+  document.body.style.paddingBottom=(name==='form'||name==='vistForm'||!perfil)?'':'72px';
   window.scrollTo(0,0);
 }
 window.view=view;
@@ -1027,7 +1064,11 @@ function irParaOS(f){
 }
 window.irParaOS=irParaOS;
 window.goHome=goHome;
-$('#btnBack').onclick=goHome;
+$('#btnBack').onclick=()=>{
+  if(viewAtual==='vistForm')return abrirVistorias();
+  if(viewAtual==='vistorias'||viewAtual==='equipe')return view('menu');
+  goHome();
+};
 
 function itemEquipHTML(r){
   return `<div class="item" onclick="openFicha('${r.id}')">
@@ -1291,15 +1332,13 @@ $('#qrIdInput').addEventListener('keydown',e=>{if(e.key==='Enter')buscarParaQr()
    Preencha BUSCA_TEC_URL com a URL da função "buscaTecnica" depois do deploy.
 ======================================================== */
 const BUSCA_TEC_URL='';
-const APP_VERSAO='2026-10-22';
+const APP_VERSAO='2026-10-23';
 const NOVIDADES=[
-  ['🧭','Nova navegação inferior: Início, Ordem de Serviço, Alertas e Menu'],
-  ['🟦','Atalhos de acesso rápido, com botão de informação (ⓘ) descrevendo cada função'],
-  ['📏','Régua P-T com cálculo preciso por refrigerante'],
-  ['🏷️','Gerador de QR code para qualquer equipamento, com impressão e compartilhamento'],
-  ['👤','Perfil e opção de sair reorganizados no Menu'],
-  ['✨','Nova animação de abertura do aplicativo'],
-  ['🚧','Em breve: consulta de manuais e fichas técnicas de compressores']
+  ['🏛️','Vistorias de congregação: checklist completo por máquina, com tensão, corrente e insuflamento, e geração de PDF'],
+  ['📷','Ao adicionar fotos, é possível tirar a foto na hora ou escolher da galeria'],
+  ['🏷️','QR code agora fica fixo na ficha de cada equipamento, com impressão e compartilhamento'],
+  ['❄️','Cortina de ar disponível no cadastro de equipamentos e de peças avulsas'],
+  ['🔧','Correção do gerador de QR code, que agora funciona também sem internet']
 ];
 function mostrarNovidades(){
   try{if(localStorage.getItem('novidadesVista')===APP_VERSAO)return}catch(e){}
@@ -1372,6 +1411,193 @@ function abrirPdfInApp(i){
 window.abrirPdfInApp=abrirPdfInApp;
 $('#btModeloInput').addEventListener('keydown',e=>{if(e.key==='Enter')buscarTecnico()});
 
+/* ========================================================
+   VISTORIAS DE CONGREGAÇÃO (coleção "vistorias" no Firestore)
+======================================================== */
+const VI_OK=['OK','Obs'], VI_SN=['Sim','Não'];
+const VI_ITENS=[
+  ['filtros','Verificação dos filtros nos evaporadores',['OK','Sujo','Obs']],
+  ['drenagem','Verificar sistema de drenagem',VI_OK],
+  ['vibracao','Há vibrações e ruídos anormais nos equipamentos?',VI_SN,'sn'],
+  ['ventilacao','Verificar ventilação das unidades',VI_OK],
+  ['odores','Há odores desagradáveis no evaporador?',VI_SN,'sn'],
+  ['compressor','Verificar funcionamento do compressor',VI_OK],
+  ['contatora','Verificar atuação da contatora',VI_OK],
+  ['terminais','Verificar terminais elétricos',['OK','Obs','Sem terminal']],
+  ['fixacao','Verificar fixação interna dos equipamentos',VI_OK],
+  ['sujEvap','Há sujeira nas serpentinas do evaporador?',VI_SN,'sn'],
+  ['sujCond','Há sujeira nas serpentinas do condensador?',VI_SN,'sn'],
+  ['carenagens','Verificar estado das carenagens',['OK','Danificada']],
+  ['isolamentos','Verificar estado dos isolamentos frigoríficos',VI_OK],
+  ['suportes','Verificar se os suportes estão com varão roscável',VI_OK]
+];
+const VI_ELET=[
+  ['dps','Verificar presença e estado dos DPS no Q.D.',['OK','Obs','Ausente']],
+  ['cabos','Os cabos de alimentação estão corretos?',VI_SN,'ok_sn'],
+  ['disj','Os disjuntores estão corretos?',VI_SN,'ok_sn'],
+  ['termCabos','Há terminais nos cabos de alimentação?',VI_SN,'ok_sn'],
+  ['aterr','Verificar situação do sistema de aterramento',VI_OK]
+];
+const VI_TENSAO=['R-S','S-T','R-T','R-N','S-N','T-N'], VI_CORR=['R','S','T'];
+let vist=null, vistTimer=null;
+const vistOwner=()=>vist&&vist.criadoPorUid===perfil.uid;
+const vistErro=e=>toast(e&&e.code==='permission-denied'?'Sem permissão no Firestore: publique as regras da coleção "vistorias" (ver instruções).':'Não foi possível salvar/carregar a vistoria.');
+function vistVazia(){return{marca:'',btu:'',tipoEq:'',psi:'',gas:'',itens:{},tensao:{},corrente:{},ins:{ent:'',sai:'',total:''}}}
+async function abrirVistorias(){
+  view('vistorias');
+  $('#vistList').innerHTML='<small style="color:var(--mut)">Carregando…</small>';
+  try{
+    const snap=await getDocs(query(collection(db,'vistorias'),orderBy('criadoEm','desc')));
+    const rows=snap.docs.map(d=>({id:d.id,...d.data()}));
+    $('#vistList').innerHTML=rows.length?rows.map(r=>`<div class="item" onclick="abrirVistoria('${r.id}')">
+      <div class="ph" style="display:flex;align-items:center;justify-content:center;font-size:22px;background:var(--pri2);border-radius:50%;width:42px;height:42px">🏛️</div>
+      <div><b>${esc(r.congregacao||'Sem congregação')}</b><small>${r.data?r.data.split('-').reverse().join('/'):'sem data'} · ${(r.maquinas||[]).length} máquina(s)${r.criadoPor?' · '+esc(r.criadoPor):''}</small></div></div>`).join('')
+      :'<small style="color:var(--mut)">Nenhuma vistoria registrada ainda.</small>';
+  }catch(e){$('#vistList').innerHTML='<small style="color:var(--no)">Não foi possível carregar as vistorias.</small>';vistErro(e)}
+}
+window.abrirVistorias=abrirVistorias;
+function novaVistoria(){
+  const id=doc(collection(db,'vistorias')).id;
+  vist={id,congregacao:'',data:new Date().toISOString().slice(0,10),maquinas:[vistVazia()],eletrica:{},obs:'',
+    criadoEm:Date.now(),criadoPor:perfil.nome+' '+perfil.sobrenome,criadoPorUid:perfil.uid};
+  renderVist();view('vistForm');salvarVistAgora();
+}
+window.novaVistoria=novaVistoria;
+async function abrirVistoria(id){
+  try{
+    const sn=await getDoc(doc(db,'vistorias',id));
+    if(!sn.exists()){toast('Vistoria não encontrada.');return}
+    vist={id,...sn.data()};
+    if(!vist.maquinas)vist.maquinas=[];if(!vist.eletrica)vist.eletrica={};
+    renderVist();view('vistForm');
+  }catch(e){vistErro(e)}
+}
+window.abrirVistoria=abrirVistoria;
+function salvarVist(){clearTimeout(vistTimer);vistTimer=setTimeout(salvarVistAgora,700)}
+async function salvarVistAgora(){
+  if(!vist||!vistOwner())return;
+  const {id,...data}=vist;
+  try{await setDoc(doc(db,'vistorias',id),data);const t=$('#vistSaved');if(t)t.textContent='✔ Salvo'}
+  catch(e){vistErro(e)}
+}
+function vchipsHTML(op,key,val,tipo,ro){
+  return `<div class="vchips">${op.map(o=>{
+    let cls='';if(val===o){cls=' on';if(tipo==='sn')cls+=(o==='Sim'?' bad':' good');else if(tipo==='ok_sn')cls+=(o==='Sim'?' good':' bad');else if(o==='OK')cls+=' good';else if(o==='Sujo'||o==='Obs'||o==='Danificada'||o==='Ausente')cls+=' bad'}
+    return `<button type="button" class="vchip${cls}" data-t="${tipo||''}" data-key="${key}" data-v="${o}" ${ro?'disabled':''}>${o}</button>`}).join('')}</div>`;
+}
+function vistMaqHTML(m,i,ro){
+  const it=m.itens||{};
+  return `<details class="vmaq" ${i===0?'open':''}><summary>Máquina ${String(i+1).padStart(2,'0')}${m.marca?' — '+esc(m.marca):''}</summary><div class="body">
+    <div class="vsub" style="margin-top:0">Identificação</div>
+    <label class="l" style="margin-top:6px">Marca</label><input type="text" data-m="${i}" data-f="marca" value="${esc(m.marca)}" ${ro?'disabled':''}>
+    <label class="l">Capacidade em BTU's</label><input type="text" data-m="${i}" data-f="btu" value="${esc(m.btu)}" ${ro?'disabled':''}>
+    <label class="l">Convencional ou Inverter?</label>${vchipsHTML(['Convencional','Inverter'],`m${i}.tipoEq`,m.tipoEq,'',ro)}
+    <label class="l">Carga de fluido refrigerante (PSI)</label><input type="text" data-m="${i}" data-f="psi" value="${esc(m.psi)}" ${ro?'disabled':''}>
+    <label class="l">Tipo de fluido refrigerante</label><select data-m="${i}" data-f="gas" ${ro?'disabled':''}><option value="">Selecione</option>${GASES.map(g=>`<option ${g===m.gas?'selected':''}>${g}</option>`).join('')}</select>
+    <div class="vsub">Vistoria nos equipamentos</div>
+    ${VI_ITENS.map(([k,l,op,t])=>`<label class="l" style="margin-top:10px">${l}</label>${vchipsHTML(op,`m${i}.itens.${k}`,it[k],t,ro)}`).join('')}
+    <div class="vsub">Tensão (V)</div>
+    <div class="vgrid">${VI_TENSAO.map(k=>`<div><label>${k}</label><input type="text" inputmode="decimal" data-m="${i}" data-g="tensao" data-f="${k}" value="${esc((m.tensao||{})[k]||'')}" ${ro?'disabled':''}></div>`).join('')}</div>
+    <div class="vsub">Corrente (A)</div>
+    <div class="vgrid">${VI_CORR.map(k=>`<div><label>${k}</label><input type="text" inputmode="decimal" data-m="${i}" data-g="corrente" data-f="${k}" value="${esc((m.corrente||{})[k]||'')}" ${ro?'disabled':''}></div>`).join('')}</div>
+    <div class="vsub">Insuflamento (°C)</div>
+    <div class="vgrid"><div><label>Entrada</label><input type="text" inputmode="decimal" data-m="${i}" data-g="ins" data-f="ent" value="${esc((m.ins||{}).ent||'')}" ${ro?'disabled':''}></div>
+      <div><label>Saída</label><input type="text" inputmode="decimal" data-m="${i}" data-g="ins" data-f="sai" value="${esc((m.ins||{}).sai||'')}" ${ro?'disabled':''}></div>
+      <div><label>Total (Δ)</label><input type="text" inputmode="decimal" id="insTotal${i}" data-m="${i}" data-g="ins" data-f="total" value="${esc((m.ins||{}).total||'')}" ${ro?'disabled':''}></div></div>
+    ${ro?'':`<button class="btn g" style="color:var(--no);border-color:var(--no)" onclick="removerMaquina(${i})">🗑 Remover esta máquina</button>`}
+  </div></details>`;
+}
+function renderVist(){
+  const ro=!vistOwner();
+  const el=vist.eletrica||{};
+  $('#title').textContent='Vistoria';
+  $('#vistForm').innerHTML=`${ro?`<div class="err" style="margin-bottom:10px">🔒 Vistoria criada por <b>${esc(vist.criadoPor||'—')}</b>. Você pode visualizar, mas só quem criou pode editar.</div>`:''}
+   <div class="card"><h2>Dados da vistoria</h2>
+    <label class="l" style="margin-top:0">Congregação</label>
+    <input type="text" id="vCong" list="listaCongregacoes" autocomplete="off" value="${esc(vist.congregacao)}" ${ro?'disabled':''}>
+    <label class="l">Data</label><input type="date" id="vData" value="${esc(vist.data)}" ${ro?'disabled':''}>
+    <small id="vistSaved" style="color:var(--ok);display:block;margin-top:8px"></small></div>
+   <div id="vistMaqs">${vist.maquinas.map((m,i)=>vistMaqHTML(m,i,ro)).join('')}</div>
+   ${ro?'':`<button class="btn g" onclick="addMaquina()">＋ Adicionar máquina</button>`}
+   <div class="card" style="margin-top:12px"><h2>Vistoria elétrica</h2>
+    ${VI_ELET.map(([k,l,op,t])=>`<label class="l" style="margin-top:10px">${l}</label>${vchipsHTML(op,`e.${k}`,el[k],t,ro)}`).join('')}</div>
+   <div class="card"><h2>Observações</h2><textarea id="vObs" ${ro?'disabled':''}>${esc(vist.obs)}</textarea></div>
+   <button class="btn" onclick="imprimirVist()">📄 Gerar PDF / imprimir</button>
+   ${ro?'':`<button class="btn r" onclick="excluirVist()">🗑 Excluir vistoria</button>`}`;
+  bindVist(ro);
+}
+function bindVist(ro){
+  if(ro)return;
+  const F=$('#vistForm');
+  $('#vCong').oninput=e=>{vist.congregacao=e.target.value;salvarVist()};
+  $('#vData').onchange=e=>{vist.data=e.target.value;salvarVist()};
+  $('#vObs').oninput=e=>{vist.obs=e.target.value;salvarVist()};
+  F.querySelectorAll('[data-m]').forEach(el=>{
+    const ev=el.tagName==='SELECT'?'onchange':'oninput';
+    el[ev]=()=>{
+      const m=vist.maquinas[+el.dataset.m],f=el.dataset.f,g=el.dataset.g;
+      if(g){m[g]=m[g]||{};m[g][f]=el.value;
+        if(g==='ins'&&f!=='total'){
+          const a=parseFloat(String(m.ins.ent).replace(',','.')),b=parseFloat(String(m.ins.sai).replace(',','.'));
+          if(!isNaN(a)&&!isNaN(b)){m.ins.total=(Math.round((a-b)*10)/10).toString();$('#insTotal'+el.dataset.m).value=m.ins.total}
+        }
+      }else m[f]=el.value;
+      salvarVist();
+    };
+  });
+  F.querySelectorAll('.vchip').forEach(b=>b.onclick=()=>{
+    const key=b.dataset.key,v=b.dataset.v;
+    let obj,campo;
+    if(key.startsWith('e.')){obj=vist.eletrica;campo=key.slice(2)}
+    else{const mm=key.match(/^m(\d+)\.(.+)$/);const m=vist.maquinas[+mm[1]];
+      if(mm[2].startsWith('itens.')){m.itens=m.itens||{};obj=m.itens;campo=mm[2].slice(6)}else{obj=m;campo=mm[2]}}
+    obj[campo]=(obj[campo]===v)?'':v;
+    const sib=[...b.parentElement.children];
+    sib.forEach(x=>x.className='vchip');
+    if(obj[campo]){
+      const t=b.dataset.t;b.classList.add('on');
+      if(t==='sn')b.classList.add(v==='Sim'?'bad':'good');
+      else if(t==='ok_sn')b.classList.add(v==='Sim'?'good':'bad');
+      else if(v==='OK')b.classList.add('good');
+      else if(['Sujo','Obs','Danificada','Ausente'].includes(v))b.classList.add('bad');
+    }
+    salvarVist();
+  });
+}
+function addMaquina(){vist.maquinas.push(vistVazia());renderVist();salvarVistAgora();
+  const d=document.querySelectorAll('details.vmaq');if(d.length){d.forEach(x=>x.open=false);d[d.length-1].open=true;d[d.length-1].scrollIntoView({behavior:'smooth'})}}
+function removerMaquina(i){if(!confirm('Remover a máquina '+String(i+1).padStart(2,'0')+'?'))return;vist.maquinas.splice(i,1);renderVist();salvarVistAgora()}
+async function excluirVist(){
+  if(!confirm('Excluir esta vistoria? Não dá para desfazer.'))return;
+  try{await deleteDoc(doc(db,'vistorias',vist.id));toast('Vistoria excluída.');abrirVistorias()}catch(e){vistErro(e)}
+}
+function imprimirVist(){
+  const ms=vist.maquinas;
+  const cel=v=>esc(v||'');
+  const linhas=[
+    ['Marca',m=>m.marca],['Capacidade (BTU)',m=>m.btu],['Convencional/Inverter',m=>m.tipoEq],['Carga (PSI)',m=>m.psi],['Fluido',m=>m.gas],
+    ...VI_ITENS.map(([k,l])=>[l,m=>(m.itens||{})[k]]),
+    ...VI_TENSAO.map(k=>['Tensão '+k+' (V)',m=>(m.tensao||{})[k]]),
+    ...VI_CORR.map(k=>['Corrente '+k+' (A)',m=>(m.corrente||{})[k]]),
+    ['Insuflamento — entrada (°C)',m=>(m.ins||{}).ent],['Insuflamento — saída (°C)',m=>(m.ins||{}).sai],['Insuflamento — total',m=>(m.ins||{}).total]
+  ];
+  const el=vist.eletrica||{};
+  $('#print').innerHTML=`<div style="font-family:Arial,sans-serif">
+    <div style="text-align:center"><img src="icon-512.png" style="width:44px;height:44px;border-radius:8px"><div style="font-size:11px;color:#555">Assembleia de Deus — Templo Central</div></div>
+    <h1 style="text-align:center;font-size:16px">CHECK LIST — FISCALIZAÇÃO DE SERVIÇOS EM EQUIPAMENTOS DE AR CONDICIONADO</h1>
+    <p style="font-size:12px"><b>Congregação:</b> ${cel(vist.congregacao)} &nbsp;&nbsp; <b>Data:</b> ${vist.data?vist.data.split('-').reverse().join('/'):''}</p>
+    <table style="width:100%;border-collapse:collapse;font-size:10px"><tr><th style="border:1px solid #999;padding:3px;text-align:left">Vistoria nos equipamentos</th>${ms.map((m,i)=>`<th style="border:1px solid #999;padding:3px">Máq. ${String(i+1).padStart(2,'0')}</th>`).join('')}</tr>
+    ${linhas.map(([l,f])=>`<tr><td style="border:1px solid #999;padding:3px">${l}</td>${ms.map(m=>`<td style="border:1px solid #999;padding:3px;text-align:center">${cel(f(m))}</td>`).join('')}</tr>`).join('')}</table>
+    <h2 style="font-size:13px;margin-top:14px">Vistoria elétrica</h2>
+    <table style="width:100%;border-collapse:collapse;font-size:11px">${VI_ELET.map(([k,l])=>`<tr><td style="border:1px solid #999;padding:4px">${l}</td><td style="border:1px solid #999;padding:4px;width:90px;text-align:center">${cel(el[k])}</td></tr>`).join('')}</table>
+    ${vist.obs?`<p style="font-size:11px"><b>Observações:</b> ${cel(vist.obs)}</p>`:''}
+    <p style="font-size:10px;color:#666">Registrado por ${cel(vist.criadoPor)}</p></div>`;
+  const old=document.title;document.title='Vistoria_'+(vist.congregacao||'congregacao').replace(/\s+/g,'_');
+  setTimeout(()=>{window.print();document.title=old},300);
+}
+window.addMaquina=addMaquina;window.removerMaquina=removerMaquina;window.excluirVist=excluirVist;window.imprimirVist=imprimirVist;
+
+
 
 /* ---------- formulário ---------- */
 function fieldHTML(f,ro){
@@ -1404,12 +1630,12 @@ function renderForm(){
      <div class="err" id="idEditErr"></div>
    </div>`}
    <small style="color:var(--mut);display:block;margin-top:8px">Aberta em ${full(cur.criado)}${cur.criadoPor?' · por '+esc(cur.criadoPor):''}</small>
-   <button class="btn g" style="margin-top:8px" onclick="gerarEtiqueta()">🏷️ Gerar etiqueta (QR code)</button>
+   <div id="qrFixo" style="text-align:center;margin-top:12px;padding:12px;background:var(--pri2);border-radius:14px"><small style="color:var(--mut)">Gerando QR code…</small></div>
    ${cur.usadoEm?`<div class="ok-msg" style="margin:6px 0 0">🔗 Esta peça está instalada no equipamento <b>${esc(cur.usadoEm)}</b>.</div>`:''}
    ${ro?`<div class="err" style="margin:8px 0 0">🔒 Ficha criada por <b>${esc(cur.criadoPor||'—')}</b>. Você pode visualizar, mas só quem criou pode editar ou excluir.</div>`:''}
    <label class="l" style="margin-top:10px">Fotos gerais do equipamento</label>
    <div class="fotos" id="fotos">${cur.fotos.map((p,i)=>`<div><img src="${p.dataUrl}">${ro?'':`<i onclick="delFoto(${i})">×</i>`}</div>`).join('')}</div>
-   ${ro?'':`<button class="btn g" onclick="document.getElementById('fileGeral').click()">📷 Adicionar foto(s)</button>
+   ${ro?'':`<button class="btn g" onclick="escolherFoto('geral')">📷 Adicionar foto(s)</button>
    <input type="file" id="fileGeral" accept="image/*" multiple class="hide">`}</div>`;
   SECTIONS.forEach((s,idx)=>{
     if(!secaoAplicavel(s.t,cur.d))return;
@@ -1418,7 +1644,7 @@ function renderForm(){
     h+=`<div class="card"><h2>${s.t}</h2>${fs.map(f=>fieldHTML(f,ro)).join('')}
      <label class="l">Fotos deste item</label>
      <div class="fotos" id="fotosSec_${idx}">${fotosSec.map((p,i)=>`<div><img src="${p.dataUrl}">${ro?'':`<i onclick="delFotoSec(${idx},${i})">×</i>`}</div>`).join('')}</div>
-     ${ro?'':`<button class="btn g" style="margin-top:6px" onclick="document.getElementById('fileSec_${idx}').click()">📷 Adicionar foto(s)</button>
+     ${ro?'':`<button class="btn g" style="margin-top:6px" onclick="escolherFoto(${idx})">📷 Adicionar foto(s)</button>
      <input type="file" id="fileSec_${idx}" data-sec="${idx}" accept="image/*" multiple class="hide">`}
     </div>`;
   });
@@ -1442,7 +1668,7 @@ function renderForm(){
    <div class="card"><h2>Histórico de procedimentos</h2><div id="logv" style="font-size:14px">${cur.log.slice().reverse().map(l=>`<div style="padding:4px 0;border-bottom:1px solid var(--bd)"><b>${hm(l.t)}</b> · ${esc(l.x)}${l.quem?' <small style=\"color:var(--mut)\">('+esc(l.quem)+')</small>':''}</div>`).join('')}</div></div>`;
   $('#form').innerHTML=h;
   const btnEx=$('#btnExcluirFicha'); if(btnEx) btnEx.classList.toggle('hide',ro);
-  bindForm(ro);initSig(ro);window.scrollTo(0,y);
+  bindForm(ro);initSig(ro);mostrarQrFixo();window.scrollTo(0,y);
 }
 function bindForm(ro){
   if(ro)return;
@@ -1474,6 +1700,21 @@ function compress(file){return new Promise(res=>{
 function tamanhoAtualKB(){
   return Math.round((JSON.stringify(cur).length)/1024);
 }
+let fotoAlvo=null;
+function escolherFoto(alvo){fotoAlvo=alvo;$('#fotoSheet').classList.remove('hide')}
+function fecharFotoSheet(){$('#fotoSheet').classList.add('hide')}
+function fotoOrigem(modo){
+  fecharFotoSheet();
+  const alvo=fotoAlvo;if(alvo===null)return;
+  if(modo==='galeria'){
+    const el=alvo==='geral'?document.getElementById('fileGeral'):document.getElementById('fileSec_'+alvo);
+    if(el)el.click();return;
+  }
+  const i=document.createElement('input');i.type='file';i.accept='image/*';i.setAttribute('capture','environment');
+  i.onchange=e=>{if(!e.target.files.length)return;alvo==='geral'?addFotos(e.target.files):addFotosSecao(alvo,e.target.files)};
+  i.click();
+}
+window.escolherFoto=escolherFoto;window.fecharFotoSheet=fecharFotoSheet;window.fotoOrigem=fotoOrigem;
 async function addFotos(files){
   if(!podeEditarFicha())return;
   toast('Processando foto(s)…');
@@ -1685,6 +1926,18 @@ async function finalizar(){
 window.finalizar=finalizar;
 
 /* ---------- etiqueta com QR code (pra colar no equipamento e escanear depois) ---------- */
+function mostrarQrFixo(){
+  const box=$('#qrFixo');if(!box||!cur)return;
+  if(typeof QRCode==='undefined'){box.innerHTML='<small style="color:var(--mut)">QR code indisponível.</small>';return}
+  const id=cur.id;
+  QRCode.toDataURL(id,{width:360,margin:1},(err,url)=>{
+    if(err||!cur||cur.id!==id||!$('#qrFixo'))return;
+    qrAtual={id,url};
+    $('#qrFixo').innerHTML=`<img src="${url}" style="width:150px;height:150px;border-radius:8px;background:#fff">
+      <div style="font-weight:700;letter-spacing:1px;margin:4px 0 8px">${esc(id)}</div>
+      <div class="row" style="gap:8px"><button class="btn g" style="margin:0;padding:10px" onclick="gerarEtiqueta()">🖨️ Imprimir</button><button class="btn g" style="margin:0;padding:10px" onclick="compartilharQrAtual()">📤 Compartilhar</button></div>`;
+  });
+}
 function gerarEtiqueta(){
   if(typeof QRCode==='undefined'){toast('Gerador de QR ainda não carregou — verifique a internet e tente de novo em instantes.');return}
   QRCode.toDataURL(cur.id, {width:280, margin:1}, (err,url)=>{
