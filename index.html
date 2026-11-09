@@ -162,6 +162,15 @@ details.vmaq .body{padding:0 14px 14px}
 .vgrid label{font-size:12px;color:var(--mut);font-weight:600;display:block;margin-bottom:3px}
 .vgrid input{padding:10px!important}
 .vsub{font-size:12.5px;font-weight:700;color:var(--mut);text-transform:uppercase;letter-spacing:.4px;margin:16px 0 6px}
+#etqModal{position:fixed;inset:0;background:rgba(10,25,40,.55);z-index:150;display:flex;align-items:flex-end;justify-content:center}
+#etqModal .etqBox{background:#fff;width:100%;max-width:520px;max-height:94vh;overflow-y:auto;border-radius:20px 20px 0 0;padding:16px 16px calc(16px + env(safe-area-inset-bottom));animation:txtUp .25s ease both}
+#etqModal h3{margin:0 0 10px;font-size:17px;color:var(--pri);display:flex;justify-content:space-between;align-items:center}
+#etqModal .x{background:none;border:0;font-size:22px;color:var(--mut)}
+#etqPrev{margin:10px auto;border:1px dashed var(--bd);background:#fff;padding:0;max-width:100%}
+#etqPrev canvas{width:100%;height:100%;display:block}
+#etqModal .opt{display:flex;align-items:center;gap:8px;margin-top:8px}
+#etqModal .opt input[type=text]{flex:1;padding:9px}
+#etqModal .opt input[type=checkbox]{width:20px;height:20px;flex:none}
 /* animação da tela de entrada */
 @keyframes logoIn{0%{opacity:0;transform:scale(.55) rotate(-8deg)}60%{opacity:1;transform:scale(1.08) rotate(2deg)}100%{opacity:1;transform:scale(1) rotate(0)}}
 @keyframes logoGlow{0%,100%{filter:drop-shadow(0 6px 18px rgba(0,0,0,.35))}50%{filter:drop-shadow(0 0 26px rgba(160,205,255,.85))}}
@@ -227,6 +236,37 @@ details.vmaq .body{padding:0 14px 14px}
 <body>
 
 <!-- ===================== TELA DE LOGIN / CADASTRO ===================== -->
+<div id="etqModal" class="hide">
+  <div class="etqBox">
+    <h3>🏷️ Etiqueta <button class="x" onclick="fecharEtiqueta()">✕</button></h3>
+    <div id="etqPrev"><canvas id="etqCanvas"></canvas></div>
+    <label class="l" style="margin-top:6px">Tamanho da etiqueta</label>
+    <select id="etqTam" onchange="etqTamMudou()"></select>
+    <div id="etqCustom" class="row hide" style="gap:8px;margin-top:6px">
+      <input id="etqW" type="number" inputmode="decimal" placeholder="Largura mm" onchange="etqDesenhar()">
+      <input id="etqH" type="number" inputmode="decimal" placeholder="Altura mm" onchange="etqDesenhar()">
+    </div>
+    <label class="l" style="margin-top:10px">Tamanho do texto <span id="etqFsTxt"></span></label>
+    <input type="range" id="etqFs" min="70" max="160" step="5" oninput="etqDesenhar()" style="width:100%">
+    <div class="opt"><input type="checkbox" id="etqShId" onchange="etqDesenhar()"><input type="text" id="etqTId" oninput="etqDesenhar()" placeholder="ID"></div>
+    <div class="opt"><input type="checkbox" id="etqShCong" onchange="etqDesenhar()"><input type="text" id="etqTCong" oninput="etqDesenhar()" placeholder="Congregação"></div>
+    <div class="opt"><input type="checkbox" id="etqShMod" onchange="etqDesenhar()"><input type="text" id="etqTMod" oninput="etqDesenhar()" placeholder="Marca / modelo"></div>
+    <div class="opt"><input type="checkbox" id="etqShData" onchange="etqDesenhar()"><input type="text" id="etqTData" oninput="etqDesenhar()" placeholder="Data"></div>
+    <details style="margin-top:10px"><summary style="font-size:13px;color:var(--mut)">Ajustes da impressora</summary>
+      <div class="row" style="gap:8px;margin-top:8px;align-items:center">
+        <div style="flex:1"><label class="l" style="margin-top:0">Espaço entre etiquetas (mm)</label><input id="etqGap" type="number" inputmode="decimal" step="0.5" onchange="etqSalvarCfg()"></div>
+        <div style="flex:1"><label class="l" style="margin-top:0">Escurecimento (1–15)</label><input id="etqDens" type="number" inputmode="numeric" min="1" max="15" onchange="etqSalvarCfg()"></div>
+      </div>
+      <label class="opt" style="font-size:13px"><input type="checkbox" id="etqInv" onchange="etqSalvarCfg()">Inverter cores (use se sair tudo preto)</label>
+    </details>
+    <div class="row" style="gap:8px;margin-top:12px;align-items:center">
+      <input id="etqCopias" type="number" inputmode="numeric" value="1" min="1" max="20" style="flex:1" title="Cópias">
+      <button class="btn" style="flex:3;margin:0" onclick="etqImprimir()">🖨️ Imprimir (Bluetooth)</button>
+    </div>
+    <div id="etqStatus" style="margin:8px 0;font-size:13px;color:var(--mut);min-height:18px"></div>
+    <button class="btn g" onclick="etqSalvarPng()">💾 Salvar / compartilhar imagem da etiqueta</button>
+  </div>
+</div>
 <div id="fotoSheet" class="hide" onclick="if(event.target===this)fecharFotoSheet()">
   <div class="sheet"><b>Adicionar foto</b>
     <button class="btn" onclick="fotoOrigem('camera')">📷 Tirar foto agora</button>
@@ -1299,7 +1339,8 @@ function buscarParaQr(){
   QRCode.toDataURL(id,{width:560,margin:1},async(err,url)=>{
     if(err){toast('Não foi possível gerar o QR code.');return}
     qrAtual={id,url};
-    let existe=true;try{existe=!!(await dbGet(id))}catch(e){}
+    let existe=true,rec=null;try{rec=await dbGet(id);existe=!!rec}catch(e){}
+    qrAtual.d=rec&&rec.d;
     $('#qrToolResult').innerHTML=`<div style="text-align:center">
       <img src="${url}" style="width:220px;height:220px">
       <div style="font-size:24px;font-weight:700;letter-spacing:1px">${esc(id)}</div>
@@ -1307,7 +1348,8 @@ function buscarParaQr(){
       <div class="row" style="gap:8px;margin-top:12px">
         <button class="btn" style="margin:0" onclick="imprimirQrAtual()">🖨️ Imprimir</button>
         <button class="btn g" style="margin:0" onclick="compartilharQrAtual()">📤 Compartilhar</button>
-      </div></div>`;
+      </div>
+      <button class="btn" style="margin:8px 0 0" onclick="abrirEtiqueta(qrAtual.id,qrAtual.d)">🏷️ Imprimir etiqueta (impressora)</button></div>`;
   });
 }
 window.buscarParaQr=buscarParaQr;
@@ -1339,13 +1381,13 @@ $('#qrIdInput').addEventListener('keydown',e=>{if(e.key==='Enter')buscarParaQr()
    Preencha BUSCA_TEC_URL com a URL da função "buscaTecnica" depois do deploy.
 ======================================================== */
 const BUSCA_TEC_URL='';
-const APP_VERSAO='2026-10-23';
+const APP_VERSAO='2026-11-09';
 const NOVIDADES=[
-  ['🏛️','Vistorias de congregação: checklist completo por máquina, com tensão, corrente e insuflamento, e geração de PDF'],
+  ['🏷️','Impressão de etiquetas com QR code direto na impressora térmica por Bluetooth, com escolha de tamanho e conteúdo'],
+  ['🏛️','Vistorias de congregação com checklist por máquina, endereço (busca no mapa ou localização) e PDF em A4'],
   ['📷','Ao adicionar fotos, é possível tirar a foto na hora ou escolher da galeria'],
-  ['🏷️','QR code agora fica fixo na ficha de cada equipamento, com impressão e compartilhamento'],
-  ['❄️','Cortina de ar disponível no cadastro de equipamentos e de peças avulsas'],
-  ['🔧','Correção do gerador de QR code, que agora funciona também sem internet']
+  ['🔄','Aviso de atualização mais rápido, sem precisar fechar e abrir o aplicativo'],
+  ['❄️','Cortina de ar disponível no cadastro de equipamentos e de peças avulsas']
 ];
 function mostrarNovidades(){
   try{if(localStorage.getItem('novidadesVista')===APP_VERSAO)return}catch(e){}
@@ -1658,6 +1700,199 @@ function imprimirVist(){
   setTimeout(()=>{window.print();document.title=old},300);
 }
 window.addMaquina=addMaquina;window.removerMaquina=removerMaquina;window.excluirVist=excluirVist;window.imprimirVist=imprimirVist;
+/* ========================================================
+   ETIQUETA + IMPRESSORA BLUETOOTH (TSPL, 203 dpi = 8 pontos/mm)
+======================================================== */
+const ETQ_TAM=[[40,20],[40,30],[50,30],[50,40],[58,40]];
+const ETQ_UUIDS=['000018f0-0000-1000-8000-00805f9b34fb','0000ff00-0000-1000-8000-00805f9b34fb','0000ffe0-0000-1000-8000-00805f9b34fb','0000fff0-0000-1000-8000-00805f9b34fb','0000fee7-0000-1000-8000-00805f9b34fb','0000ae00-0000-1000-8000-00805f9b34fb','0000af30-0000-1000-8000-00805f9b34fb','0000ffb0-0000-1000-8000-00805f9b34fb','0000ffc0-0000-1000-8000-00805f9b34fb','0000ffd0-0000-1000-8000-00805f9b34fb','0000fe00-0000-1000-8000-00805f9b34fb','49535343-fe7d-4ae5-8fa9-9fafd205e455','e7810a71-73ae-499d-8c15-faa9aef0c3f2','bef8d6c9-9c21-4c9e-b632-bd58c1009f9f','6e400001-b5a3-f393-b0a9-e50e24dcca9e','00001800-0000-1000-8000-00805f9b34fb'];
+let etq={id:'',dev:null,chr:null};
+function etqCfg(){
+  let c={};try{c=JSON.parse(localStorage.getItem('etqCfg')||'{}')}catch(e){}
+  return Object.assign({w:40,h:30,gap:2,inv:false,dens:8,fs:100,show:{id:true,cong:true,modelo:true,data:false}},c);
+}
+function etqSalvarCfg(){
+  const c={w:+$('#etqW').value||40,h:+$('#etqH').value||30,gap:+$('#etqGap').value||0,inv:$('#etqInv').checked,dens:+$('#etqDens').value||8,fs:+$('#etqFs').value||100,
+    show:{id:$('#etqShId').checked,cong:$('#etqShCong').checked,modelo:$('#etqShMod').checked,data:$('#etqShData').checked}};
+  try{localStorage.setItem('etqCfg',JSON.stringify(c))}catch(e){}
+  return c;
+}
+function abrirEtiqueta(id,d){
+  d=d||{};
+  const c=etqCfg();
+  etq.id=id;
+  $('#etqTam').innerHTML=ETQ_TAM.map(t=>`<option value="${t[0]}x${t[1]}" ${t[0]===c.w&&t[1]===c.h?'selected':''}>${t[0]} × ${t[1]} mm</option>`).join('')+`<option value="custom" ${ETQ_TAM.some(t=>t[0]===c.w&&t[1]===c.h)?'':'selected'}>Outro tamanho…</option>`;
+  $('#etqW').value=c.w;$('#etqH').value=c.h;$('#etqGap').value=c.gap;$('#etqInv').checked=c.inv;$('#etqDens').value=c.dens;$('#etqFs').value=c.fs;
+  $('#etqShId').checked=c.show.id;$('#etqShCong').checked=c.show.cong;$('#etqShMod').checked=c.show.modelo;$('#etqShData').checked=c.show.data;
+  $('#etqTId').value=id;
+  $('#etqTCong').value=d.congDestino||d.congOrigem||'';
+  $('#etqTMod').value=[d.modelo,d.capacidade].filter(Boolean).join(' · ');
+  $('#etqTData').value=new Date().toLocaleDateString('pt-BR');
+  $('#etqCustom').classList.toggle('hide',$('#etqTam').value!=='custom');
+  $('#etqStatus').textContent=etq.chr&&etq.dev&&etq.dev.gatt.connected?('✅ Conectada: '+(etq.dev.name||'impressora')):'';
+  $('#etqModal').classList.remove('hide');
+  etqDesenhar();
+}
+function fecharEtiqueta(){$('#etqModal').classList.add('hide')}
+function etqTamMudou(){
+  const v=$('#etqTam').value;
+  $('#etqCustom').classList.toggle('hide',v!=='custom');
+  if(v!=='custom'){const [w,h]=v.split('x');$('#etqW').value=w;$('#etqH').value=h}
+  etqDesenhar();
+}
+function etqAjusta(ctx,txt,px,maxW,peso){
+  let f=px;ctx.font=`${peso} ${f}px Arial,Helvetica,sans-serif`;
+  while(f>9&&ctx.measureText(txt).width>maxW){f-=1;ctx.font=`${peso} ${f}px Arial,Helvetica,sans-serif`}
+  return f;
+}
+function etqQuebra(ctx,txt,maxW,maxLin){
+  const pal=String(txt).split(/\s+/),lin=[];let at='';
+  for(const p of pal){
+    const t=at?at+' '+p:p;
+    if(ctx.measureText(t).width<=maxW||!at)at=t;else{lin.push(at);at=p}
+  }
+  if(at)lin.push(at);
+  if(lin.length>maxLin){lin.length=maxLin;let u=lin[maxLin-1];while(u.length>1&&ctx.measureText(u+'…').width>maxW)u=u.slice(0,-1);lin[maxLin-1]=u+'…'}
+  return lin;
+}
+let etqSeq=0;
+function etqDesenhar(){
+  const c=etqSalvarCfg(),cv=$('#etqCanvas');
+  $('#etqFsTxt').textContent='('+c.fs+'%)';
+  const W=Math.round(c.w*8),H=Math.round(c.h*8);
+  cv.width=W;cv.height=H;
+  const ctx=cv.getContext('2d');
+  ctx.fillStyle='#fff';ctx.fillRect(0,0,W,H);
+  const pad=Math.round(W*0.04);
+  const qs=Math.min(H-2*pad,Math.round(W*0.42));
+  const seq=++etqSeq;
+  const textoW=W-qs-3*pad;
+  const linhas=[];
+  if(c.show.id)linhas.push({t:$('#etqTId').value||etq.id,peso:'bold',px:H*0.38,max:1});
+  if(c.show.cong&&$('#etqTCong').value)linhas.push({t:$('#etqTCong').value,peso:'bold',px:H*0.22,max:2});
+  if(c.show.modelo&&$('#etqTMod').value)linhas.push({t:$('#etqTMod').value,peso:'bold',px:H*0.20,max:2});
+  if(c.show.data&&$('#etqTData').value)linhas.push({t:$('#etqTData').value,peso:'bold',px:H*0.18,max:1});
+  ctx.textBaseline='top';ctx.fillStyle='#000';
+  const gapL=Math.round(H*0.04);
+  const medir=sc=>linhas.map(l=>{
+    if(l.max===1){
+      const f=etqAjusta(ctx,l.t,l.px*sc,textoW,l.peso);
+      ctx.font=`${l.peso} ${f}px Arial,Helvetica,sans-serif`;
+      return {ls:[l.t],f,peso:l.peso};
+    }
+    let f=Math.round(l.px*sc),ls;
+    for(;;){
+      ctx.font=`${l.peso} ${f}px Arial,Helvetica,sans-serif`;
+      ls=etqQuebra(ctx,l.t,textoW,99);
+      if(ls.length<=l.max||f<=9)break;
+      f-=1;
+    }
+    if(ls.length>l.max)ls=etqQuebra(ctx,l.t,textoW,l.max);
+    return {ls,f,peso:l.peso};
+  });
+  const alt=bl=>bl.reduce((a,b)=>a+b.ls.length*b.f*1.12,0)+gapL*Math.max(0,bl.length-1);
+  let sc=(c.fs||100)/100,blocos=medir(sc);
+  while(alt(blocos)>H-2*pad&&sc>0.3){sc*=0.94;blocos=medir(sc)}
+  let y=Math.max(pad,Math.round((H-alt(blocos))/2));
+  for(const b of blocos){
+    ctx.font=`${b.peso} ${b.f}px Arial,Helvetica,sans-serif`;
+    for(const ln of b.ls){ctx.fillText(ln,pad,y);y+=b.f*1.12}
+    y+=gapL;
+  }
+  if(typeof QRCode!=='undefined'){
+    QRCode.toDataURL(etq.id,{width:qs,margin:0,errorCorrectionLevel:'M'},(err,url)=>{
+      if(err||seq!==etqSeq)return;
+      const im=new Image();
+      im.onload=()=>{if(seq!==etqSeq)return;ctx.imageSmoothingEnabled=false;ctx.drawImage(im,W-qs-pad,Math.round((H-qs)/2),qs,qs);etqBinariza(cv,ctx)};
+      im.src=url;
+    });
+  }else etqBinariza(cv,ctx);
+  const prev=$('#etqPrev');
+  prev.style.width=Math.min(300,W*1.0)+'px';
+  prev.style.aspectRatio=c.w+'/'+c.h;
+}
+function etqBinariza(cv,ctx){
+  const im=ctx.getImageData(0,0,cv.width,cv.height),d=im.data;
+  for(let i=0;i<d.length;i+=4){const g=0.299*d[i]+0.587*d[i+1]+0.114*d[i+2];const v=g<150?0:255;d[i]=d[i+1]=d[i+2]=v;d[i+3]=255}
+  ctx.putImageData(im,0,0);
+}
+function etqBytesTSPL(cfg,copias){
+  const cv=$('#etqCanvas'),W=cv.width,H=cv.height,wb=Math.ceil(W/8);
+  const px=cv.getContext('2d').getImageData(0,0,W,H).data;
+  const bmp=new Uint8Array(wb*H);
+  for(let y=0;y<H;y++)for(let x=0;x<W;x++){
+    const preto=px[(y*W+x)*4]<128;
+    const bit=cfg.inv?(preto?1:0):(preto?0:1);   // padrão TSPL: 0 = ponto preto
+    if(bit)bmp[y*wb+(x>>3)]|=(0x80>>(x&7));
+  }
+  const enc=new TextEncoder();
+  const ini=enc.encode(`SIZE ${cfg.w} mm,${cfg.h} mm\r\nGAP ${cfg.gap} mm,0 mm\r\nDIRECTION 1\r\nDENSITY ${cfg.dens}\r\nCLS\r\nBITMAP 0,0,${wb},${H},0,`);
+  const fim=enc.encode(`\r\nPRINT ${copias},1\r\n`);
+  const out=new Uint8Array(ini.length+bmp.length+fim.length);
+  out.set(ini,0);out.set(bmp,ini.length);out.set(fim,ini.length+bmp.length);
+  return out;
+}
+async function etqConectar(){
+  const st=$('#etqStatus');
+  if(!navigator.bluetooth){st.innerHTML='<span style="color:var(--no)">Este navegador não tem Bluetooth para sites. Use o Chrome no Android.</span>';return null}
+  if(etq.chr&&etq.dev&&etq.dev.gatt.connected)return etq.chr;
+  try{
+    st.textContent='Procurando impressoras…';
+    if(!etq.dev)etq.dev=await navigator.bluetooth.requestDevice({acceptAllDevices:true,optionalServices:ETQ_UUIDS});
+    etq.dev.addEventListener('gattserverdisconnected',()=>{etq.chr=null;const s=$('#etqStatus');if(s)s.textContent='Impressora desconectada.'},{once:true});
+    st.textContent='Conectando…';
+    const srv=await etq.dev.gatt.connect();
+    const svcs=await srv.getPrimaryServices();
+    let achada=null;
+    for(const sv of svcs){
+      const chs=await sv.getCharacteristics();
+      for(const ch of chs){if(ch.properties.write||ch.properties.writeWithoutResponse){achada=ch;break}}
+      if(achada)break;
+    }
+    if(!achada){st.innerHTML='<span style="color:var(--no)">Conectei, mas não achei por onde enviar a impressão. Serviços: '+svcs.map(s=>s.uuid.slice(4,8)).join(', ')+'</span>';etq.dev.gatt.disconnect();return null}
+    etq.chr=achada;
+    st.textContent='✅ Conectada: '+(etq.dev.name||'impressora');
+    return achada;
+  }catch(e){
+    etq.dev=null;
+    st.innerHTML='<span style="color:var(--no)">'+(e&&e.name==='NotFoundError'?'Nenhuma impressora escolhida.':'Não foi possível conectar: '+esc(e&&e.message||''))+'</span>';
+    return null;
+  }
+}
+async function etqEnviar(chr,bytes){
+  const sem=!!chr.properties.writeWithoutResponse;
+  for(const chunk of [128,20]){
+    try{
+      for(let i=0;i<bytes.length;i+=chunk){
+        const p=bytes.slice(i,i+chunk);
+        if(sem)await chr.writeValueWithoutResponse(p);else await chr.writeValue(p);
+        await new Promise(r=>setTimeout(r,12));
+      }
+      return true;
+    }catch(e){ if(chunk===20)throw e }
+  }
+}
+async function etqImprimir(){
+  const cfg=etqSalvarCfg();
+  const cp=Math.max(1,Math.min(20,parseInt($('#etqCopias').value)||1));
+  const st=$('#etqStatus');
+  const chr=await etqConectar();if(!chr)return;
+  try{
+    st.textContent='Enviando…';
+    await etqEnviar(chr,etqBytesTSPL(cfg,cp));
+    st.innerHTML='<span style="color:var(--ok)">✔ Enviado para a impressora.</span>';
+  }catch(e){st.innerHTML='<span style="color:var(--no)">Falha ao enviar: '+esc(e&&e.message||'')+'</span>'}
+}
+async function etqSalvarPng(){
+  const url=$('#etqCanvas').toDataURL('image/png');
+  try{
+    const blob=await (await fetch(url)).blob();
+    const f=new File([blob],'etiqueta_'+etq.id+'.png',{type:'image/png'});
+    if(navigator.canShare&&navigator.canShare({files:[f]})){await navigator.share({files:[f],title:'Etiqueta '+etq.id});return}
+  }catch(e){if(e&&e.name==='AbortError')return}
+  const a=document.createElement('a');a.href=url;a.download='etiqueta_'+etq.id+'.png';document.body.appendChild(a);a.click();a.remove();
+}
+window.abrirEtiqueta=abrirEtiqueta;window.fecharEtiqueta=fecharEtiqueta;window.etqTamMudou=etqTamMudou;window.etqDesenhar=etqDesenhar;window.etqImprimir=etqImprimir;window.etqSalvarPng=etqSalvarPng;window.etqConectar=etqConectar;
+
 
 
 
@@ -1997,7 +2232,8 @@ function mostrarQrFixo(){
     qrAtual={id,url};
     $('#qrFixo').innerHTML=`<img src="${url}" style="width:150px;height:150px;border-radius:8px;background:#fff">
       <div style="font-weight:700;letter-spacing:1px;margin:4px 0 8px">${esc(id)}</div>
-      <div class="row" style="gap:8px"><button class="btn g" style="margin:0;padding:10px" onclick="gerarEtiqueta()">🖨️ Imprimir</button><button class="btn g" style="margin:0;padding:10px" onclick="compartilharQrAtual()">📤 Compartilhar</button></div>`;
+      <div class="row" style="gap:8px"><button class="btn g" style="margin:0;padding:10px" onclick="gerarEtiqueta()">🖨️ Folha</button><button class="btn g" style="margin:0;padding:10px" onclick="compartilharQrAtual()">📤 Compartilhar</button></div>
+      <button class="btn" style="margin:8px 0 0;padding:11px" onclick="abrirEtiqueta(cur.id,cur.d)">🏷️ Imprimir etiqueta (impressora)</button>`;
   });
 }
 function gerarEtiqueta(){
@@ -2084,8 +2320,9 @@ Minimum version required to store current data is: `+i+`.
      quando sai uma versão nova (em vez da pessoa precisar desinstalar). -->
 <script>
 if('serviceWorker' in navigator){
-  window.addEventListener('load', ()=>{
-    navigator.serviceWorker.register('./sw.js').then(reg=>{
+  const jaTinhaControle=!!navigator.serviceWorker.controller;
+  window.addEventListener('load',()=>{
+    navigator.serviceWorker.register('./sw.js',{updateViaCache:'none'}).then(reg=>{
       reg.addEventListener('updatefound', ()=>{
         const nw=reg.installing;
         if(!nw)return;
@@ -2095,8 +2332,17 @@ if('serviceWorker' in navigator){
           }
         });
       });
+      // procura versão nova ao abrir, ao voltar pro app e a cada 3 minutos
+      const checar=()=>{ if(navigator.onLine) reg.update().catch(()=>{}) };
+      checar();
+      document.addEventListener('visibilitychange',()=>{ if(document.visibilityState==='visible') checar() });
+      window.addEventListener('focus',checar);
+      window.addEventListener('online',checar);
+      setInterval(checar,3*60*1000);
     }).catch(()=>{});
   });
+  // a nova versão assumiu o controle (skipWaiting): avisa também por aqui
+  navigator.serviceWorker.addEventListener('controllerchange',()=>{ if(jaTinhaControle) mostrarBannerAtualizacao() });
 }
 function mostrarBannerAtualizacao(){
   if(document.getElementById('updateBanner'))return;

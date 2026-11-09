@@ -1,4 +1,4 @@
-const CACHE = 'fichas-ac-login-v14';
+const CACHE = 'fichas-ac-login-v17';
 const ASSETS = [
   './',
   './index.html',
@@ -13,7 +13,7 @@ const ASSETS = [
 
 self.addEventListener('install', e => {
   e.waitUntil(
-    caches.open(CACHE).then(c => c.addAll(ASSETS)).then(() => self.skipWaiting())
+    caches.open(CACHE).then(c => Promise.all(ASSETS.map(u => fetch(new Request(u,{cache:'reload'})).then(r => r.ok ? c.put(u,r) : null).catch(() => null)))).then(() => self.skipWaiting())
   );
 });
 
@@ -35,7 +35,7 @@ self.addEventListener('fetch', e => {
 
   e.respondWith(
     caches.match(e.request).then(cached => {
-      const fetchPromise = fetch(e.request).then(res => {
+      const fetchPromise = fetch(new Request(e.request.url,{cache:'no-cache',credentials:'same-origin'})).then(res => {
         if (res && res.status === 200) {
           const clone = res.clone();
           caches.open(CACHE).then(c => c.put(e.request, clone));
