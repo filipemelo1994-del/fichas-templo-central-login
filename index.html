@@ -213,7 +213,9 @@ details.vmaq .body{padding:0 14px 14px}
   header,.stick,#auth,#scan,main>section{display:none!important}
   #print{display:block!important}
   * {-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  .vistPrint{page:vist}
 }
+@page vist{size:A4 landscape;margin:7mm}
 @page{margin:14mm 12mm}
 </style>
 </head>
@@ -1582,16 +1584,25 @@ function imprimirVist(){
     ['Insuflamento — entrada (°C)',m=>(m.ins||{}).ent],['Insuflamento — saída (°C)',m=>(m.ins||{}).sai],['Insuflamento — total',m=>(m.ins||{}).total]
   ];
   const el=vist.eletrica||{};
-  $('#print').innerHTML=`<div style="font-family:Arial,sans-serif">
-    <div style="text-align:center"><img src="icon-512.png" style="width:44px;height:44px;border-radius:8px"><div style="font-size:11px;color:#555">Assembleia de Deus — Templo Central</div></div>
-    <h1 style="text-align:center;font-size:16px">CHECK LIST — FISCALIZAÇÃO DE SERVIÇOS EM EQUIPAMENTOS DE AR CONDICIONADO</h1>
-    <p style="font-size:12px"><b>Congregação:</b> ${cel(vist.congregacao)} &nbsp;&nbsp; <b>Data:</b> ${vist.data?vist.data.split('-').reverse().join('/'):''}</p>
-    <table style="width:100%;border-collapse:collapse;font-size:10px"><tr><th style="border:1px solid #999;padding:3px;text-align:left">Vistoria nos equipamentos</th>${ms.map((m,i)=>`<th style="border:1px solid #999;padding:3px">Máq. ${String(i+1).padStart(2,'0')}</th>`).join('')}</tr>
-    ${linhas.map(([l,f])=>`<tr><td style="border:1px solid #999;padding:3px">${l}</td>${ms.map(m=>`<td style="border:1px solid #999;padding:3px;text-align:center">${cel(f(m))}</td>`).join('')}</tr>`).join('')}</table>
-    <h2 style="font-size:13px;margin-top:14px">Vistoria elétrica</h2>
-    <table style="width:100%;border-collapse:collapse;font-size:11px">${VI_ELET.map(([k,l])=>`<tr><td style="border:1px solid #999;padding:4px">${l}</td><td style="border:1px solid #999;padding:4px;width:90px;text-align:center">${cel(el[k])}</td></tr>`).join('')}</table>
-    ${vist.obs?`<p style="font-size:11px"><b>Observações:</b> ${cel(vist.obs)}</p>`:''}
-    <p style="font-size:10px;color:#666">Registrado por ${cel(vist.criadoPor)}</p></div>`;
+  const td='border:1px solid #888;padding:1.5px 3px;';
+  const dt=vist.data?vist.data.split('-').reverse().join('/'):'';
+  $('#print').innerHTML=`<div class="vistPrint" style="font-family:Arial,sans-serif;color:#000">
+    <div style="display:flex;align-items:center;gap:10px;border-bottom:2px solid #0b5cab;padding-bottom:4px;margin-bottom:5px">
+      <img src="icon-192.png" style="width:34px;height:34px;border-radius:6px">
+      <div style="flex:1"><div style="font-size:13px;font-weight:700;color:#0b5cab">CHECK LIST — FISCALIZAÇÃO DE SERVIÇOS EM EQUIPAMENTOS DE AR CONDICIONADO</div>
+        <div style="font-size:9px;color:#555">Assembleia de Deus — Templo Central · Equipe de Manutenção</div></div>
+      <div style="font-size:11px;text-align:right;line-height:1.5"><b>Congregação:</b> ${cel(vist.congregacao)}<br><b>Data:</b> ${dt}</div>
+    </div>
+    <table style="width:100%;border-collapse:collapse;font-size:8.5px;table-layout:fixed"><colgroup><col style="width:30%">${ms.map(()=>'<col>').join('')}</colgroup>
+    <tr style="background:#e7f0fa"><th style="${td}text-align:left">Vistoria nos equipamentos</th>${ms.map((m,i)=>`<th style="${td}">Máq. ${String(i+1).padStart(2,'0')}</th>`).join('')}</tr>
+    ${linhas.map(([l,f])=>`<tr><td style="${td}">${l}</td>${ms.map(m=>`<td style="${td}text-align:center">${cel(f(m))}</td>`).join('')}</tr>`).join('')}</table>
+    <div style="display:flex;gap:10px;margin-top:6px;align-items:flex-start">
+      <div style="flex:1"><div style="font-size:10px;font-weight:700;color:#0b5cab;margin-bottom:2px">Vistoria elétrica</div>
+        <table style="width:100%;border-collapse:collapse;font-size:8.5px">${VI_ELET.map(([k,l])=>`<tr><td style="${td}">${l}</td><td style="${td}width:60px;text-align:center">${cel(el[k])}</td></tr>`).join('')}</table></div>
+      <div style="flex:1"><div style="font-size:10px;font-weight:700;color:#0b5cab;margin-bottom:2px">Observações</div>
+        <div style="border:1px solid #888;min-height:44px;padding:3px;font-size:9px">${cel(vist.obs)}</div>
+        <div style="font-size:8px;color:#666;margin-top:3px">Registrado por ${cel(vist.criadoPor)}</div></div>
+    </div></div>`;
   const old=document.title;document.title='Vistoria_'+(vist.congregacao||'congregacao').replace(/\s+/g,'_');
   setTimeout(()=>{window.print();document.title=old},300);
 }
