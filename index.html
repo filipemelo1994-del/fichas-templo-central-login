@@ -224,7 +224,7 @@ details.vmaq .body{padding:0 14px 14px}
   * {-webkit-print-color-adjust:exact;print-color-adjust:exact}
   html,body{padding:0!important;margin:0!important;height:auto!important;min-height:0!important}
   main{display:none!important}
-  #bottomNav,#devModal,#novModal,#fotoSheet,#splash,#updateBanner,.toast{display:none!important}
+  #bottomNav,#etqModal,#devModal,#novModal,#fotoSheet,#splash,#updateBanner,.toast{display:none!important}
   .vistPrint{height:274mm;display:flex;flex-direction:column;overflow:hidden;padding:0 2px}
   .vistPrint table{font-size:6.6px!important}
   @media (orientation:landscape){.vistPrint{height:184mm}.vistPrint table{font-size:8.5px!important}}
@@ -264,6 +264,7 @@ details.vmaq .body{padding:0 14px 14px}
       <button class="btn" style="flex:3;margin:0" onclick="etqImprimir()">🖨️ Imprimir (Bluetooth)</button>
     </div>
     <div id="etqStatus" style="margin:8px 0;font-size:13px;color:var(--mut);min-height:18px"></div>
+    <button class="btn" style="background:#0a7a4b" onclick="etqImprimirAndroid()">🖨️ Imprimir pelo Android (impressora instalada)</button>
     <button class="btn g" onclick="etqSalvarPng()">💾 Salvar / compartilhar imagem da etiqueta</button>
   </div>
 </div>
@@ -1349,7 +1350,7 @@ function buscarParaQr(){
         <button class="btn" style="margin:0" onclick="imprimirQrAtual()">🖨️ Imprimir</button>
         <button class="btn g" style="margin:0" onclick="compartilharQrAtual()">📤 Compartilhar</button>
       </div>
-      <button class="btn" style="margin:8px 0 0" onclick="abrirEtiqueta(qrAtual.id,qrAtual.d)">🏷️ Imprimir etiqueta (impressora)</button></div>`;
+      <button class="btn" style="margin:8px 0 0" onclick="abrirEtiquetaQr()">🏷️ Imprimir etiqueta (impressora)</button></div>`;
   });
 }
 window.buscarParaQr=buscarParaQr;
@@ -1730,7 +1731,7 @@ function prepararEtiqueta(id,d){
   $('#etqW').value=c.w;$('#etqH').value=c.h;$('#etqGap').value=c.gap;$('#etqInv').checked=c.inv;$('#etqDens').value=c.dens;$('#etqFs').value=c.fs;
   $('#etqShId').checked=c.show.id;$('#etqShCong').checked=c.show.cong;$('#etqShMod').checked=c.show.modelo;$('#etqShData').checked=c.show.data;
   $('#etqTId').value=id;
-  $('#etqTCong').value=d.congDestino||d.congOrigem||'';
+  {const ok=v=>v&&!/^sem\s+destino$/i.test(String(v).trim());$('#etqTCong').value=ok(d.congDestino)?d.congDestino:(d.congOrigem||'');}
   $('#etqTMod').value=[d.modelo,d.capacidade].filter(Boolean).join(' · ');
   $('#etqTData').value=new Date().toLocaleDateString('pt-BR');
   $('#etqCustom').classList.toggle('hide',$('#etqTam').value!=='custom');
@@ -1895,6 +1896,21 @@ async function etqSalvarPng(){
   }catch(e){if(e&&e.name==='AbortError')return}
   const a=document.createElement('a');a.href=url;a.download='etiqueta_'+etq.id+'.png';document.body.appendChild(a);a.click();a.remove();
 }
+
+function etqImprimirAndroid(){
+  const w=+$('#etqW').value||40,h=+$('#etqH').value||30;
+  const url=$('#etqCanvas').toDataURL('image/png');
+  const st=document.createElement('style');st.id='etqPageStyle';
+  st.textContent='@page{size:'+w+'mm '+h+'mm;margin:0}@media print{html,body{width:'+w+'mm;height:'+h+'mm}#print{width:'+w+'mm;height:'+h+'mm;overflow:hidden}#print img{display:block;width:'+w+'mm;height:'+h+'mm}}';
+  document.head.appendChild(st);
+  $('#print').innerHTML='<img src="'+url+'">';
+  const limpa=()=>{st.remove();$('#print').innerHTML='';window.removeEventListener('afterprint',limpa)};
+  window.addEventListener('afterprint',limpa);
+  setTimeout(()=>window.print(),150);
+}
+window.etqImprimirAndroid=etqImprimirAndroid;
+window.abrirEtiquetaFicha=()=>abrirEtiqueta(cur.id,cur.d);
+window.abrirEtiquetaQr=()=>abrirEtiqueta(qrAtual.id,qrAtual.d);
 window.abrirEtiqueta=abrirEtiqueta;window.fecharEtiqueta=fecharEtiqueta;window.etqTamMudou=etqTamMudou;window.etqDesenhar=etqDesenhar;window.etqImprimir=etqImprimir;window.etqSalvarPng=etqSalvarPng;window.etqConectar=etqConectar;
 
 
@@ -2238,7 +2254,7 @@ function mostrarQrFixo(){
     qrAtual={id,url,d:cur.d};
     $('#qrFixo').innerHTML=`<img src="${url}" style="max-width:100%;width:260px;border:1px dashed var(--bd);background:#fff">
       <div style="font-size:12px;color:var(--mut);margin:4px 0 8px">Etiqueta ${etqCfg().w} × ${etqCfg().h} mm</div>
-      <button class="btn" style="margin:0 0 8px;padding:11px" onclick="abrirEtiqueta(cur.id,cur.d)">🏷️ Imprimir etiqueta (impressora)</button>
+      <button class="btn" style="margin:0 0 8px;padding:11px" onclick="abrirEtiquetaFicha()">🏷️ Imprimir etiqueta (impressora)</button>
       <div class="row" style="gap:8px"><button class="btn g" style="margin:0;padding:10px" onclick="gerarEtiqueta()">🖨️ Folha</button><button class="btn g" style="margin:0;padding:10px" onclick="compartilharQrAtual()">📤 Compartilhar</button></div>`;
   };
   etqDesenhar();
