@@ -213,9 +213,11 @@ details.vmaq .body{padding:0 14px 14px}
   header,.stick,#auth,#scan,main>section{display:none!important}
   #print{display:block!important}
   * {-webkit-print-color-adjust:exact;print-color-adjust:exact}
-  .vistPrint{page:vist}
+  body{padding:0!important;margin:0!important}
+  #bottomNav,#devModal,#novModal,#fotoSheet,#splash,#updateBanner,.toast{display:none!important}
+  .vistPrint{height:188mm;display:flex;flex-direction:column;overflow:hidden;padding:0 2px}
 }
-@page vist{size:A4 landscape;margin:7mm}
+@page{size:A4 portrait;margin:8mm}
 @page{margin:14mm 12mm}
 </style>
 </head>
@@ -1453,14 +1455,14 @@ async function abrirVistorias(){
     const rows=snap.docs.map(d=>({id:d.id,...d.data()}));
     $('#vistList').innerHTML=rows.length?rows.map(r=>`<div class="item" onclick="abrirVistoria('${r.id}')">
       <div class="ph" style="display:flex;align-items:center;justify-content:center;font-size:22px;background:var(--pri2);border-radius:50%;width:42px;height:42px">🏛️</div>
-      <div><b>${esc(r.congregacao||'Sem congregação')}</b><small>${r.data?r.data.split('-').reverse().join('/'):'sem data'} · ${(r.maquinas||[]).length} máquina(s)${r.criadoPor?' · '+esc(r.criadoPor):''}</small></div></div>`).join('')
+      <div><b>${esc(r.congregacao||'Sem congregação')}</b><small>${r.endereco?esc(r.endereco.slice(0,60))+'<br>':''}${r.data?r.data.split('-').reverse().join('/'):'sem data'} · ${(r.maquinas||[]).length} máquina(s)${r.criadoPor?' · '+esc(r.criadoPor):''}</small></div></div>`).join('')
       :'<small style="color:var(--mut)">Nenhuma vistoria registrada ainda.</small>';
   }catch(e){$('#vistList').innerHTML='<small style="color:var(--no)">Não foi possível carregar as vistorias.</small>';vistErro(e)}
 }
 window.abrirVistorias=abrirVistorias;
 function novaVistoria(){
   const id=doc(collection(db,'vistorias')).id;
-  vist={id,congregacao:'',data:new Date().toISOString().slice(0,10),maquinas:[vistVazia()],eletrica:{},obs:'',
+  vist={id,congregacao:'',endereco:'',data:new Date().toISOString().slice(0,10),maquinas:[vistVazia()],eletrica:{},obs:'',
     criadoEm:Date.now(),criadoPor:perfil.nome+' '+perfil.sobrenome,criadoPorUid:perfil.uid};
   renderVist();view('vistForm');salvarVistAgora();
 }
@@ -1517,6 +1519,13 @@ function renderVist(){
    <div class="card"><h2>Dados da vistoria</h2>
     <label class="l" style="margin-top:0">Congregação</label>
     <input type="text" id="vCong" list="listaCongregacoes" autocomplete="off" value="${esc(vist.congregacao)}" ${ro?'disabled':''}>
+    <label class="l">Endereço</label>
+    <div class="row" style="gap:6px">
+      <input type="text" id="vEnd" placeholder="Rua, número, bairro, cidade" autocomplete="off" value="${esc(vist.endereco||'')}" ${ro?'disabled':''} style="flex:1">
+      ${ro?'':`<button class="btn g" style="margin:0;width:48px;padding:0;flex:none" title="Buscar no mapa" onclick="buscarEndereco()">🔍</button>
+      <button class="btn g" style="margin:0;width:48px;padding:0;flex:none" title="Usar minha localização" onclick="usarLocalizacao()">📍</button>`}
+    </div>
+    <div id="vEndRes" style="margin-top:6px"></div>
     <label class="l">Data</label><input type="date" id="vData" value="${esc(vist.data)}" ${ro?'disabled':''}>
     <small id="vistSaved" style="color:var(--ok);display:block;margin-top:8px"></small></div>
    <div id="vistMaqs">${vist.maquinas.map((m,i)=>vistMaqHTML(m,i,ro)).join('')}</div>
@@ -1533,6 +1542,7 @@ function bindVist(ro){
   const F=$('#vistForm');
   $('#vCong').oninput=e=>{vist.congregacao=e.target.value;salvarVist()};
   $('#vData').onchange=e=>{vist.data=e.target.value;salvarVist()};
+  $('#vEnd').oninput=e=>{vist.endereco=e.target.value;salvarVist()};
   $('#vObs').oninput=e=>{vist.obs=e.target.value;salvarVist()};
   F.querySelectorAll('[data-m]').forEach(el=>{
     const ev=el.tagName==='SELECT'?'onchange':'oninput';
@@ -1566,6 +1576,40 @@ function bindVist(ro){
     salvarVist();
   });
 }
+function setEndereco(txt,lat,lon){
+  vist.endereco=txt;if(lat!==undefined){vist.lat=lat;vist.lon=lon}
+  const i=$('#vEnd');if(i)i.value=txt;
+  $('#vEndRes').innerHTML='';salvarVist();
+}
+let endOpcoes=[];
+async function buscarEndereco(){
+  const q=($('#vEnd').value.trim()||vist.congregacao||'').trim();
+  const box=$('#vEndRes');
+  if(!q){toast('Digite o endereço ou o nome da congregação.');return}
+  box.innerHTML='<small style="color:var(--mut)">Buscando no mapa…</small>';
+  try{
+    const r=await fetch('https://nominatim.openstreetmap.org/search?format=jsonv2&addressdetails=0&limit=5&countrycodes=br&accept-language=pt-BR&q='+encodeURIComponent(q));
+    if(!r.ok)throw new Error(r.status);
+    endOpcoes=await r.json();
+    const gm='https://www.google.com/maps/search/?api=1&query='+encodeURIComponent(q);
+    box.innerHTML=(endOpcoes.length?endOpcoes.map((o,i)=>`<div class="item" style="padding:8px 4px" onclick="escolherEnd(${i})"><div style="font-size:18px">📍</div><div style="font-size:13px">${esc(o.display_name)}</div></div>`).join(''):'<small style="color:var(--mut)">Nada encontrado com esse texto.</small>')
+      +`<a href="${gm}" target="_blank" rel="noopener" style="display:block;margin-top:6px;font-size:13px;color:var(--pri)">Abrir no Google Maps ↗</a>`;
+  }catch(e){box.innerHTML='<small style="color:var(--no)">Não foi possível buscar agora. Verifique a internet.</small>'}
+}
+function escolherEnd(i){const o=endOpcoes[i];if(o)setEndereco(o.display_name,+o.lat,+o.lon)}
+function usarLocalizacao(){
+  if(!navigator.geolocation){toast('Este aparelho não permite localização.');return}
+  const box=$('#vEndRes');box.innerHTML='<small style="color:var(--mut)">Obtendo localização…</small>';
+  navigator.geolocation.getCurrentPosition(async pos=>{
+    const {latitude:la,longitude:lo}=pos.coords;
+    try{
+      const r=await fetch(`https://nominatim.openstreetmap.org/reverse?format=jsonv2&accept-language=pt-BR&lat=${la}&lon=${lo}`);
+      const j=await r.json();
+      setEndereco(j.display_name||(la.toFixed(5)+', '+lo.toFixed(5)),la,lo);
+    }catch(e){setEndereco(la.toFixed(5)+', '+lo.toFixed(5),la,lo);toast('Salvei só as coordenadas (sem internet para achar o endereço).')}
+  },err=>{box.innerHTML='<small style="color:var(--no)">'+(err.code===1?'Permissão de localização negada. Libere nas configurações do navegador.':'Não foi possível obter a localização.')+'</small>'},{enableHighAccuracy:true,timeout:15000});
+}
+window.buscarEndereco=buscarEndereco;window.escolherEnd=escolherEnd;window.usarLocalizacao=usarLocalizacao;
 function addMaquina(){vist.maquinas.push(vistVazia());renderVist();salvarVistAgora();
   const d=document.querySelectorAll('details.vmaq');if(d.length){d.forEach(x=>x.open=false);d[d.length-1].open=true;d[d.length-1].scrollIntoView({behavior:'smooth'})}}
 function removerMaquina(i){if(!confirm('Remover a máquina '+String(i+1).padStart(2,'0')+'?'))return;vist.maquinas.splice(i,1);renderVist();salvarVistAgora()}
@@ -1584,25 +1628,32 @@ function imprimirVist(){
     ['Insuflamento — entrada (°C)',m=>(m.ins||{}).ent],['Insuflamento — saída (°C)',m=>(m.ins||{}).sai],['Insuflamento — total',m=>(m.ins||{}).total]
   ];
   const el=vist.eletrica||{};
-  const td='border:1px solid #888;padding:1.5px 3px;';
+  const fs=8.5,lab=21;
+  const paginas=[];const nPag=Math.max(1,Math.ceil(ms.length/10));
+  const td='border:1px solid #888;padding:0 3px;';
   const dt=vist.data?vist.data.split('-').reverse().join('/'):'';
-  $('#print').innerHTML=`<div class="vistPrint" style="font-family:Arial,sans-serif;color:#000">
+  for(let pg=0;pg<nPag;pg++){const base=pg*10;const colsMaq=Array.from({length:10},(_,i)=>ms[base+i]||null);const ultima=pg===nPag-1;
+  paginas.push(`<div class="vistPrint" style="font-family:Arial,sans-serif;color:#000;${ultima?'':'break-after:page;page-break-after:always;'}">
     <div style="display:flex;align-items:center;gap:10px;border-bottom:2px solid #0b5cab;padding-bottom:4px;margin-bottom:5px">
       <img src="icon-192.png" style="width:34px;height:34px;border-radius:6px">
-      <div style="flex:1"><div style="font-size:13px;font-weight:700;color:#0b5cab">CHECK LIST — FISCALIZAÇÃO DE SERVIÇOS EM EQUIPAMENTOS DE AR CONDICIONADO</div>
+      <div style="flex:1"><div style="font-size:12px;font-weight:700;color:#0b5cab">CHECK LIST — FISCALIZAÇÃO DE SERVIÇOS EM EQUIPAMENTOS DE AR CONDICIONADO</div>
         <div style="font-size:9px;color:#555">Assembleia de Deus — Templo Central · Equipe de Manutenção</div></div>
-      <div style="font-size:11px;text-align:right;line-height:1.5"><b>Congregação:</b> ${cel(vist.congregacao)}<br><b>Data:</b> ${dt}</div>
+      <div style="font-size:11px;text-align:right;line-height:1.5;max-width:42%"><b>Congregação:</b> ${cel(vist.congregacao)}<br>${vist.endereco?`<b>Endereço:</b> ${cel(vist.endereco)}<br>`:''}<b>Data:</b> ${dt}</div>
     </div>
-    <table style="width:100%;border-collapse:collapse;font-size:8.5px;table-layout:fixed"><colgroup><col style="width:30%">${ms.map(()=>'<col>').join('')}</colgroup>
-    <tr style="background:#e7f0fa"><th style="${td}text-align:left">Vistoria nos equipamentos</th>${ms.map((m,i)=>`<th style="${td}">Máq. ${String(i+1).padStart(2,'0')}</th>`).join('')}</tr>
-    ${linhas.map(([l,f])=>`<tr><td style="${td}">${l}</td>${ms.map(m=>`<td style="${td}text-align:center">${cel(f(m))}</td>`).join('')}</tr>`).join('')}</table>
-    <div style="display:flex;gap:10px;margin-top:6px;align-items:flex-start">
+    <div style="flex:1;min-height:0;display:flex"><table style="width:100%;height:100%;border-collapse:collapse;font-size:${fs}px;table-layout:fixed;word-break:break-word"><colgroup><col style="width:${lab}%">${colsMaq.map(()=>'<col>').join('')}</colgroup>
+    <tr style="background:#e7f0fa"><th style="${td}text-align:left">Vistoria nos equipamentos</th>${colsMaq.map((m,i)=>`<th style="${td}">Máq. ${String(base+i+1).padStart(2,'0')}</th>`).join('')}</tr>
+    ${linhas.map(([l,f])=>`<tr><td style="${td}">${l}</td>${colsMaq.map(m=>`<td style="${td}text-align:center">${m?cel(f(m)):''}</td>`).join('')}</tr>`).join('')}</table></div>
+    ${ultima?`<div style="display:flex;gap:10px;margin-top:6px;align-items:flex-start">
       <div style="flex:1"><div style="font-size:10px;font-weight:700;color:#0b5cab;margin-bottom:2px">Vistoria elétrica</div>
         <table style="width:100%;border-collapse:collapse;font-size:8.5px">${VI_ELET.map(([k,l])=>`<tr><td style="${td}">${l}</td><td style="${td}width:60px;text-align:center">${cel(el[k])}</td></tr>`).join('')}</table></div>
       <div style="flex:1"><div style="font-size:10px;font-weight:700;color:#0b5cab;margin-bottom:2px">Observações</div>
         <div style="border:1px solid #888;min-height:44px;padding:3px;font-size:9px">${cel(vist.obs)}</div>
         <div style="font-size:8px;color:#666;margin-top:3px">Registrado por ${cel(vist.criadoPor)}</div></div>
-    </div></div>`;
+    </div>`:'<div style="font-size:9px;color:#666;text-align:right;margin-top:4px">Continua na próxima folha →</div>'}</div>`);}
+  $('#print').innerHTML=paginas.join('');
+  let ps=document.getElementById('pageVist');if(!ps){ps=document.createElement('style');ps.id='pageVist';document.head.appendChild(ps)}
+  ps.textContent='@page{size:A4 landscape;margin:8mm}';
+  window.addEventListener('afterprint',()=>{const x=document.getElementById('pageVist');if(x)x.textContent=''},{once:true});
   const old=document.title;document.title='Vistoria_'+(vist.congregacao||'congregacao').replace(/\s+/g,'_');
   setTimeout(()=>{window.print();document.title=old},300);
 }
