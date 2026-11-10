@@ -147,8 +147,8 @@ header .iconBtn{position:relative}
 #fotoSheet .sheet{background:#fff;width:100%;max-width:480px;border-radius:20px 20px 0 0;padding:18px 16px calc(18px + env(safe-area-inset-bottom));animation:txtUp .25s ease both}
 #fotoSheet .sheet b{display:block;text-align:center;font-size:15px;margin-bottom:4px}
 /* vistoria */
-#pmocView label,#pmForm label{font-size:12px;color:var(--mut);font-weight:600;display:block;margin:8px 0 3px}
-#pmocView input,#pmForm input,#pmForm select,#pmForm textarea{width:100%;padding:11px;border:1px solid var(--bd);border-radius:10px;font-size:15px;font-family:inherit;box-sizing:border-box}
+#configView label,#pmocView label,#pmForm label{font-size:12px;color:var(--mut);font-weight:600;display:block;margin:8px 0 3px}
+#configView input:not([type=checkbox]),#configView select,#pmocView input,#pmForm input,#pmForm select,#pmForm textarea{width:100%;padding:11px;border:1px solid var(--bd);border-radius:10px;font-size:15px;font-family:inherit;box-sizing:border-box}
 .vchips{display:flex;flex-wrap:wrap;gap:6px}
 .vchip{padding:8px 12px;border:1px solid var(--bd);background:#fff;border-radius:20px;font-size:13.5px;color:var(--tx)}
 .vchip.on{background:var(--pri);border-color:var(--pri);color:#fff}
@@ -503,7 +503,7 @@ details.vmaq .body{padding:0 14px 14px}
       <div class="menuRow" onclick="avisoDev('descarte')"><span class="ic">♻️</span>Descarte de equipamento<span class="arrow">›</span></div>
       <div class="menuRow" onclick="openEquipe()"><span class="ic">👥</span>Equipe de manutenção<span class="arrow">›</span></div>
       <div class="menuRow" onclick="exportarTudoCSV()"><span class="ic">📊</span>Exportar tudo (CSV/Excel)<span class="arrow">›</span></div>
-      <div class="menuRow" onclick="avisoDev('config')"><span class="ic">⚙️</span>Configurações<span class="arrow">›</span></div>
+      <div class="menuRow" onclick="abrirConfig()"><span class="ic">⚙️</span>Configurações<span class="arrow">›</span></div>
       <button class="menuRow sair" id="btnLogout" style="width:100%;border:0;background:none;text-align:left;cursor:pointer"><span class="ic">🚪</span>Sair<span class="arrow">›</span></button>
     </div>
   </section>
@@ -575,6 +575,34 @@ details.vmaq .body{padding:0 14px 14px}
   <section id="vistoriasView" class="hide">
     <button class="btn" style="margin-top:0" onclick="novaVistoria()">＋ Nova vistoria</button>
     <div class="card" style="margin-top:12px"><h2>Vistorias de congregação</h2><div id="vistList"><small style="color:var(--mut)">Carregando…</small></div></div>
+  </section>
+
+  <section id="configView" class="hide">
+    <div class="card"><h2>👤 Minha conta</h2>
+      <div style="font-size:13px;color:var(--mut)">E-mail: <b id="cfEmail"></b></div>
+      <label>Nome</label><input id="cfNome"><label>Sobrenome</label><input id="cfSobrenome"><label>Função</label><input id="cfFuncao"><label>Telefone</label><input id="cfTel" inputmode="tel">
+      <button class="btn" onclick="cfSalvarConta()">Salvar dados da conta</button>
+      <button class="btn g" onclick="cfSenha()">Redefinir senha por e-mail</button></div>
+    <div class="card"><h2>🏷️ Etiqueta (padrão deste celular)</h2>
+      <div class="row" style="gap:8px"><div style="flex:1"><label>Largura (mm)</label><input id="cfEW" type="number" inputmode="numeric"></div><div style="flex:1"><label>Altura (mm)</label><input id="cfEH" type="number" inputmode="numeric"></div></div>
+      <div class="row" style="gap:8px"><div style="flex:1"><label>Espaço entre etiquetas (mm)</label><input id="cfEGap" type="number" inputmode="numeric"></div><div style="flex:1"><label>Densidade (1–15)</label><input id="cfEDens" type="number" inputmode="numeric"></div></div>
+      <label>Tamanho da fonte (%)</label><input id="cfEFs" type="number" inputmode="numeric">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px;font-size:14px">
+        <label style="display:flex;gap:6px;align-items:center;margin:0"><input type="checkbox" id="cfEId" style="width:auto"> ID</label>
+        <label style="display:flex;gap:6px;align-items:center;margin:0"><input type="checkbox" id="cfECong" style="width:auto"> Congregação</label>
+        <label style="display:flex;gap:6px;align-items:center;margin:0"><input type="checkbox" id="cfEMod" style="width:auto"> Marca / modelo</label>
+        <label style="display:flex;gap:6px;align-items:center;margin:0"><input type="checkbox" id="cfEData" style="width:auto"> Data</label>
+        <label style="display:flex;gap:6px;align-items:center;margin:0"><input type="checkbox" id="cfEInv" style="width:auto"> Inverter cores</label></div>
+      <button class="btn" onclick="cfSalvarEtiqueta()">Salvar padrão da etiqueta</button></div>
+    <div class="card"><h2>📑 PMOC</h2>
+      <label>Responsável técnico</label><input id="cfRTnome"><label>CREA</label><input id="cfRTcrea"><label>ART (nº)</label><input id="cfRTart"><label>Empresa / setor</label><input id="cfRTemp">
+      <label>Periodicidade padrão</label><select id="cfPer"></select>
+      <button class="btn" onclick="cfSalvarPmoc()">Salvar dados do PMOC</button></div>
+    <div class="card"><h2>📱 Aplicativo</h2>
+      <div style="font-size:13px;color:var(--mut)" id="cfVersao"></div>
+      <button class="btn g" onclick="cfBuscarAtualizacao()">🔄 Buscar atualização</button>
+      <button class="btn g" onclick="cfNovidades()">✨ Ver novidades</button>
+      <button class="btn g" style="color:var(--no);border-color:var(--no)" onclick="cfLimparCache()">Limpar cache do app</button></div>
   </section>
 
   <section id="pmocView" class="hide">
@@ -1115,9 +1143,9 @@ async function setVal(k,v,disp){
 }
 
 /* ---------- navegação ---------- */
-const TITULOS={home:'Fichas de Equipamentos',os:'Ordem de Serviço',menu:'Menu',equipe:'Equipe de Manutenção',alertas:'Pendências',vistorias:'Vistorias de congregação',vistForm:'Vistoria',pmoc:'PMOC',pmocForm:'Execução PMOC',regua:'Régua P-T',qrTool:'Criar QR code',buscaTec:'Busca técnica'};
-const VIEWS={home:'#home',os:'#osView',menu:'#menuView',equipe:'#equipeView',alertas:'#alertasView',vistorias:'#vistoriasView',vistForm:'#vistFormView',pmoc:'#pmocView',pmocForm:'#pmocFormView',regua:'#reguaView',qrTool:'#qrToolView',buscaTec:'#buscaTecView',form:'#formView'};
-const NAV_DE={home:'navInicio',os:'navOS',alertas:'navAlertas',menu:'navMenu',vistorias:'navMenu',equipe:'navMenu',pmoc:'navMenu'};
+const TITULOS={home:'Fichas de Equipamentos',os:'Ordem de Serviço',menu:'Menu',equipe:'Equipe de Manutenção',alertas:'Pendências',vistorias:'Vistorias de congregação',vistForm:'Vistoria',pmoc:'PMOC',pmocForm:'Execução PMOC',config:'Configurações',regua:'Régua P-T',qrTool:'Criar QR code',buscaTec:'Busca técnica'};
+const VIEWS={home:'#home',os:'#osView',menu:'#menuView',equipe:'#equipeView',alertas:'#alertasView',vistorias:'#vistoriasView',vistForm:'#vistFormView',pmoc:'#pmocView',pmocForm:'#pmocFormView',config:'#configView',regua:'#reguaView',qrTool:'#qrToolView',buscaTec:'#buscaTecView',form:'#formView'};
+const NAV_DE={home:'navInicio',os:'navOS',alertas:'navAlertas',menu:'navMenu',vistorias:'navMenu',equipe:'navMenu',pmoc:'navMenu',config:'navMenu'};
 let viewAtual='home';
 function view(name){
   viewAtual=name;
@@ -1143,7 +1171,7 @@ window.goHome=goHome;
 $('#btnBack').onclick=()=>{
   if(viewAtual==='vistForm')return abrirVistorias();
   if(viewAtual==='pmocForm')return abrirPmoc();
-  if(viewAtual==='pmoc')return view('menu');
+  if(viewAtual==='pmoc'||viewAtual==='config')return view('menu');
   if(viewAtual==='vistorias'||viewAtual==='equipe')return view('menu');
   goHome();
 };
@@ -1412,8 +1440,9 @@ $('#qrIdInput').addEventListener('keydown',e=>{if(e.key==='Enter')buscarParaQr()
    Preencha BUSCA_TEC_URL com a URL da função "buscaTecnica" depois do deploy.
 ======================================================== */
 const BUSCA_TEC_URL='';
-const APP_VERSAO='2026-11-10';
+const APP_VERSAO='2026-11-11';
 const NOVIDADES=[
+  ['⚙️','Nova aba Configurações: dados da conta, padrão da etiqueta, dados do PMOC e busca de atualização do app'],
   ['📑','Novo módulo PMOC: checklist de manutenção preventiva, medições, fotos antes e depois, assinaturas na tela, relatório em PDF e aviso da próxima manutenção'],
   ['🏷️','Impressão de etiquetas com QR code direto na impressora térmica por Bluetooth, com escolha de tamanho e conteúdo'],
   ['🏛️','Vistorias de congregação com checklist por máquina, endereço (busca no mapa ou localização) e PDF em A4'],
@@ -1421,8 +1450,8 @@ const NOVIDADES=[
   ['🔄','Aviso de atualização mais rápido, sem precisar fechar e abrir o aplicativo'],
   ['❄️','Cortina de ar disponível no cadastro de equipamentos e de peças avulsas']
 ];
-function mostrarNovidades(){
-  try{if(localStorage.getItem('novidadesVista')===APP_VERSAO)return}catch(e){}
+function mostrarNovidades(force){
+  if(force!==true){try{if(localStorage.getItem('novidadesVista')===APP_VERSAO)return}catch(e){}}
   $('#novLista').innerHTML=NOVIDADES.map(n=>`<li><span class="e">${n[0]}</span><span>${n[1]}</span></li>`).join('');
   $('#novModal').classList.remove('hide');
 }
@@ -1775,7 +1804,7 @@ async function abrirPmoc(){
   }catch(e){$('#pmHist').innerHTML='<small style="color:var(--no)">Não foi possível carregar.</small>';pmErro(e)}
 }
 async function pmocSalvarRT(){
-  pmRT={nome:$('#pmRT_nome').value.trim(),crea:$('#pmRT_crea').value.trim(),art:$('#pmRT_art').value.trim(),empresa:$('#pmRT_empresa').value.trim()};
+  pmRT={...pmRT,nome:$('#pmRT_nome').value.trim(),crea:$('#pmRT_crea').value.trim(),art:$('#pmRT_art').value.trim(),empresa:$('#pmRT_empresa').value.trim()};
   try{await setDoc(doc(db,'pmoc','config'),{kind:'config',rt:pmRT});toast('Responsável técnico salvo ✔')}catch(e){pmErro(e)}
 }
 function pmocNovaBusca(){const id=($('#pmEquipIn').value||'').trim().toUpperCase();if(!id){toast('Digite ou escolha o ID do equipamento.');return}pmocNova(id)}
@@ -1784,7 +1813,7 @@ async function pmocNova(equipId){
   if(!r){try{r=await dbGet(equipId)}catch(e){}}
   if(!r){toast('Equipamento '+equipId+' não encontrado.');return}
   const d=r.d||{};
-  let meses=3;
+  let meses=pmRT.perPadrao||3;
   try{const p=await getDoc(doc(db,'pmoc','plano_'+equipId));if(p.exists())meses=p.data().meses||3}catch(e){}
   const id=doc(collection(db,'pmoc')).id;
   pm={id,kind:'exec',equipId,eq:{modelo:d.modelo||'',cap:d.capacidade||'',tipo:d.tipo||'',local:d.local||'',cong:(/^sem\s+destino$/i.test(d.congDestino||'')?'':d.congDestino)||d.congOrigem||''},
@@ -1919,6 +1948,68 @@ window.abrirPmoc=abrirPmoc;window.pmocSalvarRT=pmocSalvarRT;window.pmocNovaBusca
 window.pmocSet=pmocSet;window.pmocMed=pmocMed;window.pmocCampo=pmocCampo;window.pmocFoto=pmocFoto;window.pmocFotoFecha=pmocFotoFecha;window.pmocFotoOrigem=pmocFotoOrigem;
 window.pmocDelFoto=pmocDelFoto;window.pmocAssinar=pmocAssinar;window.pmocSigLimpar=pmocSigLimpar;window.pmocSigOk=pmocSigOk;window.pmocSigFechar=pmocSigFechar;
 window.pmocFinalizar=pmocFinalizar;window.pmocExcluir=pmocExcluir;window.pmocPdf=pmocPdf;window.pmocDaFicha=()=>pmocNova(cur.id);
+
+/* ========================================================
+   CONFIGURAÇÕES — conta, etiqueta (padrão deste celular), PMOC, app
+   ======================================================== */
+async function abrirConfig(){
+  view('config');
+  const p=perfil;
+  $('#cfNome').value=p.nome||'';$('#cfSobrenome').value=p.sobrenome||'';$('#cfFuncao').value=p.funcao||'';$('#cfTel').value=p.telefone||'';
+  $('#cfEmail').textContent=p.email||'';
+  const c=etqCfg();
+  $('#cfEW').value=c.w;$('#cfEH').value=c.h;$('#cfEGap').value=c.gap;$('#cfEDens').value=c.dens;$('#cfEFs').value=c.fs;$('#cfEInv').checked=!!c.inv;
+  $('#cfEId').checked=!!c.show.id;$('#cfECong').checked=!!c.show.cong;$('#cfEMod').checked=!!c.show.modelo;$('#cfEData').checked=!!c.show.data;
+  $('#cfVersao').textContent='Versão '+APP_VERSAO;
+  try{const s=await getDoc(doc(db,'pmoc','config'));if(s.exists())pmRT={...pmRT,...(s.data().rt||{})}}catch(e){}
+  $('#cfRTnome').value=pmRT.nome||'';$('#cfRTcrea').value=pmRT.crea||'';$('#cfRTart').value=pmRT.art||'';$('#cfRTemp').value=pmRT.empresa||'';
+  $('#cfPer').innerHTML=PM_PER.map(x=>`<option value="${x[0]}"${x[0]===(pmRT.perPadrao||3)?' selected':''}>${x[1]}</option>`).join('');
+}
+async function cfSalvarConta(){
+  const nome=$('#cfNome').value.trim(),sobrenome=$('#cfSobrenome').value.trim(),funcao=$('#cfFuncao').value.trim(),telefone=$('#cfTel').value.trim();
+  if(!nome){toast('Informe o nome.');return}
+  try{
+    await updateDoc(doc(db,'users',perfil.uid),{nome,sobrenome,funcao,telefone});
+    Object.assign(perfil,{nome,sobrenome,funcao,telefone});
+    $('#nomeLogado').textContent=nome+' '+sobrenome;$('#funcaoLogado').textContent=funcao||'—';
+    $('#avatarIni').textContent=((nome[0]||'')+(sobrenome[0]||'')).toUpperCase();
+    $('#nomeMenu').textContent=$('#nomeLogado').textContent;$('#funcaoMenu').textContent=funcao||'—';$('#avatarMenu').textContent=$('#avatarIni').textContent;
+    toast('Dados da conta salvos ✔');
+  }catch(e){toast('Não foi possível salvar os dados da conta.')}
+}
+async function cfSenha(){
+  if(!perfil.email){toast('Conta sem e-mail cadastrado.');return}
+  if(!confirm('Enviar e-mail de redefinição de senha para '+perfil.email+'?'))return;
+  try{await sendPasswordResetEmail(auth,perfil.email);toast('E-mail enviado. Confira a caixa de entrada e o spam.')}catch(e){toast('Não foi possível enviar o e-mail.')}
+}
+function cfSalvarEtiqueta(){
+  const c={w:+$('#cfEW').value||40,h:+$('#cfEH').value||30,gap:+$('#cfEGap').value||0,inv:$('#cfEInv').checked,dens:+$('#cfEDens').value||8,fs:+$('#cfEFs').value||100,
+    show:{id:$('#cfEId').checked,cong:$('#cfECong').checked,modelo:$('#cfEMod').checked,data:$('#cfEData').checked}};
+  try{localStorage.setItem('etqCfg',JSON.stringify(c));toast('Padrão da etiqueta salvo neste celular ✔')}catch(e){toast('Não foi possível salvar.')}
+}
+async function cfSalvarPmoc(){
+  pmRT={...pmRT,nome:$('#cfRTnome').value.trim(),crea:$('#cfRTcrea').value.trim(),art:$('#cfRTart').value.trim(),empresa:$('#cfRTemp').value.trim(),perPadrao:+$('#cfPer').value||3};
+  try{await setDoc(doc(db,'pmoc','config'),{kind:'config',rt:pmRT});toast('Dados do PMOC salvos ✔')}catch(e){pmErro(e)}
+}
+async function cfBuscarAtualizacao(){
+  toast('Procurando atualização…');
+  try{
+    const reg=window.__swReg||(navigator.serviceWorker&&await navigator.serviceWorker.getRegistration());
+    if(!reg){toast('Atualização automática indisponível neste navegador.');return}
+    await reg.update();
+    setTimeout(()=>{if(!document.getElementById('updateBanner'))toast('Você já está na versão mais recente ✔')},2500);
+  }catch(e){toast('Não foi possível verificar agora. Confira a internet.')}
+}
+async function cfLimparCache(){
+  if(!confirm('Limpar os arquivos guardados do app neste celular e recarregar? Seus dados na nuvem não são afetados.'))return;
+  try{
+    if(window.caches){for(const k of await caches.keys())await caches.delete(k)}
+    const regs=navigator.serviceWorker?await navigator.serviceWorker.getRegistrations():[];for(const r of regs)await r.unregister();
+  }catch(e){}
+  location.reload();
+}
+window.abrirConfig=abrirConfig;window.cfSalvarConta=cfSalvarConta;window.cfSenha=cfSenha;window.cfSalvarEtiqueta=cfSalvarEtiqueta;window.cfSalvarPmoc=cfSalvarPmoc;
+window.cfBuscarAtualizacao=cfBuscarAtualizacao;window.cfLimparCache=cfLimparCache;window.cfNovidades=()=>mostrarNovidades(true);
 
 /* ========================================================
    ETIQUETA + IMPRESSORA BLUETOOTH (TSPL, 203 dpi = 8 pontos/mm)
@@ -2566,6 +2657,7 @@ if('serviceWorker' in navigator){
   const jaTinhaControle=!!navigator.serviceWorker.controller;
   window.addEventListener('load',()=>{
     navigator.serviceWorker.register('./sw.js',{updateViaCache:'none'}).then(reg=>{
+      window.__swReg=reg;
       reg.addEventListener('updatefound', ()=>{
         const nw=reg.installing;
         if(!nw)return;
