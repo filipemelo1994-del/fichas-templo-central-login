@@ -444,7 +444,7 @@ details.vmaq .body{padding:0 14px 14px}
 <main>
   <section id="home">
     <div class="card" id="quemSou" style="display:flex;align-items:center;gap:10px">
-      <div style="width:40px;height:40px;border-radius:50%;background:var(--pri2);display:flex;align-items:center;justify-content:center;font-weight:700;color:var(--pri)" id="avatarIni"></div>
+      <div style="width:40px;height:40px;border-radius:50%;background:var(--pri2);display:flex;align-items:center;justify-content:center;font-weight:700;color:var(--pri);overflow:hidden;flex:none" id="avatarIni"></div>
       <div><b id="nomeLogado"></b><br><small style="color:var(--mut)" id="funcaoLogado"></small></div>
     </div>
     <div class="stats" id="statsStrip">
@@ -494,7 +494,7 @@ details.vmaq .body{padding:0 14px 14px}
 
   <section id="menuView" class="hide">
     <div class="card" style="display:flex;align-items:center;gap:10px">
-      <div style="width:40px;height:40px;border-radius:50%;background:var(--pri2);display:flex;align-items:center;justify-content:center;font-weight:700;color:var(--pri)" id="avatarMenu"></div>
+      <div style="width:40px;height:40px;border-radius:50%;background:var(--pri2);display:flex;align-items:center;justify-content:center;font-weight:700;color:var(--pri);overflow:hidden;flex:none" id="avatarMenu"></div>
       <div><b id="nomeMenu"></b><br><small style="color:var(--mut)" id="funcaoMenu"></small></div>
     </div>
     <div class="menuList">
@@ -568,6 +568,7 @@ details.vmaq .body{padding:0 14px 14px}
         <input id="btModeloInput" type="text" placeholder="Ex.: Springer Midea 12000 BTU" style="flex:3">
         <button class="btn" style="flex:1;margin:0" onclick="buscarTecnico()">Buscar</button>
       </div>
+      <div id="btRecentes" style="margin-top:10px"></div>
       <div id="btResult" style="margin-top:12px"></div>
     </div>
   </section>
@@ -579,6 +580,9 @@ details.vmaq .body{padding:0 14px 14px}
 
   <section id="configView" class="hide">
     <div class="card"><h2>👤 Minha conta</h2>
+      <div style="display:flex;align-items:center;gap:12px;margin-bottom:6px"><div id="cfAvatar"></div>
+        <div style="flex:1"><button class="btn g" style="margin:0 0 6px;padding:9px" onclick="cfFoto('camera')">📷 Tirar foto</button>
+        <div class="row" style="gap:6px"><button class="btn g" style="margin:0;padding:9px;flex:1" onclick="cfFoto('galeria')">🖼️ Galeria</button><button class="btn g" style="margin:0;padding:9px;flex:1;color:var(--no);border-color:var(--no)" onclick="cfFotoRemover()">Remover</button></div></div></div>
       <div style="font-size:13px;color:var(--mut)">E-mail: <b id="cfEmail"></b></div>
       <label>Nome</label><input id="cfNome"><label>Sobrenome</label><input id="cfSobrenome"><label>Função</label><input id="cfFuncao"><label>Telefone</label><input id="cfTel" inputmode="tel">
       <button class="btn" onclick="cfSalvarConta()">Salvar dados da conta</button>
@@ -957,10 +961,9 @@ function entrarNoApp(){
   $('#btnBell').classList.remove('hide');
   $('#nomeLogado').textContent=perfil.nome+' '+perfil.sobrenome;
   $('#funcaoLogado').textContent=perfil.funcao||'—';
-  $('#avatarIni').textContent=((perfil.nome[0]||'')+(perfil.sobrenome[0]||'')).toUpperCase();
   $('#nomeMenu').textContent=$('#nomeLogado').textContent;
   $('#funcaoMenu').textContent=perfil.funcao||'—';
-  $('#avatarMenu').textContent=$('#avatarIni').textContent;
+  aplicarAvatar();sincronizarFotoGoogle();
   view('home');
   renderList();
   fecharSplash();
@@ -1290,7 +1293,7 @@ async function openEquipe(){
     const snap=await getDocs(collection(db,'users'));
     const rows=snap.docs.map(d=>d.data());
     $('#equipeList').innerHTML=rows.length?rows.map(u=>`<div class="item">
-      <div style="width:40px;height:40px;border-radius:50%;background:var(--pri2);display:flex;align-items:center;justify-content:center;font-weight:700;color:var(--pri)">${((u.nome?.[0]||'')+(u.sobrenome?.[0]||'')).toUpperCase()}</div>
+      ${avatarHTML(u,40)}
       <div><b>${esc(u.nome)} ${esc(u.sobrenome)}</b><small>${esc(u.funcao||'—')} · ${esc(u.telefone||'')} · ${esc(u.email||'')}</small></div></div>`).join('')
       :'<small style="color:var(--mut)">Ninguém cadastrado ainda.</small>';
   }catch(e){
@@ -1440,8 +1443,10 @@ $('#qrIdInput').addEventListener('keydown',e=>{if(e.key==='Enter')buscarParaQr()
    Preencha BUSCA_TEC_URL com a URL da função "buscaTecnica" depois do deploy.
 ======================================================== */
 const BUSCA_TEC_URL='';
-const APP_VERSAO='2026-11-11';
+const APP_VERSAO='2026-11-13';
 const NOVIDADES=[
+  ['👤','Foto de perfil: puxada automaticamente de quem entra com o Google, ou escolhida em Configurações'],
+  ['📖','Manuais de equipamentos e fichas técnicas de compressor: digite o modelo e abra a busca em PDF, em sites de manuais e em vídeos'],
   ['⚙️','Nova aba Configurações: dados da conta, padrão da etiqueta, dados do PMOC e busca de atualização do app'],
   ['📑','Novo módulo PMOC: checklist de manutenção preventiva, medições, fotos antes e depois, assinaturas na tela, relatório em PDF e aviso da próxima manutenção'],
   ['🏷️','Impressão de etiquetas com QR code direto na impressora térmica por Bluetooth, com escolha de tamanho e conteúdo'],
@@ -1483,12 +1488,12 @@ function fecharDev(){$('#devModal').classList.add('hide')}
 window.avisoDev=avisoDev;window.fecharDev=fecharDev;
 let btModo='manual';
 function abrirBuscaTec(modo){
-  if(!BUSCA_TEC_URL){avisoDev(modo);return}
   btModo=modo;
   $('#btTitulo').textContent=modo==='manual'?'Manuais de equipamentos':'Compressor — ficha técnica';
   $('#btSub').textContent=modo==='manual'?'Digite o modelo do equipamento pra buscar o manual em PDF.':'Digite o modelo do compressor pra buscar a ficha técnica em PDF.';
   $('#btModeloInput').placeholder=modo==='manual'?'Ex.: Springer Midea 12000 BTU':'Ex.: Embraco EMI 60HER';
   $('#btResult').innerHTML='';
+  btRecentes();
   view('buscaTec');
 }
 window.abrirBuscaTec=abrirBuscaTec;
@@ -1496,7 +1501,19 @@ async function buscarTecnico(){
   const q=$('#btModeloInput').value.trim();
   if(!q){toast('Digite o modelo.');return}
   const box=$('#btResult');
-  if(!BUSCA_TEC_URL){box.innerHTML='<small style="color:var(--warn)">Busca ainda não configurada (falta a chave do Google). Assim que for configurada, os PDFs aparecem aqui.</small>';return}
+  if(!BUSCA_TEC_URL){
+    try{const r=JSON.parse(localStorage.getItem('btRec_'+btModo)||'[]').filter(x=>x!==q);r.unshift(q);localStorage.setItem('btRec_'+btModo,JSON.stringify(r.slice(0,6)))}catch(e){}
+    const e=encodeURIComponent,man=btModo==='manual';
+    const L=[
+      ['📄','Manual em PDF (Google)',man?'manual do usuário / instalação, somente PDF':'ficha técnica / datasheet, somente PDF','https://www.google.com/search?q='+e(q+(man?' manual filetype:pdf':' compressor ficha técnica datasheet filetype:pdf'))],
+      ['🔎','Busca geral (Google)',man?'manual, esquema elétrico e códigos de erro':'catálogo, tabela de pressões e dados elétricos','https://www.google.com/search?q='+e(q+(man?' manual esquema elétrico':' compressor catálogo especificações'))],
+      ['📚','ManualsLib','biblioteca de manuais de várias marcas','https://www.manualslib.com/search/?q='+e(q)],
+      ['▶️','Vídeos (YouTube)',man?'instalação e manutenção deste modelo':'troca e teste deste compressor','https://www.youtube.com/results?search_query='+e(q+(man?' manutenção':' compressor teste'))]
+    ];
+    box.innerHTML=L.map(x=>`<a class="item" style="text-decoration:none;color:inherit" href="${x[3]}" target="_blank" rel="noopener"><div class="ph" style="display:flex;align-items:center;justify-content:center;font-size:20px;background:var(--pri2);border-radius:50%;width:42px;height:42px">${x[0]}</div><div><b style="font-size:14px">${x[1]}</b><small>${x[2]}</small></div></a>`).join('')+'<small style="display:block;color:var(--mut);margin-top:8px">Os resultados abrem em uma nova aba do navegador.</small>';
+    btRecentes();
+    return;
+  }
   box.innerHTML='<small style="color:var(--mut)">Buscando…</small>';
   try{
     const tk=await auth.currentUser.getIdToken();
@@ -1508,6 +1525,12 @@ async function buscarTecnico(){
       :'<small style="color:var(--mut)">Nenhum PDF encontrado pra esse modelo. Tente outro nome/código.</small>';
     window._btItens=it;
   }catch(e){box.innerHTML='<small style="color:var(--no)">Não foi possível buscar agora.</small>'}
+}
+function btRecentes(){
+  const el=$('#btRecentes');if(!el)return;let r=[];
+  try{r=JSON.parse(localStorage.getItem('btRec_'+btModo)||'[]')}catch(e){}
+  el.innerHTML=r.length?'<small style="color:var(--mut)">Buscas recentes</small><div class="vchips" style="margin-top:4px">'+r.map(x=>`<button type="button" class="vchip" data-q="${esc(x)}">${esc(x)}</button>`).join('')+'</div>':'';
+  el.querySelectorAll('button').forEach(b=>b.onclick=()=>{$('#btModeloInput').value=b.dataset.q;buscarTecnico()});
 }
 window.buscarTecnico=buscarTecnico;
 function abrirPdfInApp(i){
@@ -1957,6 +1980,7 @@ async function abrirConfig(){
   const p=perfil;
   $('#cfNome').value=p.nome||'';$('#cfSobrenome').value=p.sobrenome||'';$('#cfFuncao').value=p.funcao||'';$('#cfTel').value=p.telefone||'';
   $('#cfEmail').textContent=p.email||'';
+  $('#cfAvatar').innerHTML=avatarHTML(p,64);
   const c=etqCfg();
   $('#cfEW').value=c.w;$('#cfEH').value=c.h;$('#cfEGap').value=c.gap;$('#cfEDens').value=c.dens;$('#cfEFs').value=c.fs;$('#cfEInv').checked=!!c.inv;
   $('#cfEId').checked=!!c.show.id;$('#cfECong').checked=!!c.show.cong;$('#cfEMod').checked=!!c.show.modelo;$('#cfEData').checked=!!c.show.data;
@@ -1972,8 +1996,7 @@ async function cfSalvarConta(){
     await updateDoc(doc(db,'users',perfil.uid),{nome,sobrenome,funcao,telefone});
     Object.assign(perfil,{nome,sobrenome,funcao,telefone});
     $('#nomeLogado').textContent=nome+' '+sobrenome;$('#funcaoLogado').textContent=funcao||'—';
-    $('#avatarIni').textContent=((nome[0]||'')+(sobrenome[0]||'')).toUpperCase();
-    $('#nomeMenu').textContent=$('#nomeLogado').textContent;$('#funcaoMenu').textContent=funcao||'—';$('#avatarMenu').textContent=$('#avatarIni').textContent;
+    $('#nomeMenu').textContent=$('#nomeLogado').textContent;$('#funcaoMenu').textContent=funcao||'—';aplicarAvatar();
     toast('Dados da conta salvos ✔');
   }catch(e){toast('Não foi possível salvar os dados da conta.')}
 }
@@ -2010,6 +2033,47 @@ async function cfLimparCache(){
 }
 window.abrirConfig=abrirConfig;window.cfSalvarConta=cfSalvarConta;window.cfSenha=cfSenha;window.cfSalvarEtiqueta=cfSalvarEtiqueta;window.cfSalvarPmoc=cfSalvarPmoc;
 window.cfBuscarAtualizacao=cfBuscarAtualizacao;window.cfLimparCache=cfLimparCache;window.cfNovidades=()=>mostrarNovidades(true);
+
+
+/* ---------- foto de perfil: própria (base64 pequeno) ou a do Google ---------- */
+function avatarHTML(u,size){
+  const f=(u&&(u.foto||u.fotoUrl))||'';
+  const ini=(((u&&u.nome&&u.nome[0])||'')+((u&&u.sobrenome&&u.sobrenome[0])||'')).toUpperCase();
+  return `<div style="width:${size}px;height:${size}px;border-radius:50%;background:var(--pri2);display:flex;align-items:center;justify-content:center;font-weight:700;color:var(--pri);overflow:hidden;flex:none;font-size:${Math.round(size*.4)}px">${f?`<img src="${esc(f)}" referrerpolicy="no-referrer" alt="" style="width:100%;height:100%;object-fit:cover" onerror="this.remove()">`:esc(ini)}</div>`;
+}
+function aplicarAvatar(){
+  ['avatarIni','avatarMenu'].forEach(id=>{
+    const el=document.getElementById(id);if(!el)return;
+    const t=document.createElement('div');t.innerHTML=avatarHTML(perfil,40);
+    el.innerHTML=t.firstChild.innerHTML;
+  });
+  const c=document.getElementById('cfAvatar');if(c)c.innerHTML=avatarHTML(perfil,64);
+}
+async function sincronizarFotoGoogle(){
+  try{
+    const u=auth.currentUser;const g=u&&u.photoURL;
+    if(g&&perfil.fotoUrl!==g){await updateDoc(doc(db,'users',perfil.uid),{fotoUrl:g});perfil.fotoUrl=g;aplicarAvatar()}
+  }catch(e){}
+}
+function cfFotoProcessa(file){return new Promise((res,rej)=>{
+  const img=new Image(),u=URL.createObjectURL(file);
+  img.onload=()=>{const L=220,m=Math.min(img.width,img.height),sx=(img.width-m)/2,sy=(img.height-m)/2;
+    const c=document.createElement('canvas');c.width=c.height=L;c.getContext('2d').drawImage(img,sx,sy,m,m,0,0,L,L);
+    URL.revokeObjectURL(u);res(c.toDataURL('image/jpeg',.8))};
+  img.onerror=rej;img.src=u})}
+function cfFoto(modo){
+  const i=document.createElement('input');i.type='file';i.accept='image/*';if(modo==='camera')i.setAttribute('capture','user');
+  i.onchange=async e=>{
+    const f=e.target.files[0];if(!f)return;
+    try{const foto=await cfFotoProcessa(f);await updateDoc(doc(db,'users',perfil.uid),{foto});perfil.foto=foto;aplicarAvatar();toast('Foto de perfil atualizada ✔')}
+    catch(x){toast('Não foi possível salvar a foto.')}
+  };i.click();
+}
+async function cfFotoRemover(){
+  if(!perfil.foto){toast(perfil.fotoUrl?'Sua foto atual é a da conta Google.':'Você não tem foto personalizada.');return}
+  try{await updateDoc(doc(db,'users',perfil.uid),{foto:''});perfil.foto='';aplicarAvatar();toast('Foto removida.')}catch(e){toast('Não foi possível remover.')}
+}
+window.cfFoto=cfFoto;window.cfFotoRemover=cfFotoRemover;window.avatarHTML=avatarHTML;
 
 /* ========================================================
    ETIQUETA + IMPRESSORA BLUETOOTH (TSPL, 203 dpi = 8 pontos/mm)
