@@ -4,6 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
 <meta name="theme-color" content="#0b5cab">
+<script>(function(){try{var t=localStorage.getItem('tema')||'auto';var d=t==='escuro'||(t==='auto'&&window.matchMedia&&matchMedia('(prefers-color-scheme: dark)').matches);if(d)document.documentElement.setAttribute('data-tema','dark')}catch(e){}})()</script>
 <link rel="manifest" href="manifest.json">
 <link rel="icon" type="image/png" sizes="48x48" href="favicon-48.png">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
@@ -13,12 +14,15 @@
 <meta name="apple-mobile-web-app-title" content="Fichas AC">
 <title>Cadastro de Equipamentos — Templo Central</title>
 <style>
-:root{--bg:#f1f4f8;--card:#fff;--pri:#0b5cab;--pri2:#e7f0fa;--tx:#17212b;--mut:#6b7885;--bd:#d9e0e7;--ok:#1a8f4c;--warn:#c17a1e;--warn2:#faf0e0;--no:#c0392b;--shadow:0 2px 10px rgba(20,50,80,.07)}
+:root{--hdr:#0b5cab;--priBtn:#0b5cab;--noBg:#fdecea;--bg:#f1f4f8;--card:#fff;--pri:#0b5cab;--pri2:#e7f0fa;--tx:#17212b;--mut:#6b7885;--bd:#d9e0e7;--ok:#1a8f4c;--warn:#c17a1e;--warn2:#faf0e0;--no:#c0392b;--shadow:0 2px 10px rgba(20,50,80,.07)}
+html[data-tema=dark]{color-scheme:dark;--hdr:#12335a;--priBtn:#2a72c3;--noBg:#3d1f1c;--bg:#0e151d;--card:#17212c;--pri:#4a9be8;--pri2:#1c2e44;--tx:#e6edf4;--mut:#93a3b3;--bd:#2a3a4b;--ok:#37b26c;--warn:#e0a04a;--warn2:#3a2f1c;--no:#ec6a5c;--shadow:0 2px 10px rgba(0,0,0,.35)}
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 html{height:100%;overscroll-behavior-y:none}
 body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif;background:var(--bg);color:var(--tx);font-size:16px;min-height:100%;overscroll-behavior-y:none;-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
 input,textarea,select{-webkit-user-select:text;user-select:text}
-header{background:var(--pri);color:#fff;padding:calc(14px + env(safe-area-inset-top)) calc(16px + env(safe-area-inset-right)) 14px calc(16px + env(safe-area-inset-left));display:flex;align-items:center;gap:10px;position:sticky;top:0;z-index:5}
+input,textarea,select{color:var(--tx)}
+#configView input:not([type=checkbox]),#configView select,#pmocView input,#pmForm input,#pmForm select,#pmForm textarea{background:var(--card)}
+header{background:var(--hdr);color:#fff;padding:calc(14px + env(safe-area-inset-top)) calc(16px + env(safe-area-inset-right)) 14px calc(16px + env(safe-area-inset-left));display:flex;align-items:center;gap:10px;position:sticky;top:0;z-index:5}
 header h1{font-size:18px;margin:0;flex:1}
 header button{background:rgba(255,255,255,.18);color:#fff;border:0;border-radius:8px;padding:8px 12px;font-size:15px}
 header .brand{display:flex;align-items:center;gap:10px;flex:1}
@@ -47,10 +51,10 @@ main{padding:14px calc(14px + env(safe-area-inset-right)) 90px calc(14px + env(s
 .big button.alt{background:#0f7a5a}
 label.l{display:block;font-size:14px;font-weight:600;margin:12px 0 5px}
 label.l small{font-weight:400;color:var(--mut);margin-left:6px}
-input[type=text],input[type=email],input[type=tel],input[type=password],select,textarea{width:100%;padding:12px;border:1px solid var(--bd);border-radius:10px;font-size:16px;background:#fff;font-family:inherit}
+input[type=text],input[type=email],input[type=tel],input[type=password],select,textarea{width:100%;padding:12px;border:1px solid var(--bd);border-radius:10px;font-size:16px;background:var(--card);font-family:inherit}
 textarea{min-height:70px;resize:vertical}
 .seg{display:flex;gap:8px}
-.seg button{flex:1;padding:12px;border:1px solid var(--bd);background:#fff;border-radius:10px;font-size:16px}
+.seg button{flex:1;padding:12px;border:1px solid var(--bd);background:var(--card);border-radius:10px;font-size:16px}
 .seg button.on.s{background:var(--ok);border-color:var(--ok);color:#fff}
 .seg button.on.n{background:var(--no);border-color:var(--no);color:#fff}
 .seg button.on.pick{background:var(--pri);border-color:var(--pri);color:#fff}
@@ -58,9 +62,9 @@ textarea{min-height:70px;resize:vertical}
 .chk label{border:1px solid var(--bd);border-radius:20px;padding:9px 14px;display:flex;gap:6px;align-items:center;font-size:13.5px}
 .chk label.on{background:var(--pri);border-color:var(--pri);color:#fff;font-weight:600}
 #home .chk label{background:var(--card)}
-#home .chk label.on{background:var(--pri)}
-.btn{width:100%;padding:14px;border:0;border-radius:14px;background:var(--pri);color:#fff;font-size:16px;font-weight:600;margin-top:10px}
-.btn.g{background:#fff;color:var(--pri);border:1px solid var(--pri)}
+#home .chk label.on{background:var(--priBtn)}
+.btn{width:100%;padding:14px;border:0;border-radius:14px;background:var(--priBtn);color:#fff;font-size:16px;font-weight:600;margin-top:10px}
+.btn.g{background:var(--card);color:var(--pri);border:1px solid var(--pri)}
 .btn.r{background:var(--no)}
 .btn.ok{background:var(--ok);box-shadow:0 3px 10px rgba(26,143,76,.25)}
 .btn[disabled]{opacity:.55}
@@ -86,7 +90,7 @@ canvas.sig{width:100%;height:160px;border:2px dashed var(--bd);border-radius:10p
 #scan video{flex:1;width:100%;object-fit:cover}
 #scan .bar{padding:16px calc(16px + env(safe-area-inset-right)) calc(16px + env(safe-area-inset-bottom)) calc(16px + env(safe-area-inset-left));color:#fff;text-align:center}
 #scan .frame{position:absolute;left:15%;right:15%;top:25%;height:30%;border:3px solid #fff;border-radius:16px;pointer-events:none}
-.stick{position:fixed;left:0;right:0;bottom:0;background:#fff;border-top:1px solid var(--bd);padding:10px calc(14px + env(safe-area-inset-right)) calc(10px + env(safe-area-inset-bottom)) calc(14px + env(safe-area-inset-left));display:flex;flex-direction:column;gap:8px;z-index:6}
+.stick{position:fixed;left:0;right:0;bottom:0;background:var(--card);border-top:1px solid var(--bd);padding:10px calc(14px + env(safe-area-inset-right)) calc(10px + env(safe-area-inset-bottom)) calc(14px + env(safe-area-inset-left));display:flex;flex-direction:column;gap:8px;z-index:6}
 .bellBtn{position:relative}
 .bellBadge{position:absolute;top:2px;right:2px;background:#e74c3c;color:#fff;border-radius:50%;min-width:16px;height:16px;font-size:10px;line-height:16px;text-align:center;padding:0 3px;font-weight:700}
 .stick .btn{margin:0}
@@ -95,7 +99,7 @@ canvas.sig{width:100%;height:160px;border:2px dashed var(--bd);border-radius:10p
 #updateBanner button{background:#fff;color:var(--warn);border:0;border-radius:8px;padding:6px 12px;font-weight:700;font-size:13px}
 
 /* ---------- menu inferior ---------- */
-#bottomNav{position:fixed;left:0;right:0;bottom:0;background:#fff;border-top:1px solid var(--bd);display:flex;padding:6px calc(4px + env(safe-area-inset-right)) calc(6px + env(safe-area-inset-bottom)) calc(4px + env(safe-area-inset-left));z-index:6}
+#bottomNav{position:fixed;left:0;right:0;bottom:0;background:var(--card);border-top:1px solid var(--bd);display:flex;padding:6px calc(4px + env(safe-area-inset-right)) calc(6px + env(safe-area-inset-bottom)) calc(4px + env(safe-area-inset-left));z-index:6}
 #bottomNav button{flex:1;background:none;border:0;display:flex;flex-direction:column;align-items:center;gap:2px;color:var(--mut);font-size:10px;padding:6px 2px;border-radius:10px}
 #bottomNav button span.navIc{font-size:19px}
 #bottomNav button.on{color:var(--pri);font-weight:700}
@@ -130,13 +134,13 @@ header .iconBtn{position:relative}
 #auth.up .logoWrap p{display:none}
 /* aviso "em desenvolvimento" */
 #devModal{position:fixed;inset:0;background:rgba(10,25,40,.55);z-index:150;display:flex;align-items:center;justify-content:center;padding:24px}
-#devModal .box{background:#fff;border-radius:18px;max-width:340px;width:100%;padding:22px 20px 18px;text-align:center;box-shadow:0 12px 40px rgba(0,0,0,.3);animation:txtUp .25s ease both}
+#devModal .box{background:var(--card);border-radius:18px;max-width:340px;width:100%;padding:22px 20px 18px;text-align:center;box-shadow:0 12px 40px rgba(0,0,0,.3);animation:txtUp .25s ease both}
 #devModal .ic{font-size:34px}
 #devModal h3{margin:6px 0 2px;font-size:17px;color:var(--tx)}
 #devModal .tag{display:inline-block;background:var(--warn2);color:var(--warn);font-size:11.5px;font-weight:700;border-radius:20px;padding:3px 10px;margin:6px 0 10px}
 #devModal p{font-size:13.5px;color:var(--mut);margin:0 0 16px;line-height:1.45}
 #novModal{position:fixed;inset:0;background:rgba(10,25,40,.55);z-index:150;display:flex;align-items:center;justify-content:center;padding:24px}
-#novModal .box{background:#fff;border-radius:18px;max-width:360px;width:100%;max-height:82vh;overflow-y:auto;padding:22px 20px 18px;box-shadow:0 12px 40px rgba(0,0,0,.3);animation:txtUp .25s ease both}
+#novModal .box{background:var(--card);border-radius:18px;max-width:360px;width:100%;max-height:82vh;overflow-y:auto;padding:22px 20px 18px;box-shadow:0 12px 40px rgba(0,0,0,.3);animation:txtUp .25s ease both}
 #novModal h3{margin:0 0 4px;font-size:18px;color:var(--pri);text-align:center}
 #novModal .sub{text-align:center;font-size:12.5px;color:var(--mut);margin-bottom:12px}
 #novModal ul{list-style:none;margin:0 0 16px;padding:0}
@@ -144,14 +148,14 @@ header .iconBtn{position:relative}
 #novModal li:last-child{border:0}
 #novModal li .e{font-size:19px;width:24px;text-align:center}
 #fotoSheet{position:fixed;inset:0;background:rgba(10,25,40,.55);z-index:150;display:flex;align-items:flex-end;justify-content:center}
-#fotoSheet .sheet{background:#fff;width:100%;max-width:480px;border-radius:20px 20px 0 0;padding:18px 16px calc(18px + env(safe-area-inset-bottom));animation:txtUp .25s ease both}
+#fotoSheet .sheet{background:var(--card);width:100%;max-width:480px;border-radius:20px 20px 0 0;padding:18px 16px calc(18px + env(safe-area-inset-bottom));animation:txtUp .25s ease both}
 #fotoSheet .sheet b{display:block;text-align:center;font-size:15px;margin-bottom:4px}
 /* vistoria */
 #configView label,#pmocView label,#pmForm label{font-size:12px;color:var(--mut);font-weight:600;display:block;margin:8px 0 3px}
 #configView input:not([type=checkbox]),#configView select,#pmocView input,#pmForm input,#pmForm select,#pmForm textarea{width:100%;padding:11px;border:1px solid var(--bd);border-radius:10px;font-size:15px;font-family:inherit;box-sizing:border-box}
 .vchips{display:flex;flex-wrap:wrap;gap:6px}
-.vchip{padding:8px 12px;border:1px solid var(--bd);background:#fff;border-radius:20px;font-size:13.5px;color:var(--tx)}
-.vchip.on{background:var(--pri);border-color:var(--pri);color:#fff}
+.vchip{padding:8px 12px;border:1px solid var(--bd);background:var(--card);border-radius:20px;font-size:13.5px;color:var(--tx)}
+.vchip.on{background:var(--priBtn);border-color:var(--priBtn);color:#fff}
 .vchip.on.bad{background:var(--no);border-color:var(--no)}
 .vchip.on.good{background:var(--ok);border-color:var(--ok)}
 details.vmaq{background:var(--card);border-radius:16px;box-shadow:var(--shadow);margin-bottom:12px;border:1px solid rgba(11,92,171,.08)}
@@ -165,7 +169,7 @@ details.vmaq .body{padding:0 14px 14px}
 .vgrid input{padding:10px!important}
 .vsub{font-size:12.5px;font-weight:700;color:var(--mut);text-transform:uppercase;letter-spacing:.4px;margin:16px 0 6px}
 #etqModal{position:fixed;inset:0;background:rgba(10,25,40,.55);z-index:150;display:flex;align-items:flex-end;justify-content:center}
-#etqModal .etqBox{background:#fff;width:100%;max-width:520px;max-height:94vh;overflow-y:auto;border-radius:20px 20px 0 0;padding:16px 16px calc(16px + env(safe-area-inset-bottom));animation:txtUp .25s ease both}
+#etqModal .etqBox{background:var(--card);width:100%;max-width:520px;max-height:94vh;overflow-y:auto;border-radius:20px 20px 0 0;padding:16px 16px calc(16px + env(safe-area-inset-bottom));animation:txtUp .25s ease both}
 #etqModal h3{margin:0 0 10px;font-size:17px;color:var(--pri);display:flex;justify-content:space-between;align-items:center}
 #etqModal .x{background:none;border:0;font-size:22px;color:var(--mut)}
 #etqPrev{margin:10px auto;border:1px dashed var(--bd);background:#fff;padding:0;max-width:100%}
@@ -194,7 +198,7 @@ details.vmaq .body{padding:0 14px 14px}
 #splash.exit img{animation:logoZoom .85s cubic-bezier(.65,0,.9,.4) forwards}
 #splash.exit h2,#splash.exit p,#splash.exit .splashBar{animation:fadeOutQ .3s ease forwards}
 @media (prefers-reduced-motion:reduce){#splash img,#splash h2,#splash p,#splash .splashBar,#splash .splashBar i{animation:none}#splash.exit{animation:fadeOutQ .3s ease forwards}#splash.exit img{animation:none}}
-#auth .panel{width:100%;max-width:400px;background:#fff;color:var(--tx);border-radius:20px 20px 0 0;padding:22px 18px calc(26px + env(safe-area-inset-bottom));opacity:0;transform:translateY(30px);transition:opacity .5s ease .15s, transform .5s ease .15s;margin-top:auto}
+#auth .panel{width:100%;max-width:400px;background:var(--card);color:var(--tx);border-radius:20px 20px 0 0;padding:22px 18px calc(26px + env(safe-area-inset-bottom));opacity:0;transform:translateY(30px);transition:opacity .5s ease .15s, transform .5s ease .15s;margin-top:auto}
 #auth.up .panel{opacity:1;transform:translateY(0)}
 #auth .panel h3{margin:0 0 14px;font-size:17px;color:var(--pri)}
 #auth .foot{display:flex;justify-content:space-between;margin-top:14px}
@@ -220,6 +224,7 @@ details.vmaq .body{padding:0 14px 14px}
 #print .sig{margin-top:6px}
 #print .sig img{max-width:200px;display:block;margin:4px 0;border-bottom:1px solid #999}
 @media print{
+  :root,html[data-tema=dark]{--bg:#fff!important;--card:#fff!important;--tx:#17212b!important;--mut:#6b7885!important;--bd:#d9e0e7!important;--pri:#0b5cab!important;--pri2:#e7f0fa!important;--ok:#1a8f4c!important;--no:#c0392b!important;--warn:#c17a1e!important;--warn2:#faf0e0!important}
   html,body{background:#fff}
   header,.stick,#auth,#scan,main>section{display:none!important}
   #print{display:block!important}
@@ -271,13 +276,13 @@ details.vmaq .body{padding:0 14px 14px}
   </div>
 </div>
 <div id="pmFotoSheet" class="hide" style="position:fixed;inset:0;background:rgba(10,25,40,.55);z-index:150;display:flex;align-items:flex-end;justify-content:center" onclick="if(event.target===this)pmocFotoFecha()">
-  <div style="background:#fff;width:100%;max-width:480px;border-radius:20px 20px 0 0;padding:18px 16px calc(18px + env(safe-area-inset-bottom))">
+  <div style="background:var(--card);width:100%;max-width:480px;border-radius:20px 20px 0 0;padding:18px 16px calc(18px + env(safe-area-inset-bottom))">
     <b style="display:block;text-align:center;margin-bottom:8px">Adicionar foto</b>
     <button class="btn" onclick="pmocFotoOrigem('camera')">📷 Tirar foto agora</button>
     <button class="btn g" onclick="pmocFotoOrigem('galeria')">🖼️ Escolher da galeria</button>
     <button class="btn g" style="border-color:var(--bd);color:var(--mut)" onclick="pmocFotoFecha()">Cancelar</button></div></div>
 <div id="sigModal" class="hide" style="position:fixed;inset:0;background:rgba(10,25,40,.6);z-index:160;display:flex;align-items:center;justify-content:center;padding:16px">
-  <div style="background:#fff;border-radius:16px;padding:14px;max-width:460px;width:100%">
+  <div style="background:var(--card);border-radius:16px;padding:14px;max-width:460px;width:100%">
     <b>✍️ Assine no quadro abaixo</b>
     <canvas id="sigCanvas" style="border:1px solid var(--bd);border-radius:10px;margin-top:8px;touch-action:none;display:block"></canvas>
     <div class="row" style="gap:8px;margin-top:8px"><button class="btn g" style="margin:0;flex:1" onclick="pmocSigLimpar()">Limpar</button><button class="btn g" style="margin:0;flex:1" onclick="pmocSigFechar()">Cancelar</button><button class="btn" style="margin:0;flex:1" onclick="pmocSigOk()">Confirmar</button></div>
@@ -603,7 +608,12 @@ details.vmaq .body{padding:0 14px 14px}
       <label>Periodicidade padrão</label><select id="cfPer"></select>
       <button class="btn" onclick="cfSalvarPmoc()">Salvar dados do PMOC</button></div>
     <div class="card"><h2>📱 Aplicativo</h2>
-      <div style="font-size:13px;color:var(--mut)" id="cfVersao"></div>
+      <label>Aparência</label>
+      <select id="cfTema" onchange="cfTema(this.value)"><option value="auto">Automático (segue o celular)</option><option value="claro">Claro</option><option value="escuro">Escuro</option></select>
+      <label>Avisos no celular</label>
+      <select id="cfAvisos" onchange="cfAvisos(this.value)"><option value="off">Desativados</option><option value="on">Ativados</option></select>
+      <small style="color:var(--mut);display:block;margin-top:4px" id="cfAvisosTxt"></small>
+      <div style="font-size:13px;color:var(--mut);margin-top:10px" id="cfVersao"></div>
       <button class="btn g" onclick="cfBuscarAtualizacao()">🔄 Buscar atualização</button>
       <button class="btn g" onclick="cfNovidades()">✨ Ver novidades</button>
       <button class="btn g" style="color:var(--no);border-color:var(--no)" onclick="cfLimparCache()">Limpar cache do app</button></div>
@@ -963,7 +973,7 @@ function entrarNoApp(){
   $('#funcaoLogado').textContent=perfil.funcao||'—';
   $('#nomeMenu').textContent=$('#nomeLogado').textContent;
   $('#funcaoMenu').textContent=perfil.funcao||'—';
-  aplicarAvatar();sincronizarFotoGoogle();
+  aplicarAvatar();sincronizarFotoGoogle();setTimeout(()=>avisosLocais(),4000);
   view('home');
   renderList();
   fecharSplash();
@@ -1443,8 +1453,9 @@ $('#qrIdInput').addEventListener('keydown',e=>{if(e.key==='Enter')buscarParaQr()
    Preencha BUSCA_TEC_URL com a URL da função "buscaTecnica" depois do deploy.
 ======================================================== */
 const BUSCA_TEC_URL='';
-const APP_VERSAO='2026-11-13';
+const APP_VERSAO='2026-11-14';
 const NOVIDADES=[
+  ['🌙','Tema escuro (automático, claro ou escuro) e avisos no celular com PMOC vencido e fichas pendentes, em Configurações'],
   ['👤','Foto de perfil: puxada automaticamente de quem entra com o Google, ou escolhida em Configurações'],
   ['📖','Manuais de equipamentos e fichas técnicas de compressor: digite o modelo e abra a busca em PDF, em sites de manuais e em vídeos'],
   ['⚙️','Nova aba Configurações: dados da conta, padrão da etiqueta, dados do PMOC e busca de atualização do app'],
@@ -1735,7 +1746,7 @@ function usarLocalizacao(){
       const r=await fetch(`https://nominatim.openstreetmap.org/reverse?format=jsonv2&accept-language=pt-BR&lat=${la}&lon=${lo}`);
       const j=await r.json();
       setEndereco(j.display_name||(la.toFixed(5)+', '+lo.toFixed(5)),la,lo);
-    }catch(e){setEndereco(la.toFixed(5)+', '+lo.toFixed(5),la,lo);toast('Salvei só as coordenadas (sem internet para achar o endereço).')}
+    }catch(e){setEndereco(la.toFixed(5)+', '+lo.toFixed(5),la,lo);toast('Foram salvas apenas as coordenadas (sem internet para localizar o endereço).')}
   },err=>{box.innerHTML='<small style="color:var(--no)">'+(err.code===1?'Permissão de localização negada. Libere nas configurações do navegador.':'Não foi possível obter a localização.')+'</small>'},{enableHighAccuracy:true,timeout:15000});
 }
 window.buscarEndereco=buscarEndereco;window.escolherEnd=escolherEnd;window.usarLocalizacao=usarLocalizacao;
@@ -1818,7 +1829,7 @@ async function abrirPmoc(){
     const hj=pmHoje(),em30=pmSomaMeses(hj,1);
     $('#pmPlanos').innerHTML=planos.length?planos.map(p=>{
       const venc=p.proxima&&p.proxima<hj,perto=p.proxima&&p.proxima<=em30;
-      return `<div class="item" onclick="pmocNova('${esc(p.equipId)}')"><div class="ph" style="display:flex;align-items:center;justify-content:center;font-size:20px;background:${venc?'#fdecea':perto?'var(--warn2)':'var(--pri2)'};border-radius:50%;width:42px;height:42px">${venc?'⛔':perto?'⏰':'✅'}</div>
+      return `<div class="item" onclick="pmocNova('${esc(p.equipId)}')"><div class="ph" style="display:flex;align-items:center;justify-content:center;font-size:20px;background:${venc?'var(--noBg)':perto?'var(--warn2)':'var(--pri2)'};border-radius:50%;width:42px;height:42px">${venc?'⛔':perto?'⏰':'✅'}</div>
       <div><b>${esc(p.equipId)}</b><small>Próxima: ${pmBR(p.proxima)}${venc?' · <span style="color:var(--no)">vencida</span>':''} · ${(PM_PER.find(x=>x[0]===p.meses)||[0,'—'])[1]}</small></div></div>`}).join('')
       :'<small style="color:var(--mut)">Nenhum equipamento com plano ainda. O plano é criado ao finalizar a primeira execução.</small>';
     $('#pmHist').innerHTML=execs.length?execs.map(r=>`<div class="item" onclick="pmocAbrir('${r.id}')"><div class="ph" style="display:flex;align-items:center;justify-content:center;font-size:20px;background:var(--pri2);border-radius:50%;width:42px;height:42px">📑</div>
@@ -1985,6 +1996,8 @@ async function abrirConfig(){
   $('#cfEW').value=c.w;$('#cfEH').value=c.h;$('#cfEGap').value=c.gap;$('#cfEDens').value=c.dens;$('#cfEFs').value=c.fs;$('#cfEInv').checked=!!c.inv;
   $('#cfEId').checked=!!c.show.id;$('#cfECong').checked=!!c.show.cong;$('#cfEMod').checked=!!c.show.modelo;$('#cfEData').checked=!!c.show.data;
   $('#cfVersao').textContent='Versão '+APP_VERSAO;
+  try{$('#cfTema').value=localStorage.getItem('tema')||'auto'}catch(e){}
+  cfAvisosAtualiza();
   try{const s=await getDoc(doc(db,'pmoc','config'));if(s.exists())pmRT={...pmRT,...(s.data().rt||{})}}catch(e){}
   $('#cfRTnome').value=pmRT.nome||'';$('#cfRTcrea').value=pmRT.crea||'';$('#cfRTart').value=pmRT.art||'';$('#cfRTemp').value=pmRT.empresa||'';
   $('#cfPer').innerHTML=PM_PER.map(x=>`<option value="${x[0]}"${x[0]===(pmRT.perPadrao||3)?' selected':''}>${x[1]}</option>`).join('');
@@ -2074,6 +2087,56 @@ async function cfFotoRemover(){
   try{await updateDoc(doc(db,'users',perfil.uid),{foto:''});perfil.foto='';aplicarAvatar();toast('Foto removida.')}catch(e){toast('Não foi possível remover.')}
 }
 window.cfFoto=cfFoto;window.cfFotoRemover=cfFotoRemover;window.avatarHTML=avatarHTML;
+
+
+/* ---------- tema claro / escuro ---------- */
+function aplicarTema(){
+  let t='auto';try{t=localStorage.getItem('tema')||'auto'}catch(e){}
+  const d=t==='escuro'||(t==='auto'&&window.matchMedia&&matchMedia('(prefers-color-scheme: dark)').matches);
+  document.documentElement.toggleAttribute('data-tema',d);if(d)document.documentElement.setAttribute('data-tema','dark');
+  const m=document.querySelector('meta[name=theme-color]');if(m)m.content=d?'#12335a':'#0b5cab';
+}
+function cfTema(v){try{localStorage.setItem('tema',v)}catch(e){}aplicarTema()}
+try{matchMedia('(prefers-color-scheme: dark)').addEventListener('change',aplicarTema)}catch(e){}
+aplicarTema();
+window.cfTema=cfTema;
+
+/* ---------- avisos no celular (notificações do sistema, geradas ao abrir o app) ---------- */
+const avisosOn=()=>{try{return localStorage.getItem('avisos')==='on'&&window.Notification&&Notification.permission==='granted'}catch(e){return false}};
+function cfAvisosAtualiza(){
+  const sel=$('#cfAvisos'),tx=$('#cfAvisosTxt');if(!sel)return;
+  sel.value=avisosOn()?'on':'off';
+  tx.textContent=!window.Notification?'Este navegador não permite notificações.':Notification.permission==='denied'?'Notificações bloqueadas nas configurações do navegador/celular para este app.':'Ao abrir o app, você recebe um aviso com PMOC vencido ou a vencer e fichas pendentes.';
+}
+async function cfAvisos(v){
+  if(v==='off'){try{localStorage.setItem('avisos','off')}catch(e){}cfAvisosAtualiza();return}
+  if(!window.Notification){toast('Este navegador não permite notificações.');cfAvisosAtualiza();return}
+  let perm=Notification.permission;if(perm==='default')perm=await Notification.requestPermission();
+  if(perm!=='granted'){toast('Permissão de notificação negada.');try{localStorage.setItem('avisos','off')}catch(e){}cfAvisosAtualiza();return}
+  try{localStorage.setItem('avisos','on')}catch(e){}cfAvisosAtualiza();toast('Avisos ativados ✔');avisosLocais(true);
+}
+async function avisosLocais(forcar){
+  if(!avisosOn())return;
+  const hoje=new Date().toISOString().slice(0,10);
+  try{if(!forcar&&localStorage.getItem('avisosUlt')===hoje)return}catch(e){}
+  try{
+    const linhas=[];
+    const pend=(equipCache||[]).filter(r=>!r.final).length;
+    if(pend)linhas.push(pend+(pend===1?' ficha pendente':' fichas pendentes'));
+    const sp=await getDocs(query(collection(db,'pmoc'),where('kind','==','plano')));
+    const pl=sp.docs.map(d=>d.data());
+    const lim=new Date(Date.now()+7*864e5).toISOString().slice(0,10);
+    const venc=pl.filter(p=>p.proxima&&p.proxima<hoje).length,prox=pl.filter(p=>p.proxima&&p.proxima>=hoje&&p.proxima<=lim).length;
+    if(venc)linhas.push(venc+' PMOC vencido'+(venc>1?'s':''));
+    if(prox)linhas.push(prox+' PMOC a vencer nos próximos 7 dias');
+    if(!linhas.length)return;
+    const reg=window.__swReg||(await navigator.serviceWorker.getRegistration());
+    if(!reg)return;
+    await reg.showNotification('Fichas AC — Templo Central',{body:linhas.join(' · '),icon:'icon-192.png',badge:'icon-192.png',tag:'resumo-diario',renotify:false});
+    try{localStorage.setItem('avisosUlt',hoje)}catch(e){}
+  }catch(e){}
+}
+window.cfAvisos=cfAvisos;window.avisosLocais=avisosLocais;
 
 /* ========================================================
    ETIQUETA + IMPRESSORA BLUETOOTH (TSPL, 203 dpi = 8 pontos/mm)
@@ -2411,7 +2474,7 @@ async function addFotos(files){
   toast('Processando foto(s)…');
   for(const f of files){
     if(tamanhoAtualKB()>800){
-      toast('Ficha ficou grande demais para guardar mais fotos aqui (limite temporário sem o Storage). Remova alguma foto antiga ou finalize a ficha.');
+      toast('A ficha atingiu o limite de tamanho para fotos. Remova uma foto antiga ou finalize a ficha.');
       break;
     }
     try{
@@ -2423,7 +2486,7 @@ async function addFotos(files){
   try{
     await dbPut(cur);
   }catch(e){
-    toast('Não deu para salvar — a ficha ficou grande demais. Removendo a última foto.');
+    toast('Não foi possível salvar: a ficha excedeu o limite de tamanho. A última foto foi removida.');
     cur.fotos.pop();
   }
   renderForm();
@@ -2440,7 +2503,7 @@ async function addFotosSecao(idx,files){
   if(!cur.fotosPorSecao[sec])cur.fotosPorSecao[sec]=[];
   for(const f of files){
     if(tamanhoAtualKB()>800){
-      toast('Ficha ficou grande demais para guardar mais fotos aqui (limite temporário sem o Storage). Remova alguma foto antiga ou finalize a ficha.');
+      toast('A ficha atingiu o limite de tamanho para fotos. Remova uma foto antiga ou finalize a ficha.');
       break;
     }
     try{
@@ -2452,7 +2515,7 @@ async function addFotosSecao(idx,files){
   try{
     await dbPut(cur);
   }catch(e){
-    toast('Não deu para salvar — a ficha ficou grande demais. Removendo a última foto.');
+    toast('Não foi possível salvar: a ficha excedeu o limite de tamanho. A última foto foi removida.');
     cur.fotosPorSecao[sec].pop();
   }
   renderForm();

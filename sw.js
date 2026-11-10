@@ -1,4 +1,4 @@
-const CACHE = 'fichas-ac-login-v23';
+const CACHE = 'fichas-ac-login-v24';
 const ASSETS = [
   './',
   './index.html',
@@ -45,4 +45,9 @@ self.addEventListener('fetch', e => {
       return cached || fetchPromise;
     })
   );
+});
+
+self.addEventListener('notificationclick', e => {
+  e.notification.close();
+  e.waitUntil(self.clients.matchAll({type:'window',includeUncontrolled:true}).then(l => l.length ? l[0].focus() : self.clients.openWindow('./')));
 });
