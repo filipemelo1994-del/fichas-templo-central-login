@@ -1220,7 +1220,7 @@ function irParaOS(f){
 }
 window.irParaOS=irParaOS;
 window.goHome=goHome;
-$('#btnBack').onclick=()=>{
+function voltarTela(){
   if(viewAtual==='vistForm')return abrirVistorias();
   if(viewAtual==='pmocForm')return abrirPmoc();
   if(viewAtual==='dimForm')return abrirDim();
@@ -1229,7 +1229,26 @@ $('#btnBack').onclick=()=>{
   if(viewAtual==='pmoc'||viewAtual==='config'||viewAtual==='dim'||viewAtual==='loc'||viewAtual==='desc')return view('menu');
   if(viewAtual==='vistorias'||viewAtual==='equipe')return view('menu');
   goHome();
-};
+}
+$('#btnBack').onclick=voltarTela;
+
+/* botão voltar do celular: volta de tela em vez de fechar o app */
+(function(){
+  const OVERLAYS=['imgView','sigModal','etqModal','devModal','novModal','fotoSheet','pmFotoSheet','dmFotoSheet','lcFotoSheet','dsFotoSheet'];
+  let armado=false,t=null;
+  const empurra=()=>{try{history.pushState({app:1},'')}catch(e){}};
+  try{history.replaceState({app:0},'');}catch(e){}
+  empurra();
+  window.addEventListener('popstate',()=>{
+    const aberto=OVERLAYS.map(id=>document.getElementById(id)).find(el=>el&&!el.classList.contains('hide'));
+    if(aberto){if(aberto.id==='sigModal')sgCb=null;aberto.classList.add('hide');empurra();return}
+    if(viewAtual!=='home'){voltarTela();empurra();return}
+    if(armado){clearTimeout(t);history.back();return}
+    armado=true;toast('Pressione voltar novamente para sair');
+    clearTimeout(t);t=setTimeout(()=>{armado=false},2200);
+    empurra();
+  });
+})();
 
 function itemEquipHTML(r){
   return `<div class="item" onclick="openFicha('${r.id}')">
@@ -1496,8 +1515,9 @@ $('#qrIdInput').addEventListener('keydown',e=>{if(e.key==='Enter')buscarParaQr()
    Preencha BUSCA_TEC_URL com a URL da função "buscaTecnica" depois do deploy.
 ======================================================== */
 const BUSCA_TEC_URL='';
-const APP_VERSAO='2026-11-18';
+const APP_VERSAO='2026-11-19';
 const NOVIDADES=[
+  ['↩️','Botão voltar do celular agora volta para a tela anterior ou o menu, em vez de fechar o app'],
   ['♻️','Novo módulo Descarte de equipamento: fotos, descrição, local de descarte, assinatura de quem descartou e termo em PDF'],
   ['📍','Novo Localizador de equipamento: registro simples com tipo, BTU/h, endereço no mapa, observações, fotos e etiqueta com QR'],
   ['🖼️','Fotos maiores nas fichas, com toque para ampliar em tela cheia; histórico de procedimentos removido da ficha e do PDF'],
