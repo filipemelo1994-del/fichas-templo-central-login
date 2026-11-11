@@ -21,7 +21,7 @@ html{height:100%;overscroll-behavior-y:none}
 body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif;background:var(--bg);color:var(--tx);font-size:16px;min-height:100%;overscroll-behavior-y:none;-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
 input,textarea,select{-webkit-user-select:text;user-select:text}
 input,textarea,select{color:var(--tx)}
-#configView input:not([type=checkbox]),#configView select,#pmocView input,#pmForm input,#pmForm select,#pmForm textarea{background:var(--card)}
+#dmForm input,#dmForm select,#dmForm textarea,#configView input:not([type=checkbox]),#configView select,#pmocView input,#pmForm input,#pmForm select,#pmForm textarea{background:var(--card)}
 header{background:var(--hdr);color:#fff;padding:calc(14px + env(safe-area-inset-top)) calc(16px + env(safe-area-inset-right)) 14px calc(16px + env(safe-area-inset-left));display:flex;align-items:center;gap:10px;position:sticky;top:0;z-index:5}
 header h1{font-size:18px;margin:0;flex:1}
 header button{background:rgba(255,255,255,.18);color:#fff;border:0;border-radius:8px;padding:8px 12px;font-size:15px}
@@ -74,9 +74,9 @@ textarea{min-height:70px;resize:vertical}
 .item:last-child{border:0}
 .item img,.item .ph{width:48px;height:48px;border-radius:50%;object-fit:cover;background:var(--pri2);flex:none}
 .item b{display:block}.item small{color:var(--mut)}
-.fotos{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:10px}
-.fotos div{position:relative}.fotos img{width:100%;aspect-ratio:1;object-fit:cover;border-radius:10px;background:var(--pri2)}
-.fotos i{position:absolute;top:4px;right:4px;background:rgba(0,0,0,.65);color:#fff;border-radius:50%;width:24px;height:24px;text-align:center;line-height:24px;font-style:normal}
+.fotos{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-top:10px}
+.fotos div{position:relative}.fotos img{width:100%;aspect-ratio:4/3;object-fit:cover;border-radius:12px;background:var(--pri2);cursor:zoom-in}
+.fotos i{position:absolute;top:6px;right:6px;background:rgba(0,0,0,.65);color:#fff;border-radius:50%;width:30px;height:30px;text-align:center;line-height:30px;font-style:normal;font-size:18px}
 canvas.sig{width:100%;height:160px;border:2px dashed var(--bd);border-radius:10px;background:#fff;touch-action:none}
 .ts{color:var(--mut);font-size:12px;font-weight:400;margin-left:6px}
 .idbadge{font-size:22px;font-weight:700;color:var(--pri)}
@@ -151,8 +151,8 @@ header .iconBtn{position:relative}
 #fotoSheet .sheet{background:var(--card);width:100%;max-width:480px;border-radius:20px 20px 0 0;padding:18px 16px calc(18px + env(safe-area-inset-bottom));animation:txtUp .25s ease both}
 #fotoSheet .sheet b{display:block;text-align:center;font-size:15px;margin-bottom:4px}
 /* vistoria */
-#configView label,#pmocView label,#pmForm label{font-size:12px;color:var(--mut);font-weight:600;display:block;margin:8px 0 3px}
-#configView input:not([type=checkbox]),#configView select,#pmocView input,#pmForm input,#pmForm select,#pmForm textarea{width:100%;padding:11px;border:1px solid var(--bd);border-radius:10px;font-size:15px;font-family:inherit;box-sizing:border-box}
+#dimView label,#dmForm label,#configView label,#pmocView label,#pmForm label{font-size:12px;color:var(--mut);font-weight:600;display:block;margin:8px 0 3px}
+#dmForm input,#dmForm select,#dmForm textarea,#configView input:not([type=checkbox]),#configView select,#pmocView input,#pmForm input,#pmForm select,#pmForm textarea{width:100%;padding:11px;border:1px solid var(--bd);border-radius:10px;font-size:15px;font-family:inherit;box-sizing:border-box}
 .vchips{display:flex;flex-wrap:wrap;gap:6px}
 .vchip{padding:8px 12px;border:1px solid var(--bd);background:var(--card);border-radius:20px;font-size:13.5px;color:var(--tx)}
 .vchip.on{background:var(--priBtn);border-color:var(--priBtn);color:#fff}
@@ -217,10 +217,10 @@ details.vmaq .body{padding:0 14px 14px}
 #print td.h{color:#888;font-size:10.5px;white-space:nowrap;width:70px}
 #print .secWrap{display:flex;gap:10px;align-items:flex-start}
 #print .secWrap .secTable{flex:1;min-width:0}
-#print .ph{display:flex;flex-wrap:wrap;gap:4px;margin:3px 0 2px;max-width:150px}
-#print .ph img{width:46px;height:46px;object-fit:cover;border-radius:4px;border:1px solid #ddd}
+#print .ph{display:flex;flex-wrap:wrap;gap:5px;margin:3px 0 2px;max-width:270px}
+#print .ph img{width:130px;height:98px;object-fit:cover;border-radius:5px;border:1px solid #ddd}
 #print .phGeral{display:flex;flex-wrap:wrap;gap:5px;margin:3px 0 6px}
-#print .phGeral img{width:64px;height:64px;object-fit:cover;border-radius:5px;border:1px solid #ddd}
+#print .phGeral img{width:170px;height:128px;object-fit:cover;border-radius:6px;border:1px solid #ddd}
 #print .sig{margin-top:6px}
 #print .sig img{max-width:200px;display:block;margin:4px 0;border-bottom:1px solid #999}
 @media print{
@@ -231,7 +231,7 @@ details.vmaq .body{padding:0 14px 14px}
   * {-webkit-print-color-adjust:exact;print-color-adjust:exact}
   html,body{padding:0!important;margin:0!important;height:auto!important;min-height:0!important}
   main{display:none!important}
-  #bottomNav,#pmFotoSheet,#sigModal,#etqModal,#devModal,#novModal,#fotoSheet,#splash,#updateBanner,.toast{display:none!important}
+  #bottomNav,#imgView,#dmFotoSheet,#pmFotoSheet,#sigModal,#etqModal,#devModal,#novModal,#fotoSheet,#splash,#updateBanner,.toast{display:none!important}
   .vistPrint{height:274mm;display:flex;flex-direction:column;overflow:hidden;padding:0 2px}
   .vistPrint table{font-size:6.6px!important}
   @media (orientation:landscape){.vistPrint{height:184mm}.vistPrint table{font-size:8.5px!important}}
@@ -281,6 +281,13 @@ details.vmaq .body{padding:0 14px 14px}
     <button class="btn" onclick="pmocFotoOrigem('camera')">📷 Tirar foto agora</button>
     <button class="btn g" onclick="pmocFotoOrigem('galeria')">🖼️ Escolher da galeria</button>
     <button class="btn g" style="border-color:var(--bd);color:var(--mut)" onclick="pmocFotoFecha()">Cancelar</button></div></div>
+<div id="imgView" class="hide" style="position:fixed;inset:0;background:rgba(0,0,0,.92);z-index:300;display:flex;align-items:center;justify-content:center;padding:10px" onclick="this.classList.add('hide')"><img style="max-width:100%;max-height:100%;object-fit:contain;touch-action:pinch-zoom"><div style="position:absolute;top:calc(14px + env(safe-area-inset-top));right:16px;color:#fff;font-size:34px;line-height:1">×</div></div>
+<div id="dmFotoSheet" class="hide" style="position:fixed;inset:0;background:rgba(10,25,40,.55);z-index:150;display:flex;align-items:flex-end;justify-content:center" onclick="if(event.target===this)dimFotoFecha()">
+  <div style="background:var(--card);width:100%;max-width:480px;border-radius:20px 20px 0 0;padding:18px 16px calc(18px + env(safe-area-inset-bottom))">
+    <b style="display:block;text-align:center;margin-bottom:8px">Adicionar foto</b>
+    <button class="btn" onclick="dimFotoOrigem('camera')">📷 Tirar foto agora</button>
+    <button class="btn g" onclick="dimFotoOrigem('galeria')">🖼️ Escolher da galeria</button>
+    <button class="btn g" style="border-color:var(--bd);color:var(--mut)" onclick="dimFotoFecha()">Cancelar</button></div></div>
 <div id="sigModal" class="hide" style="position:fixed;inset:0;background:rgba(10,25,40,.6);z-index:160;display:flex;align-items:center;justify-content:center;padding:16px">
   <div style="background:var(--card);border-radius:16px;padding:14px;max-width:460px;width:100%">
     <b>✍️ Assine no quadro abaixo</b>
@@ -503,6 +510,7 @@ details.vmaq .body{padding:0 14px 14px}
       <div><b id="nomeMenu"></b><br><small style="color:var(--mut)" id="funcaoMenu"></small></div>
     </div>
     <div class="menuList">
+      <div class="menuRow" onclick="abrirDim()"><span class="ic">📐</span>Dimensionamento (novas instalações)<span class="arrow">›</span></div>
       <div class="menuRow" onclick="abrirPmoc()"><span class="ic">📑</span>PMOC — Manutenção preventiva<span class="arrow">›</span></div>
       <div class="menuRow" onclick="abrirVistorias()"><span class="ic">🏛️</span>Vistorias de congregação<span class="arrow">›</span></div>
       <div class="menuRow" onclick="avisoDev('descarte')"><span class="ic">♻️</span>Descarte de equipamento<span class="arrow">›</span></div>
@@ -582,6 +590,12 @@ details.vmaq .body{padding:0 14px 14px}
     <button class="btn" style="margin-top:0" onclick="novaVistoria()">＋ Nova vistoria</button>
     <div class="card" style="margin-top:12px"><h2>Vistorias de congregação</h2><div id="vistList"><small style="color:var(--mut)">Carregando…</small></div></div>
   </section>
+
+  <section id="dimView" class="hide">
+    <button class="btn" style="margin-top:0" onclick="dimNovo()">＋ Novo dimensionamento</button>
+    <div class="card"><h2>Registros</h2><div id="dmList"></div></div>
+  </section>
+  <section id="dimFormView" class="hide"><div id="dmForm"></div></section>
 
   <section id="configView" class="hide">
     <div class="card"><h2>👤 Minha conta</h2>
@@ -1156,9 +1170,9 @@ async function setVal(k,v,disp){
 }
 
 /* ---------- navegação ---------- */
-const TITULOS={home:'Fichas de Equipamentos',os:'Ordem de Serviço',menu:'Menu',equipe:'Equipe de Manutenção',alertas:'Pendências',vistorias:'Vistorias de congregação',vistForm:'Vistoria',pmoc:'PMOC',pmocForm:'Execução PMOC',config:'Configurações',regua:'Régua P-T',qrTool:'Criar QR code',buscaTec:'Busca técnica'};
-const VIEWS={home:'#home',os:'#osView',menu:'#menuView',equipe:'#equipeView',alertas:'#alertasView',vistorias:'#vistoriasView',vistForm:'#vistFormView',pmoc:'#pmocView',pmocForm:'#pmocFormView',config:'#configView',regua:'#reguaView',qrTool:'#qrToolView',buscaTec:'#buscaTecView',form:'#formView'};
-const NAV_DE={home:'navInicio',os:'navOS',alertas:'navAlertas',menu:'navMenu',vistorias:'navMenu',equipe:'navMenu',pmoc:'navMenu',config:'navMenu'};
+const TITULOS={home:'Fichas de Equipamentos',os:'Ordem de Serviço',menu:'Menu',equipe:'Equipe de Manutenção',alertas:'Pendências',vistorias:'Vistorias de congregação',vistForm:'Vistoria',pmoc:'PMOC',pmocForm:'Execução PMOC',config:'Configurações',dim:'Dimensionamento',dimForm:'Novo dimensionamento',regua:'Régua P-T',qrTool:'Criar QR code',buscaTec:'Busca técnica'};
+const VIEWS={home:'#home',os:'#osView',menu:'#menuView',equipe:'#equipeView',alertas:'#alertasView',vistorias:'#vistoriasView',vistForm:'#vistFormView',pmoc:'#pmocView',pmocForm:'#pmocFormView',config:'#configView',dim:'#dimView',dimForm:'#dimFormView',regua:'#reguaView',qrTool:'#qrToolView',buscaTec:'#buscaTecView',form:'#formView'};
+const NAV_DE={home:'navInicio',os:'navOS',alertas:'navAlertas',menu:'navMenu',vistorias:'navMenu',equipe:'navMenu',pmoc:'navMenu',config:'navMenu',dim:'navMenu'};
 let viewAtual='home';
 function view(name){
   viewAtual=name;
@@ -1166,10 +1180,10 @@ function view(name){
   $('#stick').classList.toggle('hide',name!=='form');
   const principal=['home','os','menu','alertas'].includes(name);
   $('#btnBack').classList.toggle('hide',name==='home'||name==='os'||name==='menu');
-  $('#bottomNav').classList.toggle('hide',name==='form'||name==='vistForm'||name==='pmocForm'||!perfil);
+  $('#bottomNav').classList.toggle('hide',name==='form'||name==='vistForm'||name==='pmocForm'||name==='dimForm'||!perfil);
   document.querySelectorAll('#bottomNav button').forEach(b=>b.classList.toggle('on',b.id===NAV_DE[name]));
   $('#title').textContent=name==='form'?(cur?cur.id:''):(TITULOS[name]||'');
-  document.body.style.paddingBottom=(name==='form'||name==='vistForm'||name==='pmocForm'||!perfil)?'':'72px';
+  document.body.style.paddingBottom=(name==='form'||name==='vistForm'||name==='pmocForm'||name==='dimForm'||!perfil)?'':'72px';
   window.scrollTo(0,0);
 }
 window.view=view;
@@ -1184,7 +1198,8 @@ window.goHome=goHome;
 $('#btnBack').onclick=()=>{
   if(viewAtual==='vistForm')return abrirVistorias();
   if(viewAtual==='pmocForm')return abrirPmoc();
-  if(viewAtual==='pmoc'||viewAtual==='config')return view('menu');
+  if(viewAtual==='dimForm')return abrirDim();
+  if(viewAtual==='pmoc'||viewAtual==='config'||viewAtual==='dim')return view('menu');
   if(viewAtual==='vistorias'||viewAtual==='equipe')return view('menu');
   goHome();
 };
@@ -1453,8 +1468,10 @@ $('#qrIdInput').addEventListener('keydown',e=>{if(e.key==='Enter')buscarParaQr()
    Preencha BUSCA_TEC_URL com a URL da função "buscaTecnica" depois do deploy.
 ======================================================== */
 const BUSCA_TEC_URL='';
-const APP_VERSAO='2026-11-14';
+const APP_VERSAO='2026-11-16';
 const NOVIDADES=[
+  ['🖼️','Fotos maiores nas fichas, com toque para ampliar em tela cheia; histórico de procedimentos removido da ficha e do PDF'],
+  ['📐','Novo módulo Dimensionamento: carga térmica por ambiente, equipamentos sugeridos, localização no mapa, fotos do local e relatório em PDF'],
   ['🌙','Tema escuro (automático, claro ou escuro) e avisos no celular com PMOC vencido e fichas pendentes, em Configurações'],
   ['👤','Foto de perfil: puxada automaticamente de quem entra com o Google, ou escolhida em Configurações'],
   ['📖','Manuais de equipamentos e fichas técnicas de compressor: digite o modelo e abra a busca em PDF, em sites de manuais e em vídeos'],
@@ -1877,7 +1894,7 @@ async function pmocSalvarAgora(){
 function pmocRender(){
   const ro=!pmDono(),dis=ro?'disabled':'';
   const chips=(k,val)=>`<div class="vchips">${PM_STATUS.map(o=>`<button type="button" class="vchip${val===o?' on '+(o==='Conforme'||o==='Corrigido'?'good':o==='Pendente'?'bad':''):''}" ${dis} onclick="pmocSet('${k}','${o}')">${o}</button>`).join('')}</div>`;
-  const fotos=(tp)=>`<div style="display:flex;flex-wrap:wrap;gap:8px">${pm.midia[tp].map((f,i)=>`<div style="position:relative"><img src="${f}" style="width:92px;height:92px;object-fit:cover;border-radius:10px;border:1px solid var(--bd)">${ro?'':`<button type="button" onclick="pmocDelFoto('${tp}',${i})" style="position:absolute;top:-6px;right:-6px;width:24px;height:24px;border-radius:50%;border:0;background:var(--no);color:#fff">✕</button>`}</div>`).join('')}</div>${ro||pm.midia[tp].length>=4?'':`<button type="button" class="btn g" style="margin-top:8px;padding:10px" onclick="pmocFoto('${tp}')">📷 Adicionar foto (${tp==='antes'?'antes':'depois'})</button>`}`;
+  const fotos=(tp)=>`<div style="display:flex;flex-wrap:wrap;gap:8px">${pm.midia[tp].map((f,i)=>`<div style="position:relative"><img src="${f}" style="width:calc(50% - 4px);aspect-ratio:4/3;height:auto;object-fit:cover;border-radius:12px;border:1px solid var(--bd);cursor:zoom-in">${ro?'':`<button type="button" onclick="pmocDelFoto('${tp}',${i})" style="position:absolute;top:-6px;right:-6px;width:24px;height:24px;border-radius:50%;border:0;background:var(--no);color:#fff">✕</button>`}</div>`).join('')}</div>${ro||pm.midia[tp].length>=4?'':`<button type="button" class="btn g" style="margin-top:8px;padding:10px" onclick="pmocFoto('${tp}')">📷 Adicionar foto (${tp==='antes'?'antes':'depois'})</button>`}`;
   const sig=(k,tit)=>`<div style="flex:1;min-width:140px"><small style="color:var(--mut)">${tit}</small><div style="border:1px dashed var(--bd);border-radius:10px;height:84px;display:flex;align-items:center;justify-content:center;background:#fff;overflow:hidden">${pm.midia[k]?`<img src="${pm.midia[k]}" style="max-height:80px;max-width:100%">`:'<small style="color:var(--mut)">sem assinatura</small>'}</div>${ro?'':`<button type="button" class="btn g" style="margin-top:6px;padding:9px" onclick="pmocAssinar('${k}')">✍️ ${pm.midia[k]?'Refazer':'Assinar'}</button>`}</div>`;
   $('#pmForm').innerHTML=`
   <div class="card"><h2>${esc(pm.equipId)} <small style="color:var(--mut);font-weight:400">· ${esc(pm.eq.modelo)} ${esc(pm.eq.cap)}</small></h2>
@@ -2137,6 +2154,265 @@ async function avisosLocais(forcar){
   }catch(e){}
 }
 window.cfAvisos=cfAvisos;window.avisosLocais=avisosLocais;
+
+/* ========================================================
+   DIMENSIONAMENTO — carga térmica prática por ambiente + localização
+   Coleção "dimensionamentos": documento principal + "m_<id>" (fotos)
+   ======================================================== */
+const DM_CAPS=[9000,12000,18000,24000,30000,36000,48000,60000];
+const DM_SOL=[['nenhum','Sem sol direto'],['manha','Sol da manhã'],['tarde','Sol da tarde'],['dia','Sol o dia todo']];
+const DM_TETO=[['forro','Laje ou forro isolado'],['laje','Laje exposta ao sol'],['telha','Telha sem forro']];
+let dm=null,dmTimer=null,dmSujo=false,dmOp=[];
+const dmErro=e=>toast(e&&e.code==='permission-denied'?'Sem permissão no Firestore: publique a regra da coleção "dimensionamentos".':'Não foi possível salvar/carregar o dimensionamento.');
+const dmNum=v=>{const n=parseFloat(String(v==null?'':v).replace(',','.'));return isNaN(n)?0:n};
+const dmFmt=n=>Math.round(n).toLocaleString('pt-BR');
+/* limites típicos publicados por marca: [capacidade até, mín m, máx m, desnível máx m] (null = não informado). Conferir sempre no manual do modelo. */
+const DM_MARCAS={
+ 'LG':[[12000,3,15,7],[24000,5,20,10]],
+ 'Elgin':[[12000,2,15,7],[18000,2,20,8],[24000,2,20,10]],
+ 'Gree':[[12000,3,15,10],[36000,3,25,10]],
+ 'Midea':[[12000,2,10,5],[18000,2,15,8],[24000,2,20,10]],
+ 'Springer':[[12000,2,10,5],[24000,2,20,10]],
+ 'Carrier':[[12000,2,10,5],[24000,2,20,10],[30000,2,25,10]],
+ 'TCL':[[24000,2,15,5]],
+ 'York':[[9000,2,7,5],[12000,2,9,5],[18000,2,12,7],[24000,2,15,10]],
+ 'Consul / Brastemp':[[24000,1,15,5]],
+ 'Electrolux':[[12000,3,15,5],[24000,3,25,7]],
+ 'Fujitsu':[[12000,3,20,15],[18000,3,25,20],[24000,3,30,20],[36000,3,50,30]],
+ 'Philco':[[12000,null,10,5]],
+ 'Samsung':[[12000,3,15,8],[24000,null,30,null],[36000,null,50,30],[60000,null,75,30]]
+};
+function dmLimites(marca,cap){const r=DM_MARCAS[marca];if(!r)return null;const x=r.find(y=>y[0]>=cap);return x?{lmin:x[1],lmax:x[2],dmax:x[3]}:null}
+function dmVazio(n){return{nome:'Ambiente '+n,area:'',pe:'2,8',pessoas:'',equipW:'',iluW:'',vidro:'',sol:'nenhum',teto:'forro',obs:'',
+  marca:'',capInst:'',horiz:'',desn:'',curvas:'',pos:'cond_abaixo',lmin:'',lmax:'',dmax:'',gAd:'',gDe:''}}
+function dmTubo(a){
+  const h=dmNum(a.horiz),dv=dmNum(a.desn),cv=dmNum(a.curvas),dist=h+dv,eq=dist+cv;
+  const lmin=dmNum(a.lmin),lmax=dmNum(a.lmax),dmax=dmNum(a.dmax),g=dmNum(a.gAd),gd=dmNum(a.gDe);
+  const av=[];
+  if(!dist&&!h)return{dist:0,eq:0,av};
+  if(!lmax&&!dmax)av.push(['aviso','Limites do fabricante não informados. Escolha a marca ou digite os valores do manual do modelo.']);
+  if(lmax){if(eq>lmax)av.push(['erro',`Comprimento equivalente de ${dmFmt(eq)} m (distância + 1 m por curva) <b>excede o máximo de ${lmax} m</b> do fabricante.`]);else if(eq>=lmax*.9)av.push(['aviso',`Comprimento equivalente de ${dmFmt(eq)} m está próximo do máximo (${lmax} m).`])}
+  if(lmin&&dist&&dist<lmin)av.push(['erro',`Distância de ${dmFmt(dist)} m <b>abaixo do mínimo de ${lmin} m</b> do fabricante.`]);
+  if(dmax&&dv){if(dv>dmax)av.push(['erro',`Desnível de ${dmFmt(dv)} m <b>excede o máximo de ${dmax} m</b> do fabricante.`]);else if(dv>=dmax*.9)av.push(['aviso',`Desnível de ${dmFmt(dv)} m está próximo do máximo (${dmax} m).`])}
+  if(a.pos==='cond_acima'&&dv>=3)av.push(['aviso',`Condensadora acima da evaporadora com desnível de ${dmFmt(dv)} m: a linha de sucção sobe. <b>Prever sifão de óleo</b> na linha de sucção (na base e nos trechos verticais conforme o manual) para o óleo retornar ao compressor.`]);
+  if(a.pos==='cond_abaixo'&&dv>0)av.push(['info','Evaporadora acima da condensadora: a linha de líquido sobe. Respeite o desnível máximo e confira no manual se a posição é permitida.']);
+  if(dist>0&&gd>0&&g>0&&dist>gd)av.push(['info',`Carga adicional de fluido: ≈ <b>${dmFmt((dist-gd)*g)} g</b> (${dmFmt(dist-gd)} m × ${g} g/m).`]);
+  else if(dist>5&&!(gd>0&&g>0))av.push(['aviso','A carga de fábrica costuma cobrir cerca de 5 m (varia por modelo). Confira no manual a carga adicional de fluido refrigerante (g/m).']);
+  if(!av.some(x=>x[0]==='erro')&&(lmax||dmax))av.unshift(['ok','Dentro dos limites informados.']);
+  return{dist,eq,av};
+}
+function dmTuboHTML(a){
+  const t=dmTubo(a);if(!t.eq&&!t.av.length)return '<small style="color:var(--mut)">Informe o trecho horizontal e o desnível para verificar os limites.</small>';
+  const cor={erro:['#c0392b','var(--noBg)','⛔'],aviso:['#c17a1e','var(--warn2)','⚠️'],ok:['#1a8f4c','var(--pri2)','✅'],info:['var(--mut)','var(--pri2)','ℹ️']};
+  return `<div style="font-size:13px;margin-bottom:6px">Distância da tubulação: <b>${dmFmt(t.dist)} m</b> · equivalente (com curvas): <b>${dmFmt(t.eq)} m</b></div>`+t.av.map(x=>`<div style="background:${cor[x[0]][1]};border-left:4px solid ${cor[x[0]][0]};border-radius:8px;padding:8px 10px;margin-top:5px;font-size:12.5px">${cor[x[0]][2]} ${x[1]}</div>`).join('');
+}
+function dmCalc(a){
+  const area=dmNum(a.area),pe=dmNum(a.pe)||2.8,pes=dmNum(a.pessoas),eq=dmNum(a.equipW)+dmNum(a.iluW),vd=dmNum(a.vidro);
+  const solP={nenhum:0,manha:.08,tarde:.15,dia:.2}[a.sol]||0,tetoP={forro:0,laje:.1,telha:.2}[a.teto]||0;
+  const parts={
+    area:area*(pe/2.8)*500*(1+solP+tetoP),
+    pessoas:pes*600,
+    equip:eq*3.41,
+    vidro:a.sol==='nenhum'?0:vd*350
+  };
+  const sub=parts.area+parts.pessoas+parts.equip+parts.vidro;
+  return{parts,total:sub*1.05,ok:area>0};
+}
+function dmSugere(T){
+  if(!T)return[];
+  const c=[];
+  for(let n=1;n<=24;n++){
+    const per=T/n;let cap=DM_CAPS.find(x=>x>=per);if(!cap)continue;
+    if(n>1&&per<9000)continue;
+    const tot=n*cap,waste=tot/T-1;
+    if(waste>.4)continue;
+    c.push({n,cap,tot,waste,score:waste*100+n*8});
+  }
+  c.sort((a,b)=>a.score-b.score);
+  const out=[];for(const x of c){if(out.length<3)out.push(x)}
+  return out;
+}
+const dmTipo=cap=>cap<=24000?'Split hi-wall':'Piso-teto ou Cassete (verificar o modelo)';
+function dmSugHTML(T){
+  const s=dmSugere(T);
+  if(!T)return '<small style="color:var(--mut)">Preencha a área para calcular.</small>';
+  const aviso=T>180000?`<div style="font-size:12.5px;color:var(--warn);margin-top:6px">⚠️ Carga alta: avaliar sistema central (chiller/VRF) com projeto de climatização.</div>`:'';
+  if(!s.length)return `<small style="color:var(--warn)">Carga acima da faixa de equipamentos individuais. Avaliar sistema central (chiller/VRF) com projeto.</small>`;
+  return aviso+s.map((x,i)=>`<div style="font-size:13px;margin-top:4px">${i===0?'⭐ ':''}<b>${x.n}× ${dmFmt(x.cap)} BTU/h</b> <span style="color:var(--mut)">· total ${dmFmt(x.tot)} (${x.waste>=0?'+':''}${Math.round(x.waste*100)}%) · ${dmTipo(x.cap)}</span></div>`).join('');
+}
+function dmTotal(){return dm.ambientes.reduce((s,a)=>s+dmCalc(a).total,0)}
+
+async function abrirDim(){
+  view('dim');$('#dmList').innerHTML='<small style="color:var(--mut)">Carregando…</small>';
+  try{
+    const s=await getDocs(query(collection(db,'dimensionamentos'),where('kind','==','dim')));
+    const l=s.docs.map(d=>({id:d.id,...d.data()})).sort((a,b)=>(b.criadoEm||0)-(a.criadoEm||0));
+    $('#dmList').innerHTML=l.length?l.map(r=>{
+      const T=(r.ambientes||[]).reduce((t,a)=>t+dmCalc(a).total,0);
+      return `<div class="item" onclick="dimAbrir('${r.id}')"><div class="ph" style="display:flex;align-items:center;justify-content:center;font-size:22px;background:var(--pri2);border-radius:50%;width:42px;height:42px">📐</div>
+      <div><b>${esc(r.congregacao||'Sem nome')}</b><small>${r.endereco?esc(r.endereco.slice(0,55))+'<br>':''}${pmBR(r.data)} · ${(r.ambientes||[]).length} ambiente(s) · ${dmFmt(T)} BTU/h</small></div></div>`}).join('')
+      :'<small style="color:var(--mut)">Nenhum dimensionamento registrado ainda.</small>';
+  }catch(e){$('#dmList').innerHTML='<small style="color:var(--no)">Não foi possível carregar.</small>';dmErro(e)}
+}
+function dimNovo(){
+  const id=doc(collection(db,'dimensionamentos')).id;
+  dm={id,kind:'dim',congregacao:'',endereco:'',lat:null,lon:null,data:pmHoje(),ambientes:[dmVazio(1)],obs:'',criadoEm:Date.now(),criadoPorUid:perfil.uid,criadoPor:perfil.nome+' '+perfil.sobrenome,midia:{fotos:[]}};
+  dmSujo=true;dimRender();view('dimForm');
+}
+async function dimAbrir(id){
+  try{
+    const [s,m]=await Promise.all([getDoc(doc(db,'dimensionamentos',id)),getDoc(doc(db,'dimensionamentos','m_'+id))]);
+    if(!s.exists()){toast('Registro não encontrado.');return}
+    dm={id,...s.data()};dm.midia={fotos:[],...(m.exists()?m.data():{})};dmSujo=false;dimRender();view('dimForm');
+  }catch(e){dmErro(e)}
+}
+const dmDono=()=>dm&&dm.criadoPorUid===perfil.uid;
+function dimSalvar(){clearTimeout(dmTimer);dmTimer=setTimeout(dimSalvarAgora,800)}
+async function dimSalvarAgora(){
+  if(!dm||!dmDono())return;
+  if(!dm.congregacao&&!dm.endereco&&!dm.ambientes.some(a=>dmNum(a.area)))return;
+  const {id,midia,...data}=dm;
+  try{await setDoc(doc(db,'dimensionamentos',id),data);
+    if(dmSujo){await setDoc(doc(db,'dimensionamentos','m_'+id),{kind:'midia',dimId:id,...midia});dmSujo=false}
+    const t=$('#dmSaved');if(t)t.textContent='✔ Salvo';
+  }catch(e){dmErro(e)}
+}
+function dmAmbHTML(a,i,ro){
+  const d=ro?'disabled':'';
+  const f=(k,l,ph,mode)=>`<div style="flex:1;min-width:0"><label>${l}</label><input inputmode="${mode||'decimal'}" value="${esc(a[k])}" placeholder="${ph||''}" ${d} oninput="dimAmb(${i},'${k}',this.value)"></div>`;
+  return `<details class="vmaq card" ${i===dm.ambientes.length-1?'open':''} style="padding:0"><summary style="padding:14px;font-weight:700;list-style:none;display:flex;justify-content:space-between"><span>🏠 <span id="dmNm${i}">${esc(a.nome||'Ambiente '+(i+1))}</span></span><span id="dmSm${i}" style="color:var(--pri);font-size:13px"></span></summary>
+  <div style="padding:0 14px 14px">
+    <label>Nome do ambiente</label><input value="${esc(a.nome)}" ${d} oninput="dimAmb(${i},'nome',this.value);document.getElementById('dmNm${i}').textContent=this.value">
+    <div class="row" style="gap:8px">${f('area','Área (m²)','ex.: 36')}${f('pe','Pé-direito (m)','2,8')}</div>
+    <div class="row" style="gap:8px">${f('pessoas','Pessoas (lotação)','ex.: 40','numeric')}${f('vidro','Vidro/janela com sol (m²)','0')}</div>
+    <div class="row" style="gap:8px">${f('equipW','Equipamentos (W)','ex.: 800')}${f('iluW','Iluminação extra (W)','0')}</div>
+    <label>Incidência de sol</label><select ${d} onchange="dimAmb(${i},'sol',this.value)">${DM_SOL.map(o=>`<option value="${o[0]}"${a.sol===o[0]?' selected':''}>${o[1]}</option>`).join('')}</select>
+    <label>Cobertura</label><select ${d} onchange="dimAmb(${i},'teto',this.value)">${DM_TETO.map(o=>`<option value="${o[0]}"${a.teto===o[0]?' selected':''}>${o[1]}</option>`).join('')}</select>
+    <label>Observações do ambiente</label><input value="${esc(a.obs)}" ${d} oninput="dimAmb(${i},'obs',this.value)">
+    <div style="font-weight:700;margin:14px 0 4px">🔧 Tubulação frigorífica (por equipamento)</div>
+    <div class="row" style="gap:8px"><div style="flex:1;min-width:0"><label>Marca</label><select ${d} onchange="dimMarca(${i},'marca',this.value)"><option value="">Selecione</option>${Object.keys(DM_MARCAS).map(m=>`<option${a.marca===m?' selected':''}>${m}</option>`).join('')}<option${a.marca==='Outra'?' selected':''}>Outra</option></select></div>
+    <div style="flex:1;min-width:0"><label>Capacidade (BTU/h)</label><select ${d} onchange="dimMarca(${i},'capInst',this.value)"><option value="">Selecione</option>${DM_CAPS.map(c=>`<option value="${c}"${String(a.capInst)===String(c)?' selected':''}>${dmFmt(c)}</option>`).join('')}</select></div></div>
+    <div class="row" style="gap:8px">${f('horiz','Trecho horizontal (m)','ex.: 8')}${f('desn','Desnível (m)','ex.: 3')}${f('curvas','Nº de curvas','ex.: 4','numeric')}</div>
+    <label>Posição das unidades</label><select ${d} onchange="dimAmb(${i},'pos',this.value)"><option value="cond_abaixo"${a.pos==='cond_abaixo'?' selected':''}>Condensadora abaixo da evaporadora</option><option value="cond_acima"${a.pos==='cond_acima'?' selected':''}>Condensadora acima da evaporadora</option></select>
+    <div class="row" style="gap:8px">${f('lmin','Mín. (m)','manual')}${f('lmax','Máx. (m)','manual')}${f('dmax','Desnível máx. (m)','manual')}</div>
+    <div class="row" style="gap:8px">${f('gDe','Carga de fábrica até (m)','ex.: 5')}${f('gAd','Gás adicional (g/m)','manual')}</div>
+    <small style="color:var(--mut);display:block;margin-top:4px">Limites preenchidos pela marca são valores típicos publicados. Confirme sempre no manual do modelo e ajuste se precisar.</small>
+    <div id="dmTb${i}" style="margin-top:8px"></div>
+    <small style="color:var(--mut);display:block;margin-top:6px">Dreno da evaporadora: manter caimento contínuo de cerca de 1 cm por metro e, em unidades com pressão negativa (cassete, piso-teto, duto), prever sifão hidráulico.</small>
+    <div id="dmRes${i}" style="margin-top:10px;background:var(--pri2);border-radius:12px;padding:10px"></div>
+    ${ro||dm.ambientes.length<2?'':`<button type="button" class="btn g" style="color:var(--no);border-color:var(--no);padding:10px" onclick="dimRemAmb(${i})">Remover ambiente</button>`}
+  </div></details>`;
+}
+function dimRender(){
+  const ro=!dmDono(),d=ro?'disabled':'';
+  const fotos=`<div style="display:flex;flex-wrap:wrap;gap:8px">${dm.midia.fotos.map((f,i)=>`<div style="position:relative"><img src="${f}" style="width:calc(50% - 4px);aspect-ratio:4/3;height:auto;object-fit:cover;border-radius:12px;border:1px solid var(--bd);cursor:zoom-in">${ro?'':`<button type="button" onclick="dimDelFoto(${i})" style="position:absolute;top:-6px;right:-6px;width:24px;height:24px;border-radius:50%;border:0;background:var(--no);color:#fff">✕</button>`}</div>`).join('')}</div>${ro||dm.midia.fotos.length>=8?'':`<button type="button" class="btn g" style="margin-top:8px;padding:10px" onclick="dimFoto()">📷 Adicionar foto do local</button>`}`;
+  const mapa=dm.lat!=null?`<a href="https://www.google.com/maps?q=${dm.lat},${dm.lon}" target="_blank" rel="noopener" style="display:block;margin-top:6px;font-size:13px;color:var(--pri)">📍 ${(+dm.lat).toFixed(5)}, ${(+dm.lon).toFixed(5)} — abrir no mapa ↗</a>`:'';
+  $('#dmForm').innerHTML=`
+  <div class="card"><h2>Local da instalação</h2>
+    <label>Congregação</label><input list="listaCongregacoes" value="${esc(dm.congregacao)}" ${d} autocomplete="off" oninput="dimCampo('congregacao',this.value)">
+    <label>Endereço</label>
+    <div class="row" style="gap:6px;flex-wrap:nowrap"><input id="dmEnd" value="${esc(dm.endereco)}" placeholder="Rua, número, bairro, cidade" ${d} autocomplete="off" oninput="dimCampo('endereco',this.value)" style="flex:1">
+    ${ro?'':`<button class="btn g" style="margin:0;width:48px;padding:0;flex:none" onclick="dimBuscarEnd()">🔍</button><button class="btn g" style="margin:0;width:48px;padding:0;flex:none" onclick="dimLocal()">📍</button>`}</div>
+    <div id="dmEndRes" style="margin-top:6px"></div>${mapa}
+    <label>Data da visita</label><input type="date" value="${esc(dm.data)}" ${d} oninput="dimCampo('data',this.value)">
+    <small style="color:var(--mut);display:block;margin-top:6px">Registrado por ${esc(dm.criadoPor||'')}</small></div>
+  <div class="card"><h2>Fotos do local</h2>${fotos}</div>
+  <div id="dmAmbs">${dm.ambientes.map((a,i)=>dmAmbHTML(a,i,ro)).join('')}</div>
+  ${ro?'':'<button class="btn g" onclick="dimAddAmb()">＋ Adicionar ambiente</button>'}
+  <div class="card" id="dmTotal"></div>
+  <div class="card"><h2>Observações gerais</h2><textarea rows="3" ${d} oninput="dimCampo('obs',this.value)" style="width:100%">${esc(dm.obs)}</textarea></div>
+  <small id="dmSaved" style="color:var(--ok)">${ro?'Somente o autor pode editar':''}</small>
+  <button class="btn" onclick="dimPdf()">📄 Gerar relatório PDF</button>
+  ${dmDono()?'<button class="btn g" style="color:var(--no);border-color:var(--no)" onclick="dimExcluir()">🗑️ Excluir registro</button>':''}`;
+  dimAtualiza();
+}
+function dimAtualiza(){
+  dm.ambientes.forEach((a,i)=>{
+    const r=dmCalc(a),el=document.getElementById('dmRes'+i);if(!el)return;
+    el.innerHTML=`<div style="font-size:12px;color:var(--mut)">Carga térmica estimada</div><div style="font-size:22px;font-weight:800;color:var(--pri)">${r.ok?dmFmt(r.total)+' BTU/h':'—'}</div>`+(r.ok?`<div style="font-size:11.5px;color:var(--mut);margin:4px 0">Área ${dmFmt(r.parts.area)} · Pessoas ${dmFmt(r.parts.pessoas)} · Equip./ilum. ${dmFmt(r.parts.equip)} · Vidro ${dmFmt(r.parts.vidro)} · margem 5%</div>`:'')+dmSugHTML(r.ok?r.total:0);
+    const tb=document.getElementById('dmTb'+i);if(tb)tb.innerHTML=dmTuboHTML(a);
+    const sm=document.getElementById('dmSm'+i);if(sm)sm.textContent=r.ok?dmFmt(r.total)+' BTU/h':'';
+  });
+  const T=dmTotal(),el=$('#dmTotal');
+  if(el)el.innerHTML=`<h2>Resumo</h2><div style="font-size:26px;font-weight:800;color:var(--pri)">${dmFmt(T)} BTU/h</div><small style="color:var(--mut)">≈ ${(T/12000).toFixed(1).replace('.',',')} TR · ${dm.ambientes.length} ambiente(s)</small><div style="font-size:12px;color:var(--mut);margin-top:8px">Estimativa prática para pré-dimensionamento. Não inclui renovação de ar nem substitui projeto de climatização com responsável técnico (ART).</div>`;
+}
+function dimMarca(i,k,v){
+  const a=dm.ambientes[i];a[k]=v;
+  const l=dmLimites(a.marca,+a.capInst||0);
+  if(l){a.lmin=l.lmin==null?'':String(l.lmin);a.lmax=String(l.lmax);a.dmax=l.dmax==null?'':String(l.dmax)}
+  dimRender();dimSalvar();
+}
+function dimCampo(k,v){dm[k]=v;dimSalvar()}
+function dimAmb(i,k,v){dm.ambientes[i][k]=v;dimAtualiza();dimSalvar()}
+function dimAddAmb(){dm.ambientes.push(dmVazio(dm.ambientes.length+1));dimRender();dimSalvarAgora();setTimeout(()=>{const x=document.querySelectorAll('#dmAmbs details');if(x.length){x.forEach(e=>e.open=false);x[x.length-1].open=true;x[x.length-1].scrollIntoView({behavior:'smooth'})}},50)}
+function dimRemAmb(i){if(!confirm('Remover este ambiente?'))return;dm.ambientes.splice(i,1);dimRender();dimSalvarAgora()}
+function dimSetEnd(txt,lat,lon){dm.endereco=txt;if(lat!==undefined){dm.lat=lat;dm.lon=lon}dimRender();dimSalvarAgora()}
+async function dimBuscarEnd(){
+  const q=(($('#dmEnd').value||'').trim()||dm.congregacao||'').trim(),box=$('#dmEndRes');
+  if(!q){toast('Digite o endereço ou o nome da congregação.');return}
+  box.innerHTML='<small style="color:var(--mut)">Buscando no mapa…</small>';
+  try{
+    const r=await fetch('https://nominatim.openstreetmap.org/search?format=jsonv2&addressdetails=0&limit=5&countrycodes=br&accept-language=pt-BR&q='+encodeURIComponent(q));
+    if(!r.ok)throw new Error(r.status);dmOp=await r.json();
+    box.innerHTML=(dmOp.length?dmOp.map((o,i)=>`<div class="item" style="padding:8px 4px" onclick="dimEscolhe(${i})"><div style="font-size:18px">📍</div><div style="font-size:13px">${esc(o.display_name)}</div></div>`).join(''):'<small style="color:var(--mut)">Nenhum resultado. Tente incluir o bairro e a cidade.</small>')+`<a href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(q)}" target="_blank" rel="noopener" style="display:block;margin-top:6px;font-size:13px;color:var(--pri)">Abrir no Google Maps ↗</a>`;
+  }catch(e){box.innerHTML='<small style="color:var(--no)">Não foi possível buscar agora. Verifique a internet.</small>'}
+}
+function dimEscolhe(i){const o=dmOp[i];if(o)dimSetEnd(o.display_name,+o.lat,+o.lon)}
+function dimLocal(){
+  if(!navigator.geolocation){toast('Este aparelho não permite localização.');return}
+  const box=$('#dmEndRes');box.innerHTML='<small style="color:var(--mut)">Obtendo localização…</small>';
+  navigator.geolocation.getCurrentPosition(async pos=>{
+    const la=pos.coords.latitude,lo=pos.coords.longitude;
+    try{const r=await fetch(`https://nominatim.openstreetmap.org/reverse?format=jsonv2&accept-language=pt-BR&lat=${la}&lon=${lo}`);const j=await r.json();dimSetEnd(j.display_name||(la.toFixed(5)+', '+lo.toFixed(5)),la,lo)}
+    catch(e){dimSetEnd(la.toFixed(5)+', '+lo.toFixed(5),la,lo);toast('Foram salvas apenas as coordenadas (sem internet para localizar o endereço).')}
+  },err=>{box.innerHTML='<small style="color:var(--no)">'+(err.code===1?'Permissão de localização negada. Libere nas configurações do navegador.':'Não foi possível obter a localização.')+'</small>'},{enableHighAccuracy:true,timeout:15000});
+}
+function dimFoto(){$('#dmFotoSheet').classList.remove('hide')}
+function dimFotoFecha(){$('#dmFotoSheet').classList.add('hide')}
+function dimFotoOrigem(modo){
+  dimFotoFecha();if(!dmDono())return;
+  const i=document.createElement('input');i.type='file';i.accept='image/*';if(modo==='camera')i.setAttribute('capture','environment');
+  i.onchange=async e=>{const f=e.target.files[0];if(!f)return;toast('Processando foto…');
+    try{dm.midia.fotos.push(await pmocCompress(f));dmSujo=true;dimRender();dimSalvarAgora()}catch(x){toast('Falha ao processar a foto.')}};
+  i.click();
+}
+function dimDelFoto(i){if(!dmDono())return;if(confirm('Remover esta foto?')){dm.midia.fotos.splice(i,1);dmSujo=true;dimRender();dimSalvar()}}
+async function dimExcluir(){
+  if(!dmDono())return;if(!confirm('Excluir este dimensionamento? Não dá para desfazer.'))return;
+  try{await deleteDoc(doc(db,'dimensionamentos',dm.id));try{await deleteDoc(doc(db,'dimensionamentos','m_'+dm.id))}catch(e){}toast('Registro excluído.');abrirDim()}catch(e){dmErro(e)}
+}
+function dimPdf(){
+  const td='border:1px solid #999;padding:3px 6px;',T=dmTotal();
+  const rows=dm.ambientes.map(a=>{const r=dmCalc(a),s=dmSugere(r.ok?r.total:0)[0];
+    return `<tr><td style="${td}">${esc(a.nome)}</td><td style="${td}text-align:center">${esc(a.area)||'—'}</td><td style="${td}text-align:center">${esc(a.pessoas)||'0'}</td><td style="${td}text-align:center">${dmNum(a.equipW)+dmNum(a.iluW)||0}</td><td style="${td}text-align:right"><b>${r.ok?dmFmt(r.total):'—'}</b></td><td style="${td}">${s?s.n+'× '+dmFmt(s.cap)+' BTU/h<br><small>'+dmTipo(s.cap)+'</small>':'—'}</td></tr>`}).join('');
+  $('#print').innerHTML=`<div class="pmPrint" style="font-family:Arial,sans-serif;color:#000;font-size:11px">
+   <div style="display:flex;align-items:center;gap:10px;border-bottom:2px solid #0b5cab;padding-bottom:6px">
+     <img src="icon-192.png" style="width:44px;height:44px;border-radius:8px">
+     <div style="flex:1"><div style="font-size:15px;font-weight:700;color:#0b5cab">DIMENSIONAMENTO DE AR-CONDICIONADO</div><div style="font-size:10px;color:#555">Pré-dimensionamento para nova instalação · Assembleia de Deus — Templo Central</div></div>
+     <div style="text-align:right"><b>Data:</b> ${pmBR(dm.data)}</div></div>
+   <table style="width:100%;border-collapse:collapse;margin-top:8px"><tr><td style="${td}background:#e7f0fa;width:20%"><b>Congregação</b></td><td style="${td}">${esc(dm.congregacao)}</td></tr>
+   <tr><td style="${td}background:#e7f0fa"><b>Endereço</b></td><td style="${td}">${esc(dm.endereco)||'—'}</td></tr>
+   <tr><td style="${td}background:#e7f0fa"><b>Coordenadas</b></td><td style="${td}">${dm.lat!=null?(+dm.lat).toFixed(5)+', '+(+dm.lon).toFixed(5)+' — maps.google.com/?q='+(+dm.lat).toFixed(5)+','+(+dm.lon).toFixed(5):'—'}</td></tr>
+   <tr><td style="${td}background:#e7f0fa"><b>Registrado por</b></td><td style="${td}">${esc(dm.criadoPor||'')}</td></tr></table>
+   <div style="margin-top:10px;font-weight:700;color:#0b5cab;font-size:12px">Ambientes e carga térmica estimada</div>
+   <table style="width:100%;border-collapse:collapse;margin-top:3px"><tr style="background:#e7f0fa;font-size:10px"><td style="${td}">Ambiente</td><td style="${td}">Área (m²)</td><td style="${td}">Pessoas</td><td style="${td}">Equip. + ilum. (W)</td><td style="${td}">Carga (BTU/h)</td><td style="${td}">Sugestão</td></tr>${rows}
+   <tr style="background:#f3f6fa"><td style="${td}" colspan="4"><b>TOTAL</b> (≈ ${(T/12000).toFixed(1).replace('.',',')} TR)</td><td style="${td}text-align:right"><b>${dmFmt(T)}</b></td><td style="${td}"></td></tr></table>
+   ${dm.ambientes.some(a=>dmTubo(a).dist)?`<div style="margin-top:10px;font-weight:700;color:#0b5cab;font-size:12px">Tubulação frigorífica</div><table style="width:100%;border-collapse:collapse;margin-top:3px"><tr style="background:#e7f0fa;font-size:10px"><td style="${td}">Ambiente</td><td style="${td}">Equipamento</td><td style="${td}">Distância (m)</td><td style="${td}">Desnível (m)</td><td style="${td}">Limites (mín / máx / desn.)</td><td style="${td}">Situação</td></tr>${dm.ambientes.map(a=>{const t=dmTubo(a);if(!t.dist)return '';const er=t.av.filter(x=>x[0]==='erro'||x[0]==='aviso');return `<tr><td style="${td}">${esc(a.nome)}</td><td style="${td}">${esc(a.marca||'—')} ${a.capInst?dmFmt(+a.capInst):''}</td><td style="${td}text-align:center">${dmFmt(t.dist)} (eq. ${dmFmt(t.eq)})</td><td style="${td}text-align:center">${dmFmt(dmNum(a.desn))}</td><td style="${td}text-align:center">${esc(a.lmin||'—')} / ${esc(a.lmax||'—')} / ${esc(a.dmax||'—')}</td><td style="${td}font-size:9px">${er.length?er.map(x=>(x[0]==='erro'?'⛔ ':'⚠ ')+x[1].replace(/<[^>]+>/g,'')).join('<br>'):'Dentro dos limites'}</td></tr>`}).join('')}</table>`:''}
+   ${dm.obs?`<div style="margin-top:8px"><b>Observações:</b> ${esc(dm.obs)}</div>`:''}
+   ${dm.midia.fotos.length?`<div style="margin-top:10px;break-inside:avoid"><b style="color:#0b5cab;font-size:12px">Fotos do local</b><div style="display:flex;flex-wrap:wrap;gap:6px;margin-top:4px">${dm.midia.fotos.map(f=>`<img src="${f}" style="width:31%;max-height:150px;object-fit:cover;border:1px solid #bbb">`).join('')}</div></div>`:''}
+   <div style="font-size:9px;color:#555;margin-top:12px;border-top:1px solid #ccc;padding-top:6px">Método prático: área × 500 BTU/h/m² (ajustado pelo pé-direito, incidência de sol e cobertura) + 600 BTU/h por pessoa + 3,41 BTU/h por watt de equipamentos e iluminação + vidros com sol, com margem de 5%. Estimativa para pré-dimensionamento: não inclui renovação de ar e não substitui projeto de climatização com responsável técnico (ART).</div>
+   <div style="margin-top:24px;width:50%;text-align:center"><div style="border-bottom:1px solid #000;height:30px"></div><div style="font-size:10px">${esc(dm.criadoPor||'')}</div></div></div>`;
+  const old=document.title;document.title='Dimensionamento_'+(dm.congregacao||'').replace(/\s+/g,'_');
+  setTimeout(()=>{window.print();document.title=old},300);
+}
+Object.assign(window,{dimMarca,abrirDim,dimNovo,dimAbrir,dimCampo,dimAmb,dimAddAmb,dimRemAmb,dimBuscarEnd,dimEscolhe,dimLocal,dimFoto,dimFotoFecha,dimFotoOrigem,dimDelFoto,dimExcluir,dimPdf});
+
+
+document.addEventListener('click',e=>{
+  const im=e.target.closest&&e.target.closest('.fotos img,#pmForm img,#dmForm img');
+  if(!im||!im.src||im.closest('#sigModal'))return;
+  const v=document.getElementById('imgView');v.querySelector('img').src=im.src;v.classList.remove('hide');
+});
 
 /* ========================================================
    ETIQUETA + IMPRESSORA BLUETOOTH (TSPL, 203 dpi = 8 pontos/mm)
@@ -2419,7 +2695,7 @@ function renderForm(){
    ${ro?'':`<button class="btn g" onclick="clearSig()">Limpar assinatura</button>
    <button class="btn ok" onclick="finalizar()">✔ Finalizar ficha (registrar hora)</button>`}
    <div id="finTxt" style="margin-top:8px;color:var(--mut);font-size:14px">${cur.final?'Finalizada em '+full(cur.final)+(cur.finalPor?' por '+esc(cur.finalPor):''):''}</div></div>
-   <div class="card"><h2>Histórico de procedimentos</h2><div id="logv" style="font-size:14px">${cur.log.slice().reverse().map(l=>`<div style="padding:4px 0;border-bottom:1px solid var(--bd)"><b>${hm(l.t)}</b> · ${esc(l.x)}${l.quem?' <small style=\"color:var(--mut)\">('+esc(l.quem)+')</small>':''}</div>`).join('')}</div></div>`;
+`;
   $('#form').innerHTML=h;
   const btnEx=$('#btnExcluirFicha'); if(btnEx) btnEx.classList.toggle('hide',ro);
   bindForm(ro);initSig(ro);mostrarQrFixo();window.scrollTo(0,y);
@@ -2734,7 +3010,6 @@ function exportPdf(){
     const fotos=fotosSec.length?`<div class="ph">${fotosSec.map(p=>`<img src="${p.dataUrl}">`).join('')}</div>`:'';
     h+=`<div class="bloco"><div class="secWrap">${tabela}${fotos}</div></div>`;
   });
-  h+=`<div class="bloco"><h2>Registro de procedimentos</h2><table>${cur.log.map(l=>`<tr><td class="h" style="text-align:left;width:20%">${full(l.t)}</td><td colspan="2">${esc(l.x)}${l.quem?' — '+esc(l.quem):''}</td></tr>`).join('')}</table></div>`;
   h+=`<div class="bloco"><h2>Técnico responsável</h2><div class="sig"><b>${esc(perfil.nome+' '+perfil.sobrenome)} (${esc(perfil.funcao||'')})</b><br>${cur.assinUrl?`<img src="${cur.assinUrl}">`:'<br><br>______________________'}<br>${cur.final?'Finalizada em '+full(cur.final):'Data/hora: '+full(nowISO())}</div></div>`;
   $('#print').innerHTML=h;
   const old=document.title;document.title='Ficha_'+cur.id;

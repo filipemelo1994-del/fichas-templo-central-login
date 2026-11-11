@@ -1,4 +1,4 @@
-const CACHE = 'fichas-ac-login-v24';
+const CACHE = 'fichas-ac-login-v26';
 const ASSETS = [
   './',
   './index.html',
