@@ -21,7 +21,7 @@ html{height:100%;overscroll-behavior-y:none}
 body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif;background:var(--bg);color:var(--tx);font-size:16px;min-height:100%;overscroll-behavior-y:none;-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
 input,textarea,select{-webkit-user-select:text;user-select:text}
 input,textarea,select{color:var(--tx)}
-#dmForm input,#dmForm select,#dmForm textarea,#configView input:not([type=checkbox]),#configView select,#pmocView input,#pmForm input,#pmForm select,#pmForm textarea{background:var(--card)}
+#lcForm input,#lcForm select,#lcForm textarea,#locView input,#dmForm input,#dmForm select,#dmForm textarea,#configView input:not([type=checkbox]),#configView select,#pmocView input,#pmForm input,#pmForm select,#pmForm textarea{background:var(--card)}
 header{background:var(--hdr);color:#fff;padding:calc(14px + env(safe-area-inset-top)) calc(16px + env(safe-area-inset-right)) 14px calc(16px + env(safe-area-inset-left));display:flex;align-items:center;gap:10px;position:sticky;top:0;z-index:5}
 header h1{font-size:18px;margin:0;flex:1}
 header button{background:rgba(255,255,255,.18);color:#fff;border:0;border-radius:8px;padding:8px 12px;font-size:15px}
@@ -151,8 +151,8 @@ header .iconBtn{position:relative}
 #fotoSheet .sheet{background:var(--card);width:100%;max-width:480px;border-radius:20px 20px 0 0;padding:18px 16px calc(18px + env(safe-area-inset-bottom));animation:txtUp .25s ease both}
 #fotoSheet .sheet b{display:block;text-align:center;font-size:15px;margin-bottom:4px}
 /* vistoria */
-#dimView label,#dmForm label,#configView label,#pmocView label,#pmForm label{font-size:12px;color:var(--mut);font-weight:600;display:block;margin:8px 0 3px}
-#dmForm input,#dmForm select,#dmForm textarea,#configView input:not([type=checkbox]),#configView select,#pmocView input,#pmForm input,#pmForm select,#pmForm textarea{width:100%;padding:11px;border:1px solid var(--bd);border-radius:10px;font-size:15px;font-family:inherit;box-sizing:border-box}
+#lcForm label,#dimView label,#dmForm label,#configView label,#pmocView label,#pmForm label{font-size:12px;color:var(--mut);font-weight:600;display:block;margin:8px 0 3px}
+#lcForm input,#lcForm select,#lcForm textarea,#locView input,#dmForm input,#dmForm select,#dmForm textarea,#configView input:not([type=checkbox]),#configView select,#pmocView input,#pmForm input,#pmForm select,#pmForm textarea{width:100%;padding:11px;border:1px solid var(--bd);border-radius:10px;font-size:15px;font-family:inherit;box-sizing:border-box}
 .vchips{display:flex;flex-wrap:wrap;gap:6px}
 .vchip{padding:8px 12px;border:1px solid var(--bd);background:var(--card);border-radius:20px;font-size:13.5px;color:var(--tx)}
 .vchip.on{background:var(--priBtn);border-color:var(--priBtn);color:#fff}
@@ -231,7 +231,7 @@ details.vmaq .body{padding:0 14px 14px}
   * {-webkit-print-color-adjust:exact;print-color-adjust:exact}
   html,body{padding:0!important;margin:0!important;height:auto!important;min-height:0!important}
   main{display:none!important}
-  #bottomNav,#imgView,#dmFotoSheet,#pmFotoSheet,#sigModal,#etqModal,#devModal,#novModal,#fotoSheet,#splash,#updateBanner,.toast{display:none!important}
+  #bottomNav,#lcFotoSheet,#imgView,#dmFotoSheet,#pmFotoSheet,#sigModal,#etqModal,#devModal,#novModal,#fotoSheet,#splash,#updateBanner,.toast{display:none!important}
   .vistPrint{height:274mm;display:flex;flex-direction:column;overflow:hidden;padding:0 2px}
   .vistPrint table{font-size:6.6px!important}
   @media (orientation:landscape){.vistPrint{height:184mm}.vistPrint table{font-size:8.5px!important}}
@@ -282,6 +282,12 @@ details.vmaq .body{padding:0 14px 14px}
     <button class="btn g" onclick="pmocFotoOrigem('galeria')">🖼️ Escolher da galeria</button>
     <button class="btn g" style="border-color:var(--bd);color:var(--mut)" onclick="pmocFotoFecha()">Cancelar</button></div></div>
 <div id="imgView" class="hide" style="position:fixed;inset:0;background:rgba(0,0,0,.92);z-index:300;display:flex;align-items:center;justify-content:center;padding:10px" onclick="this.classList.add('hide')"><img style="max-width:100%;max-height:100%;object-fit:contain;touch-action:pinch-zoom"><div style="position:absolute;top:calc(14px + env(safe-area-inset-top));right:16px;color:#fff;font-size:34px;line-height:1">×</div></div>
+<div id="lcFotoSheet" class="hide" style="position:fixed;inset:0;background:rgba(10,25,40,.55);z-index:150;display:flex;align-items:flex-end;justify-content:center" onclick="if(event.target===this)lcFotoFecha()">
+  <div style="background:var(--card);width:100%;max-width:480px;border-radius:20px 20px 0 0;padding:18px 16px calc(18px + env(safe-area-inset-bottom))">
+    <b style="display:block;text-align:center;margin-bottom:8px">Adicionar foto</b>
+    <button class="btn" onclick="lcFotoOrigem('camera')">📷 Tirar foto agora</button>
+    <button class="btn g" onclick="lcFotoOrigem('galeria')">🖼️ Escolher da galeria</button>
+    <button class="btn g" style="border-color:var(--bd);color:var(--mut)" onclick="lcFotoFecha()">Cancelar</button></div></div>
 <div id="dmFotoSheet" class="hide" style="position:fixed;inset:0;background:rgba(10,25,40,.55);z-index:150;display:flex;align-items:flex-end;justify-content:center" onclick="if(event.target===this)dimFotoFecha()">
   <div style="background:var(--card);width:100%;max-width:480px;border-radius:20px 20px 0 0;padding:18px 16px calc(18px + env(safe-area-inset-bottom))">
     <b style="display:block;text-align:center;margin-bottom:8px">Adicionar foto</b>
@@ -510,6 +516,7 @@ details.vmaq .body{padding:0 14px 14px}
       <div><b id="nomeMenu"></b><br><small style="color:var(--mut)" id="funcaoMenu"></small></div>
     </div>
     <div class="menuList">
+      <div class="menuRow" onclick="abrirLoc()"><span class="ic">📍</span>Localizador de equipamento<span class="arrow">›</span></div>
       <div class="menuRow" onclick="abrirDim()"><span class="ic">📐</span>Dimensionamento (novas instalações)<span class="arrow">›</span></div>
       <div class="menuRow" onclick="abrirPmoc()"><span class="ic">📑</span>PMOC — Manutenção preventiva<span class="arrow">›</span></div>
       <div class="menuRow" onclick="abrirVistorias()"><span class="ic">🏛️</span>Vistorias de congregação<span class="arrow">›</span></div>
@@ -590,6 +597,12 @@ details.vmaq .body{padding:0 14px 14px}
     <button class="btn" style="margin-top:0" onclick="novaVistoria()">＋ Nova vistoria</button>
     <div class="card" style="margin-top:12px"><h2>Vistorias de congregação</h2><div id="vistList"><small style="color:var(--mut)">Carregando…</small></div></div>
   </section>
+
+  <section id="locView" class="hide">
+    <button class="btn" style="margin-top:0" onclick="lcNovo()">＋ Novo localizador</button>
+    <div class="card"><input id="lcBusca" placeholder="Buscar por código, tipo, endereço ou observação" oninput="lcFiltra()" style="width:100%"><div id="lcList" style="margin-top:8px"></div></div>
+  </section>
+  <section id="locFormView" class="hide"><div id="lcForm"></div></section>
 
   <section id="dimView" class="hide">
     <button class="btn" style="margin-top:0" onclick="dimNovo()">＋ Novo dimensionamento</button>
@@ -1170,9 +1183,9 @@ async function setVal(k,v,disp){
 }
 
 /* ---------- navegação ---------- */
-const TITULOS={home:'Fichas de Equipamentos',os:'Ordem de Serviço',menu:'Menu',equipe:'Equipe de Manutenção',alertas:'Pendências',vistorias:'Vistorias de congregação',vistForm:'Vistoria',pmoc:'PMOC',pmocForm:'Execução PMOC',config:'Configurações',dim:'Dimensionamento',dimForm:'Novo dimensionamento',regua:'Régua P-T',qrTool:'Criar QR code',buscaTec:'Busca técnica'};
-const VIEWS={home:'#home',os:'#osView',menu:'#menuView',equipe:'#equipeView',alertas:'#alertasView',vistorias:'#vistoriasView',vistForm:'#vistFormView',pmoc:'#pmocView',pmocForm:'#pmocFormView',config:'#configView',dim:'#dimView',dimForm:'#dimFormView',regua:'#reguaView',qrTool:'#qrToolView',buscaTec:'#buscaTecView',form:'#formView'};
-const NAV_DE={home:'navInicio',os:'navOS',alertas:'navAlertas',menu:'navMenu',vistorias:'navMenu',equipe:'navMenu',pmoc:'navMenu',config:'navMenu',dim:'navMenu'};
+const TITULOS={home:'Fichas de Equipamentos',os:'Ordem de Serviço',menu:'Menu',equipe:'Equipe de Manutenção',alertas:'Pendências',vistorias:'Vistorias de congregação',vistForm:'Vistoria',pmoc:'PMOC',pmocForm:'Execução PMOC',config:'Configurações',dim:'Dimensionamento',dimForm:'Novo dimensionamento',loc:'Localizador',locForm:'Localizador de equipamento',regua:'Régua P-T',qrTool:'Criar QR code',buscaTec:'Busca técnica'};
+const VIEWS={home:'#home',os:'#osView',menu:'#menuView',equipe:'#equipeView',alertas:'#alertasView',vistorias:'#vistoriasView',vistForm:'#vistFormView',pmoc:'#pmocView',pmocForm:'#pmocFormView',config:'#configView',dim:'#dimView',dimForm:'#dimFormView',loc:'#locView',locForm:'#locFormView',regua:'#reguaView',qrTool:'#qrToolView',buscaTec:'#buscaTecView',form:'#formView'};
+const NAV_DE={home:'navInicio',os:'navOS',alertas:'navAlertas',menu:'navMenu',vistorias:'navMenu',equipe:'navMenu',pmoc:'navMenu',config:'navMenu',dim:'navMenu',loc:'navMenu'};
 let viewAtual='home';
 function view(name){
   viewAtual=name;
@@ -1180,10 +1193,10 @@ function view(name){
   $('#stick').classList.toggle('hide',name!=='form');
   const principal=['home','os','menu','alertas'].includes(name);
   $('#btnBack').classList.toggle('hide',name==='home'||name==='os'||name==='menu');
-  $('#bottomNav').classList.toggle('hide',name==='form'||name==='vistForm'||name==='pmocForm'||name==='dimForm'||!perfil);
+  $('#bottomNav').classList.toggle('hide',name==='form'||name==='vistForm'||name==='pmocForm'||name==='dimForm'||name==='locForm'||!perfil);
   document.querySelectorAll('#bottomNav button').forEach(b=>b.classList.toggle('on',b.id===NAV_DE[name]));
   $('#title').textContent=name==='form'?(cur?cur.id:''):(TITULOS[name]||'');
-  document.body.style.paddingBottom=(name==='form'||name==='vistForm'||name==='pmocForm'||name==='dimForm'||!perfil)?'':'72px';
+  document.body.style.paddingBottom=(name==='form'||name==='vistForm'||name==='pmocForm'||name==='dimForm'||name==='locForm'||!perfil)?'':'72px';
   window.scrollTo(0,0);
 }
 window.view=view;
@@ -1199,7 +1212,8 @@ $('#btnBack').onclick=()=>{
   if(viewAtual==='vistForm')return abrirVistorias();
   if(viewAtual==='pmocForm')return abrirPmoc();
   if(viewAtual==='dimForm')return abrirDim();
-  if(viewAtual==='pmoc'||viewAtual==='config'||viewAtual==='dim')return view('menu');
+  if(viewAtual==='locForm')return abrirLoc();
+  if(viewAtual==='pmoc'||viewAtual==='config'||viewAtual==='dim'||viewAtual==='loc')return view('menu');
   if(viewAtual==='vistorias'||viewAtual==='equipe')return view('menu');
   goHome();
 };
@@ -1349,6 +1363,7 @@ window.openFicha=openFicha;
 function normId(v){v=v.trim().toUpperCase();const n=v.replace(/\D/g,'');return n?'EQ-'+pad(parseInt(n)):v}
 async function searchId(){
   const raw=$('#searchBox').value;if(!raw.trim())return;
+  if(/^\s*LC[-\s]?\d+\s*$/i.test(raw)){await lcAbrirPorTexto(raw);return}
   const id=normId(raw);
   await openFicha(id);
 }
@@ -1468,8 +1483,9 @@ $('#qrIdInput').addEventListener('keydown',e=>{if(e.key==='Enter')buscarParaQr()
    Preencha BUSCA_TEC_URL com a URL da função "buscaTecnica" depois do deploy.
 ======================================================== */
 const BUSCA_TEC_URL='';
-const APP_VERSAO='2026-11-16';
+const APP_VERSAO='2026-11-17';
 const NOVIDADES=[
+  ['📍','Novo Localizador de equipamento: registro simples com tipo, BTU/h, endereço no mapa, observações, fotos e etiqueta com QR'],
   ['🖼️','Fotos maiores nas fichas, com toque para ampliar em tela cheia; histórico de procedimentos removido da ficha e do PDF'],
   ['📐','Novo módulo Dimensionamento: carga térmica por ambiente, equipamentos sugeridos, localização no mapa, fotos do local e relatório em PDF'],
   ['🌙','Tema escuro (automático, claro ou escuro) e avisos no celular com PMOC vencido e fichas pendentes, em Configurações'],
@@ -2409,10 +2425,132 @@ Object.assign(window,{dimMarca,abrirDim,dimNovo,dimAbrir,dimCampo,dimAmb,dimAddA
 
 
 document.addEventListener('click',e=>{
-  const im=e.target.closest&&e.target.closest('.fotos img,#pmForm img,#dmForm img');
+  const im=e.target.closest&&e.target.closest('.fotos img,#pmForm img,#dmForm img,#lcForm img');
   if(!im||!im.src||im.closest('#sigModal'))return;
   const v=document.getElementById('imgView');v.querySelector('img').src=im.src;v.classList.remove('hide');
 });
+
+/* ========================================================
+   LOCALIZADOR DE EQUIPAMENTO — registro simples (tipo, BTU/h, endereço, observação, fotos, etiqueta)
+   Coleção "localizadores"; ID LC-0001 (contador em counters/localizadores)
+   ======================================================== */
+const LC_TIPOS=['Split hi-wall','Split cassete','Split piso-teto','Split duto','Ar de janela','Fan coil','Chiller','Câmara fria','Outro'];
+let lc=null,lcTimer=null,lcLista=[],lcOp=[],lcSalvando=false;
+const lcErro=e=>toast(e&&e.code==='permission-denied'?'Sem permissão no Firestore: publique a regra da coleção "localizadores".':'Não foi possível salvar/carregar o localizador.');
+async function lcProxId(){
+  const ref=doc(db,'counters','localizadores');
+  const n=await runTransaction(db,async tx=>{const s=await tx.get(ref);const c=s.exists()?s.data().next:1;tx.set(ref,{next:c+1});return c});
+  return 'LC-'+String(n).padStart(4,'0');
+}
+const lcBtuFmt=b=>b?Number(String(b).replace(/\D/g,'')).toLocaleString('pt-BR')+' BTU/h':'';
+const lcCurto=e=>(e||'').split(',').slice(0,2).join(',').trim().slice(0,34);
+async function abrirLoc(){
+  view('loc');$('#lcList').innerHTML='<small style="color:var(--mut)">Carregando…</small>';
+  try{
+    const s=await getDocs(collection(db,'localizadores'));
+    lcLista=s.docs.map(d=>({id:d.id,...d.data()})).sort((a,b)=>(b.criadoEm||0)-(a.criadoEm||0));
+    lcFiltra();
+  }catch(e){$('#lcList').innerHTML='<small style="color:var(--no)">Não foi possível carregar.</small>';lcErro(e)}
+}
+function lcFiltra(){
+  const q=(($('#lcBusca')||{}).value||'').trim().toLowerCase();
+  const l=lcLista.filter(r=>!q||[r.id,r.tipo,r.btu,r.endereco,r.obs].join(' ').toLowerCase().includes(q));
+  $('#lcList').innerHTML=l.length?l.map(r=>`<div class="item" onclick="lcAbrir('${r.id}')">
+    ${r.fotos&&r.fotos[0]?`<img src="${r.fotos[0]}">`:'<div class="ph" style="display:flex;align-items:center;justify-content:center;font-size:22px">📍</div>'}
+    <div><b>${esc(r.id)} · ${esc(r.tipo||'Equipamento')}</b><small>${r.btu?esc(lcBtuFmt(r.btu))+' · ':''}${esc((r.endereco||'Sem endereço').slice(0,60))}</small></div></div>`).join(''):'<small style="color:var(--mut)">Nenhum registro encontrado.</small>';
+}
+function lcNovo(){
+  lc={id:null,tipo:'Split hi-wall',btu:'',endereco:'',lat:null,lon:null,obs:'',fotos:[],criadoPorUid:perfil.uid,criadoPor:perfil.nome+' '+perfil.sobrenome,criadoEm:Date.now()};
+  lcRender();view('locForm');
+}
+async function lcAbrir(id){
+  try{
+    const s=await getDoc(doc(db,'localizadores',id));if(!s.exists()){toast('Registro '+id+' não encontrado.');return}
+    lc={id,fotos:[],...s.data()};lcRender();view('locForm');
+  }catch(e){lcErro(e)}
+}
+async function lcAbrirPorTexto(txt){
+  const n=String(txt).replace(/\D/g,'');await lcAbrir('LC-'+String(parseInt(n)).padStart(4,'0'));
+}
+const lcDono=()=>lc&&lc.criadoPorUid===perfil.uid;
+function lcSalvar(){clearTimeout(lcTimer);lcTimer=setTimeout(lcSalvarAgora,800)}
+async function lcSalvarAgora(){
+  if(!lc||!lcDono()||lcSalvando)return;
+  if(!lc.btu&&!lc.endereco&&!lc.obs&&!lc.fotos.length)return;
+  lcSalvando=true;
+  try{
+    if(!lc.id){lc.id=await lcProxId();const t=$('#lcIdChip');if(t)t.textContent=lc.id}
+    const {id,...data}=lc;data.atualizadoEm=Date.now();
+    await setDoc(doc(db,'localizadores',id),data);
+    const t=$('#lcSaved');if(t)t.textContent='✔ Salvo';
+  }catch(e){lcErro(e)}
+  lcSalvando=false;
+}
+function lcRender(){
+  const ro=!lcDono(),d=ro?'disabled':'';
+  const mapa=lc.lat!=null?`<a href="https://www.google.com/maps?q=${lc.lat},${lc.lon}" target="_blank" rel="noopener" style="display:block;margin-top:6px;font-size:13px;color:var(--pri)">🗺️ Abrir no mapa ↗</a>`:(lc.endereco?`<a href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(lc.endereco)}" target="_blank" rel="noopener" style="display:block;margin-top:6px;font-size:13px;color:var(--pri)">🗺️ Abrir no mapa ↗</a>`:'');
+  const fotos=`<div class="fotos">${lc.fotos.map((f,i)=>`<div><img src="${f}">${ro?'':`<i onclick="lcDelFoto(${i})">×</i>`}</div>`).join('')}</div>${ro||lc.fotos.length>=6?'':`<button type="button" class="btn g" style="margin-top:8px;padding:11px" onclick="lcFoto()">📷 Adicionar foto</button>`}`;
+  const tipoSel=LC_TIPOS.includes(lc.tipo)?lc.tipo:'Outro';
+  $('#lcForm').innerHTML=`
+  <div class="card"><div style="display:flex;align-items:center;gap:10px;margin-bottom:6px"><div id="lcIdChip" style="background:var(--pri2);color:var(--pri);font-weight:800;font-size:22px;padding:8px 16px;border-radius:30px">${esc(lc.id||'Novo')}</div><small style="color:var(--mut)">${lc.id?'Registrado por '+esc(lc.criadoPor||''):'O código é gerado ao salvar'}</small></div>
+    <label>Tipo de equipamento</label><select ${d} onchange="lcTipo(this.value)">${LC_TIPOS.map(t=>`<option${tipoSel===t?' selected':''}>${t}</option>`).join('')}</select>
+    ${tipoSel==='Outro'?`<input ${d} placeholder="Descreva o tipo" value="${esc(LC_TIPOS.includes(lc.tipo)?'':lc.tipo)}" oninput="lcCampo('tipo',this.value)" style="margin-top:6px">`:''}
+    <label>Capacidade (BTU/h)</label><input inputmode="numeric" list="lcBtus" ${d} placeholder="ex.: 12000" value="${esc(lc.btu)}" oninput="lcCampo('btu',this.value)">
+    <datalist id="lcBtus">${[7000,9000,12000,18000,24000,30000,36000,48000,60000].map(b=>`<option value="${b}">`).join('')}</datalist>
+    <label>Endereço / localização</label>
+    <div class="row" style="gap:6px;flex-wrap:nowrap"><input id="lcEnd" value="${esc(lc.endereco)}" placeholder="Rua, número, bairro, cidade" ${d} autocomplete="off" oninput="lcCampo('endereco',this.value)" style="flex:1">
+    ${ro?'':`<button class="btn g" style="margin:0;width:48px;padding:0;flex:none" onclick="lcBuscarEnd()">🔍</button><button class="btn g" style="margin:0;width:48px;padding:0;flex:none" onclick="lcLocal()">📍</button>`}</div>
+    <div id="lcEndRes" style="margin-top:6px"></div>${mapa}
+    <label>Observações</label><textarea rows="3" ${d} placeholder="Ex.: sala, andar, referência do local, estado do equipamento" oninput="lcCampo('obs',this.value)" style="width:100%">${esc(lc.obs)}</textarea></div>
+  <div class="card"><h2>Fotos</h2>${fotos}</div>
+  <small id="lcSaved" style="color:var(--ok)">${ro?'Somente o autor pode editar':''}</small>
+  <button class="btn" onclick="lcEtiqueta()">🏷️ Imprimir etiqueta</button>
+  ${lcDono()&&lc.id?'<button class="btn g" style="color:var(--no);border-color:var(--no)" onclick="lcExcluir()">🗑️ Excluir registro</button>':''}`;
+}
+function lcCampo(k,v){lc[k]=v;lcSalvar()}
+function lcTipo(v){lc.tipo=v==='Outro'?'':v;lcRender();lcSalvar()}
+async function lcEtiqueta(){
+  if(lcDono()&&(!lc.id)){await lcSalvarAgora()}
+  if(!lc.id){toast('Preencha ao menos um dado (capacidade, endereço, observação ou foto) para gerar o código.');return}
+  prepararEtiqueta(lc.id,{congDestino:lcCurto(lc.endereco),modelo:lc.tipo,capacidade:lcBtuFmt(lc.btu)});
+  abrirEtiqueta(lc.id,{congDestino:lcCurto(lc.endereco),modelo:lc.tipo,capacidade:lcBtuFmt(lc.btu)});
+}
+async function lcBuscarEnd(){
+  const q=(($('#lcEnd').value||'').trim()).trim(),box=$('#lcEndRes');
+  if(!q){toast('Digite o endereço ou o nome do local.');return}
+  box.innerHTML='<small style="color:var(--mut)">Buscando no mapa…</small>';
+  try{
+    const r=await fetch('https://nominatim.openstreetmap.org/search?format=jsonv2&addressdetails=0&limit=5&countrycodes=br&accept-language=pt-BR&q='+encodeURIComponent(q));
+    if(!r.ok)throw new Error(r.status);lcOp=await r.json();
+    box.innerHTML=lcOp.length?lcOp.map((o,i)=>`<div class="item" style="padding:8px 4px" onclick="lcEscolhe(${i})"><div style="font-size:18px">📍</div><div style="font-size:13px">${esc(o.display_name)}</div></div>`).join(''):'<small style="color:var(--mut)">Nenhum resultado. Inclua o bairro e a cidade.</small>';
+  }catch(e){box.innerHTML='<small style="color:var(--no)">Não foi possível buscar agora. Verifique a internet.</small>'}
+}
+function lcSetEnd(t,la,lo){lc.endereco=t;if(la!==undefined){lc.lat=la;lc.lon=lo}lcRender();lcSalvarAgora()}
+function lcEscolhe(i){const o=lcOp[i];if(o)lcSetEnd(o.display_name,+o.lat,+o.lon)}
+function lcLocal(){
+  if(!navigator.geolocation){toast('Este aparelho não permite localização.');return}
+  const box=$('#lcEndRes');box.innerHTML='<small style="color:var(--mut)">Obtendo localização…</small>';
+  navigator.geolocation.getCurrentPosition(async pos=>{
+    const la=pos.coords.latitude,lo=pos.coords.longitude;
+    try{const r=await fetch(`https://nominatim.openstreetmap.org/reverse?format=jsonv2&accept-language=pt-BR&lat=${la}&lon=${lo}`);const j=await r.json();lcSetEnd(j.display_name||(la.toFixed(5)+', '+lo.toFixed(5)),la,lo)}
+    catch(e){lcSetEnd(la.toFixed(5)+', '+lo.toFixed(5),la,lo);toast('Foram salvas apenas as coordenadas (sem internet para localizar o endereço).')}
+  },err=>{box.innerHTML='<small style="color:var(--no)">'+(err.code===1?'Permissão de localização negada. Libere nas configurações do navegador.':'Não foi possível obter a localização.')+'</small>'},{enableHighAccuracy:true,timeout:15000});
+}
+function lcFoto(){$('#lcFotoSheet').classList.remove('hide')}
+function lcFotoFecha(){$('#lcFotoSheet').classList.add('hide')}
+function lcFotoOrigem(modo){
+  lcFotoFecha();if(!lcDono())return;
+  const i=document.createElement('input');i.type='file';i.accept='image/*';if(modo==='camera')i.setAttribute('capture','environment');
+  i.onchange=async e=>{const f=e.target.files[0];if(!f)return;toast('Processando foto…');
+    try{lc.fotos.push(await pmocCompress(f));lcRender();lcSalvarAgora()}catch(x){toast('Falha ao processar a foto.')}};
+  i.click();
+}
+function lcDelFoto(i){if(!lcDono())return;if(confirm('Remover esta foto?')){lc.fotos.splice(i,1);lcRender();lcSalvar()}}
+async function lcExcluir(){
+  if(!lcDono()||!lc.id)return;if(!confirm('Excluir '+lc.id+'? Não dá para desfazer.'))return;
+  try{await deleteDoc(doc(db,'localizadores',lc.id));toast('Registro excluído.');abrirLoc()}catch(e){lcErro(e)}
+}
+Object.assign(window,{abrirLoc,lcFiltra,lcNovo,lcAbrir,lcCampo,lcTipo,lcEtiqueta,lcBuscarEnd,lcEscolhe,lcLocal,lcFoto,lcFotoFecha,lcFotoOrigem,lcDelFoto,lcExcluir});
 
 /* ========================================================
    ETIQUETA + IMPRESSORA BLUETOOTH (TSPL, 203 dpi = 8 pontos/mm)
