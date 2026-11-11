@@ -21,7 +21,7 @@ html{height:100%;overscroll-behavior-y:none}
 body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif;background:var(--bg);color:var(--tx);font-size:16px;min-height:100%;overscroll-behavior-y:none;-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
 input,textarea,select{-webkit-user-select:text;user-select:text}
 input,textarea,select{color:var(--tx)}
-#lcForm input,#lcForm select,#lcForm textarea,#locView input,#dmForm input,#dmForm select,#dmForm textarea,#configView input:not([type=checkbox]),#configView select,#pmocView input,#pmForm input,#pmForm select,#pmForm textarea{background:var(--card)}
+#dsForm input:not([type=checkbox]),#dsForm select,#dsForm textarea,#descView input,#lcForm input,#lcForm select,#lcForm textarea,#locView input,#dmForm input,#dmForm select,#dmForm textarea,#configView input:not([type=checkbox]),#configView select,#pmocView input,#pmForm input,#pmForm select,#pmForm textarea{background:var(--card)}
 header{background:var(--hdr);color:#fff;padding:calc(14px + env(safe-area-inset-top)) calc(16px + env(safe-area-inset-right)) 14px calc(16px + env(safe-area-inset-left));display:flex;align-items:center;gap:10px;position:sticky;top:0;z-index:5}
 header h1{font-size:18px;margin:0;flex:1}
 header button{background:rgba(255,255,255,.18);color:#fff;border:0;border-radius:8px;padding:8px 12px;font-size:15px}
@@ -151,8 +151,8 @@ header .iconBtn{position:relative}
 #fotoSheet .sheet{background:var(--card);width:100%;max-width:480px;border-radius:20px 20px 0 0;padding:18px 16px calc(18px + env(safe-area-inset-bottom));animation:txtUp .25s ease both}
 #fotoSheet .sheet b{display:block;text-align:center;font-size:15px;margin-bottom:4px}
 /* vistoria */
-#lcForm label,#dimView label,#dmForm label,#configView label,#pmocView label,#pmForm label{font-size:12px;color:var(--mut);font-weight:600;display:block;margin:8px 0 3px}
-#lcForm input,#lcForm select,#lcForm textarea,#locView input,#dmForm input,#dmForm select,#dmForm textarea,#configView input:not([type=checkbox]),#configView select,#pmocView input,#pmForm input,#pmForm select,#pmForm textarea{width:100%;padding:11px;border:1px solid var(--bd);border-radius:10px;font-size:15px;font-family:inherit;box-sizing:border-box}
+#dsForm label,#lcForm label,#dimView label,#dmForm label,#configView label,#pmocView label,#pmForm label{font-size:12px;color:var(--mut);font-weight:600;display:block;margin:8px 0 3px}
+#dsForm input:not([type=checkbox]),#dsForm select,#dsForm textarea,#descView input,#lcForm input,#lcForm select,#lcForm textarea,#locView input,#dmForm input,#dmForm select,#dmForm textarea,#configView input:not([type=checkbox]),#configView select,#pmocView input,#pmForm input,#pmForm select,#pmForm textarea{width:100%;padding:11px;border:1px solid var(--bd);border-radius:10px;font-size:15px;font-family:inherit;box-sizing:border-box}
 .vchips{display:flex;flex-wrap:wrap;gap:6px}
 .vchip{padding:8px 12px;border:1px solid var(--bd);background:var(--card);border-radius:20px;font-size:13.5px;color:var(--tx)}
 .vchip.on{background:var(--priBtn);border-color:var(--priBtn);color:#fff}
@@ -231,7 +231,7 @@ details.vmaq .body{padding:0 14px 14px}
   * {-webkit-print-color-adjust:exact;print-color-adjust:exact}
   html,body{padding:0!important;margin:0!important;height:auto!important;min-height:0!important}
   main{display:none!important}
-  #bottomNav,#lcFotoSheet,#imgView,#dmFotoSheet,#pmFotoSheet,#sigModal,#etqModal,#devModal,#novModal,#fotoSheet,#splash,#updateBanner,.toast{display:none!important}
+  #bottomNav,#dsFotoSheet,#lcFotoSheet,#imgView,#dmFotoSheet,#pmFotoSheet,#sigModal,#etqModal,#devModal,#novModal,#fotoSheet,#splash,#updateBanner,.toast{display:none!important}
   .vistPrint{height:274mm;display:flex;flex-direction:column;overflow:hidden;padding:0 2px}
   .vistPrint table{font-size:6.6px!important}
   @media (orientation:landscape){.vistPrint{height:184mm}.vistPrint table{font-size:8.5px!important}}
@@ -282,6 +282,12 @@ details.vmaq .body{padding:0 14px 14px}
     <button class="btn g" onclick="pmocFotoOrigem('galeria')">🖼️ Escolher da galeria</button>
     <button class="btn g" style="border-color:var(--bd);color:var(--mut)" onclick="pmocFotoFecha()">Cancelar</button></div></div>
 <div id="imgView" class="hide" style="position:fixed;inset:0;background:rgba(0,0,0,.92);z-index:300;display:flex;align-items:center;justify-content:center;padding:10px" onclick="this.classList.add('hide')"><img style="max-width:100%;max-height:100%;object-fit:contain;touch-action:pinch-zoom"><div style="position:absolute;top:calc(14px + env(safe-area-inset-top));right:16px;color:#fff;font-size:34px;line-height:1">×</div></div>
+<div id="dsFotoSheet" class="hide" style="position:fixed;inset:0;background:rgba(10,25,40,.55);z-index:150;display:flex;align-items:flex-end;justify-content:center" onclick="if(event.target===this)dsFotoFecha()">
+  <div style="background:var(--card);width:100%;max-width:480px;border-radius:20px 20px 0 0;padding:18px 16px calc(18px + env(safe-area-inset-bottom))">
+    <b style="display:block;text-align:center;margin-bottom:8px">Adicionar foto</b>
+    <button class="btn" onclick="dsFotoOrigem('camera')">📷 Tirar foto agora</button>
+    <button class="btn g" onclick="dsFotoOrigem('galeria')">🖼️ Escolher da galeria</button>
+    <button class="btn g" style="border-color:var(--bd);color:var(--mut)" onclick="dsFotoFecha()">Cancelar</button></div></div>
 <div id="lcFotoSheet" class="hide" style="position:fixed;inset:0;background:rgba(10,25,40,.55);z-index:150;display:flex;align-items:flex-end;justify-content:center" onclick="if(event.target===this)lcFotoFecha()">
   <div style="background:var(--card);width:100%;max-width:480px;border-radius:20px 20px 0 0;padding:18px 16px calc(18px + env(safe-area-inset-bottom))">
     <b style="display:block;text-align:center;margin-bottom:8px">Adicionar foto</b>
@@ -520,7 +526,7 @@ details.vmaq .body{padding:0 14px 14px}
       <div class="menuRow" onclick="abrirDim()"><span class="ic">📐</span>Dimensionamento (novas instalações)<span class="arrow">›</span></div>
       <div class="menuRow" onclick="abrirPmoc()"><span class="ic">📑</span>PMOC — Manutenção preventiva<span class="arrow">›</span></div>
       <div class="menuRow" onclick="abrirVistorias()"><span class="ic">🏛️</span>Vistorias de congregação<span class="arrow">›</span></div>
-      <div class="menuRow" onclick="avisoDev('descarte')"><span class="ic">♻️</span>Descarte de equipamento<span class="arrow">›</span></div>
+      <div class="menuRow" onclick="abrirDescartes()"><span class="ic">♻️</span>Descarte de equipamento<span class="arrow">›</span></div>
       <div class="menuRow" onclick="openEquipe()"><span class="ic">👥</span>Equipe de manutenção<span class="arrow">›</span></div>
       <div class="menuRow" onclick="exportarTudoCSV()"><span class="ic">📊</span>Exportar tudo (CSV/Excel)<span class="arrow">›</span></div>
       <div class="menuRow" onclick="abrirConfig()"><span class="ic">⚙️</span>Configurações<span class="arrow">›</span></div>
@@ -597,6 +603,12 @@ details.vmaq .body{padding:0 14px 14px}
     <button class="btn" style="margin-top:0" onclick="novaVistoria()">＋ Nova vistoria</button>
     <div class="card" style="margin-top:12px"><h2>Vistorias de congregação</h2><div id="vistList"><small style="color:var(--mut)">Carregando…</small></div></div>
   </section>
+
+  <section id="descView" class="hide">
+    <button class="btn" style="margin-top:0" onclick="dsNovo()">＋ Novo descarte</button>
+    <div class="card"><input id="dsBusca" placeholder="Buscar por código, equipamento, local ou congregação" oninput="dsFiltra()" style="width:100%"><datalist id="dsEquipList"></datalist><div id="dsList" style="margin-top:8px"></div></div>
+  </section>
+  <section id="descFormView" class="hide"><div id="dsForm"></div></section>
 
   <section id="locView" class="hide">
     <button class="btn" style="margin-top:0" onclick="lcNovo()">＋ Novo localizador</button>
@@ -1183,9 +1195,9 @@ async function setVal(k,v,disp){
 }
 
 /* ---------- navegação ---------- */
-const TITULOS={home:'Fichas de Equipamentos',os:'Ordem de Serviço',menu:'Menu',equipe:'Equipe de Manutenção',alertas:'Pendências',vistorias:'Vistorias de congregação',vistForm:'Vistoria',pmoc:'PMOC',pmocForm:'Execução PMOC',config:'Configurações',dim:'Dimensionamento',dimForm:'Novo dimensionamento',loc:'Localizador',locForm:'Localizador de equipamento',regua:'Régua P-T',qrTool:'Criar QR code',buscaTec:'Busca técnica'};
-const VIEWS={home:'#home',os:'#osView',menu:'#menuView',equipe:'#equipeView',alertas:'#alertasView',vistorias:'#vistoriasView',vistForm:'#vistFormView',pmoc:'#pmocView',pmocForm:'#pmocFormView',config:'#configView',dim:'#dimView',dimForm:'#dimFormView',loc:'#locView',locForm:'#locFormView',regua:'#reguaView',qrTool:'#qrToolView',buscaTec:'#buscaTecView',form:'#formView'};
-const NAV_DE={home:'navInicio',os:'navOS',alertas:'navAlertas',menu:'navMenu',vistorias:'navMenu',equipe:'navMenu',pmoc:'navMenu',config:'navMenu',dim:'navMenu',loc:'navMenu'};
+const TITULOS={home:'Fichas de Equipamentos',os:'Ordem de Serviço',menu:'Menu',equipe:'Equipe de Manutenção',alertas:'Pendências',vistorias:'Vistorias de congregação',vistForm:'Vistoria',pmoc:'PMOC',pmocForm:'Execução PMOC',config:'Configurações',dim:'Dimensionamento',dimForm:'Novo dimensionamento',loc:'Localizador',locForm:'Localizador de equipamento',desc:'Descarte de equipamento',descForm:'Descarte',regua:'Régua P-T',qrTool:'Criar QR code',buscaTec:'Busca técnica'};
+const VIEWS={home:'#home',os:'#osView',menu:'#menuView',equipe:'#equipeView',alertas:'#alertasView',vistorias:'#vistoriasView',vistForm:'#vistFormView',pmoc:'#pmocView',pmocForm:'#pmocFormView',config:'#configView',dim:'#dimView',dimForm:'#dimFormView',loc:'#locView',locForm:'#locFormView',desc:'#descView',descForm:'#descFormView',regua:'#reguaView',qrTool:'#qrToolView',buscaTec:'#buscaTecView',form:'#formView'};
+const NAV_DE={home:'navInicio',os:'navOS',alertas:'navAlertas',menu:'navMenu',vistorias:'navMenu',equipe:'navMenu',pmoc:'navMenu',config:'navMenu',dim:'navMenu',loc:'navMenu',desc:'navMenu'};
 let viewAtual='home';
 function view(name){
   viewAtual=name;
@@ -1193,10 +1205,10 @@ function view(name){
   $('#stick').classList.toggle('hide',name!=='form');
   const principal=['home','os','menu','alertas'].includes(name);
   $('#btnBack').classList.toggle('hide',name==='home'||name==='os'||name==='menu');
-  $('#bottomNav').classList.toggle('hide',name==='form'||name==='vistForm'||name==='pmocForm'||name==='dimForm'||name==='locForm'||!perfil);
+  $('#bottomNav').classList.toggle('hide',name==='form'||name==='vistForm'||name==='pmocForm'||name==='dimForm'||name==='locForm'||name==='descForm'||!perfil);
   document.querySelectorAll('#bottomNav button').forEach(b=>b.classList.toggle('on',b.id===NAV_DE[name]));
   $('#title').textContent=name==='form'?(cur?cur.id:''):(TITULOS[name]||'');
-  document.body.style.paddingBottom=(name==='form'||name==='vistForm'||name==='pmocForm'||name==='dimForm'||name==='locForm'||!perfil)?'':'72px';
+  document.body.style.paddingBottom=(name==='form'||name==='vistForm'||name==='pmocForm'||name==='dimForm'||name==='locForm'||name==='descForm'||!perfil)?'':'72px';
   window.scrollTo(0,0);
 }
 window.view=view;
@@ -1213,7 +1225,8 @@ $('#btnBack').onclick=()=>{
   if(viewAtual==='pmocForm')return abrirPmoc();
   if(viewAtual==='dimForm')return abrirDim();
   if(viewAtual==='locForm')return abrirLoc();
-  if(viewAtual==='pmoc'||viewAtual==='config'||viewAtual==='dim'||viewAtual==='loc')return view('menu');
+  if(viewAtual==='descForm')return abrirDescartes();
+  if(viewAtual==='pmoc'||viewAtual==='config'||viewAtual==='dim'||viewAtual==='loc'||viewAtual==='desc')return view('menu');
   if(viewAtual==='vistorias'||viewAtual==='equipe')return view('menu');
   goHome();
 };
@@ -1483,8 +1496,9 @@ $('#qrIdInput').addEventListener('keydown',e=>{if(e.key==='Enter')buscarParaQr()
    Preencha BUSCA_TEC_URL com a URL da função "buscaTecnica" depois do deploy.
 ======================================================== */
 const BUSCA_TEC_URL='';
-const APP_VERSAO='2026-11-17';
+const APP_VERSAO='2026-11-18';
 const NOVIDADES=[
+  ['♻️','Novo módulo Descarte de equipamento: fotos, descrição, local de descarte, assinatura de quem descartou e termo em PDF'],
   ['📍','Novo Localizador de equipamento: registro simples com tipo, BTU/h, endereço no mapa, observações, fotos e etiqueta com QR'],
   ['🖼️','Fotos maiores nas fichas, com toque para ampliar em tela cheia; histórico de procedimentos removido da ficha e do PDF'],
   ['📐','Novo módulo Dimensionamento: carga térmica por ambiente, equipamentos sugeridos, localização no mapa, fotos do local e relatório em PDF'],
@@ -1949,9 +1963,9 @@ function pmocFotoOrigem(modo){
 }
 function pmocDelFoto(tp,i){if(!pmDono())return;if(confirm('Remover esta foto?')){pm.midia[tp].splice(i,1);pmMidiaSujo=true;pmocRender();pmocSalvar()}}
 /* assinatura na tela */
-let sgK=null,sgC=null,sgX=null,sgDesenhou=false;
-function pmocAssinar(k){
-  sgK=k;$('#sigModal').classList.remove('hide');sgC=$('#sigCanvas');
+let sgK=null,sgC=null,sgX=null,sgDesenhou=false,sgCb=null;
+function pmocAssinar(k,cb){
+  sgK=k;sgCb=cb||null;$('#sigModal').classList.remove('hide');sgC=$('#sigCanvas');
   const w=Math.min(window.innerWidth-48,420),h=160,dpr=1;sgC.width=w;sgC.height=h;sgC.style.width=w+'px';sgC.style.height=h+'px';
   sgX=sgC.getContext('2d');sgX.fillStyle='#fff';sgX.fillRect(0,0,w,h);sgX.lineWidth=2.2;sgX.lineCap='round';sgX.strokeStyle='#000';sgDesenhou=false;
   let des=false;
@@ -1963,9 +1977,11 @@ function pmocAssinar(k){
 function pmocSigLimpar(){if(!sgX)return;sgX.fillStyle='#fff';sgX.fillRect(0,0,sgC.width,sgC.height);sgDesenhou=false}
 function pmocSigOk(){
   if(!sgDesenhou){toast('Faça a assinatura antes de confirmar.');return}
-  pm.midia[sgK]=sgC.toDataURL('image/png');pmMidiaSujo=true;$('#sigModal').classList.add('hide');pmocRender();pmocSalvarAgora();
+  const url=sgC.toDataURL('image/png');$('#sigModal').classList.add('hide');
+  if(sgCb){const cb=sgCb;sgCb=null;cb(url);return}
+  pm.midia[sgK]=url;pmMidiaSujo=true;pmocRender();pmocSalvarAgora();
 }
-function pmocSigFechar(){$('#sigModal').classList.add('hide')}
+function pmocSigFechar(){sgCb=null;$('#sigModal').classList.add('hide')}
 async function pmocFinalizar(){
   if(!pmDono())return;
   const falt=PM_ITENS.filter(([k])=>!pm.checklist[k]).length;
@@ -2425,7 +2441,7 @@ Object.assign(window,{dimMarca,abrirDim,dimNovo,dimAbrir,dimCampo,dimAmb,dimAddA
 
 
 document.addEventListener('click',e=>{
-  const im=e.target.closest&&e.target.closest('.fotos img,#pmForm img,#dmForm img,#lcForm img');
+  const im=e.target.closest&&e.target.closest('.fotos img,#pmForm img,#dmForm img,#lcForm img,#dsForm img');
   if(!im||!im.src||im.closest('#sigModal'))return;
   const v=document.getElementById('imgView');v.querySelector('img').src=im.src;v.classList.remove('hide');
 });
@@ -2551,6 +2567,122 @@ async function lcExcluir(){
   try{await deleteDoc(doc(db,'localizadores',lc.id));toast('Registro excluído.');abrirLoc()}catch(e){lcErro(e)}
 }
 Object.assign(window,{abrirLoc,lcFiltra,lcNovo,lcAbrir,lcCampo,lcTipo,lcEtiqueta,lcBuscarEnd,lcEscolhe,lcLocal,lcFoto,lcFotoFecha,lcFotoOrigem,lcDelFoto,lcExcluir});
+
+/* ========================================================
+   DESCARTE DE EQUIPAMENTO — registro com fotos, descrição, local de descarte e assinatura
+   Coleção "descartes"; código DS-0001 (contador em counters/descartes)
+   ======================================================== */
+let ds=null,dsTimer=null,dsLista=[],dsSalvando=false;
+const dsErro=e=>toast(e&&e.code==='permission-denied'?'Sem permissão no Firestore: publique a regra da coleção "descartes".':'Não foi possível salvar/carregar o descarte.');
+async function dsProxId(){
+  const ref=doc(db,'counters','descartes');
+  const n=await runTransaction(db,async tx=>{const s=await tx.get(ref);const c=s.exists()?s.data().next:1;tx.set(ref,{next:c+1});return c});
+  return 'DS-'+String(n).padStart(4,'0');
+}
+async function abrirDescartes(){
+  view('desc');$('#dsList').innerHTML='<small style="color:var(--mut)">Carregando…</small>';
+  try{
+    if(!equipCache.length){try{equipCache=await dbAll()}catch(e){}}
+    $('#dsEquipList').innerHTML=equipCache.map(r=>`<option value="${esc(r.id)}">${esc((r.d&&r.d.modelo)||'')}</option>`).join('');
+    const s=await getDocs(collection(db,'descartes'));
+    dsLista=s.docs.map(d=>({id:d.id,...d.data()})).sort((a,b)=>(b.criadoEm||0)-(a.criadoEm||0));
+    dsFiltra();
+  }catch(e){$('#dsList').innerHTML='<small style="color:var(--no)">Não foi possível carregar.</small>';dsErro(e)}
+}
+function dsFiltra(){
+  const q=(($('#dsBusca')||{}).value||'').trim().toLowerCase();
+  const l=dsLista.filter(r=>!q||[r.id,r.equipId,r.equipamento,r.localDescarte,r.congregacao,r.descricao].join(' ').toLowerCase().includes(q));
+  $('#dsList').innerHTML=l.length?l.map(r=>`<div class="item" onclick="dsAbrir('${r.id}')">
+    ${r.fotos&&r.fotos[0]?`<img src="${r.fotos[0]}">`:'<div class="ph" style="display:flex;align-items:center;justify-content:center;font-size:22px">♻️</div>'}
+    <div><b>${esc(r.id)} · ${esc(r.equipId||r.equipamento||'Equipamento')}</b><small>${pmBR(r.data)} · ${esc((r.localDescarte||'Sem local').slice(0,45))} · ${r.assinatura?'✔ assinado':'⏳ sem assinatura'}</small></div></div>`).join(''):'<small style="color:var(--mut)">Nenhum descarte registrado.</small>';
+}
+function dsNovo(idEq){
+  ds={id:null,equipId:'',equipamento:'',congregacao:'',descricao:'',localDescarte:'',data:pmHoje(),gas:false,fotos:[],responsavel:perfil.nome+' '+perfil.sobrenome,assinatura:'',criadoPorUid:perfil.uid,criadoPor:perfil.nome+' '+perfil.sobrenome,criadoEm:Date.now()};
+  dsRender();view('descForm');
+  if(idEq){document.getElementById('dsEq').value=idEq;dsEquipId(idEq)}
+}
+async function dsAbrir(id){
+  try{const s=await getDoc(doc(db,'descartes',id));if(!s.exists()){toast('Registro não encontrado.');return}
+    ds={id,fotos:[],...s.data()};dsRender();view('descForm')}catch(e){dsErro(e)}
+}
+const dsDono=()=>ds&&ds.criadoPorUid===perfil.uid;
+function dsSalvar(){clearTimeout(dsTimer);dsTimer=setTimeout(dsSalvarAgora,800)}
+async function dsSalvarAgora(){
+  if(!ds||!dsDono()||dsSalvando)return;
+  if(!ds.equipId&&!ds.equipamento&&!ds.descricao&&!ds.localDescarte&&!ds.fotos.length)return;
+  dsSalvando=true;
+  try{
+    if(!ds.id){ds.id=await dsProxId();const t=$('#dsIdChip');if(t)t.textContent=ds.id}
+    const {id,...data}=ds;data.atualizadoEm=Date.now();
+    await setDoc(doc(db,'descartes',id),data);
+    const t=$('#dsSaved');if(t)t.textContent='✔ Salvo';
+  }catch(e){dsErro(e)}
+  dsSalvando=false;
+}
+function dsRender(){
+  const ro=!dsDono(),d=ro?'disabled':'';
+  const fotos=`<div class="fotos">${ds.fotos.map((f,i)=>`<div><img src="${f}">${ro?'':`<i onclick="dsDelFoto(${i})">×</i>`}</div>`).join('')}</div>${ro||ds.fotos.length>=6?'':`<button type="button" class="btn g" style="margin-top:8px;padding:11px" onclick="dsFoto()">📷 Adicionar foto</button>`}`;
+  $('#dsForm').innerHTML=`
+  <div class="card"><div style="display:flex;align-items:center;gap:10px;margin-bottom:6px"><div id="dsIdChip" style="background:var(--pri2);color:var(--pri);font-weight:800;font-size:22px;padding:8px 16px;border-radius:30px">${esc(ds.id||'Novo')}</div><small style="color:var(--mut)">${ds.id?'Registrado por '+esc(ds.criadoPor||''):'O código é gerado ao salvar'}</small></div>
+    <label>Equipamento da ficha (opcional)</label><input id="dsEq" list="dsEquipList" ${d} placeholder="ex.: EQ-0007" autocapitalize="characters" value="${esc(ds.equipId)}" onchange="dsEquipId(this.value)">
+    <label>Equipamento (tipo / marca / modelo / BTU/h)</label><input ${d} value="${esc(ds.equipamento)}" placeholder="ex.: Split 12.000 BTU/h Elgin" oninput="dsCampo('equipamento',this.value)">
+    <label>Congregação / origem</label><input list="listaCongregacoes" ${d} autocomplete="off" value="${esc(ds.congregacao)}" oninput="dsCampo('congregacao',this.value)">
+    <label>Descrição / motivo do descarte</label><textarea rows="3" ${d} placeholder="Ex.: compressor travado, sem conserto viável" oninput="dsCampo('descricao',this.value)" style="width:100%">${esc(ds.descricao)}</textarea>
+    <label>Local de descarte</label><input ${d} value="${esc(ds.localDescarte)}" placeholder="Empresa, ponto de coleta ou endereço" oninput="dsCampo('localDescarte',this.value)">
+    <label>Data do descarte</label><input type="date" ${d} value="${esc(ds.data)}" oninput="dsCampo('data',this.value)">
+    <label style="display:flex;gap:8px;align-items:center;margin-top:12px;font-size:14px"><input type="checkbox" style="width:auto" ${d} ${ds.gas?'checked':''} onchange="dsCampo('gas',this.checked)"> Fluido refrigerante recuperado antes do descarte</label></div>
+  <div class="card"><h2>Fotos</h2>${fotos}</div>
+  <div class="card"><h2>Assinatura de quem descartou</h2>
+    <label>Nome do responsável</label><input ${d} value="${esc(ds.responsavel)}" oninput="dsCampo('responsavel',this.value)">
+    <div style="border:1.5px dashed var(--bd);border-radius:12px;height:110px;margin-top:8px;display:flex;align-items:center;justify-content:center;background:#fff;overflow:hidden">${ds.assinatura?`<img src="${ds.assinatura}" style="max-height:104px;max-width:100%">`:'<small style="color:#6b7885">sem assinatura</small>'}</div>
+    ${ro?'':`<button type="button" class="btn g" style="margin-top:8px;padding:11px" onclick="dsAssinar()">✍️ ${ds.assinatura?'Refazer assinatura':'Assinar'}</button>`}</div>
+  <small id="dsSaved" style="color:var(--ok)">${ro?'Somente o autor pode editar':''}</small>
+  <button class="btn" onclick="dsPdf()">📄 Gerar termo de descarte (PDF)</button>
+  ${dsDono()&&ds.id?'<button class="btn g" style="color:var(--no);border-color:var(--no)" onclick="dsExcluir()">🗑️ Excluir registro</button>':''}`;
+}
+function dsCampo(k,v){ds[k]=v;dsSalvar()}
+function dsEquipId(v){
+  const id=String(v||'').trim().toUpperCase();ds.equipId=id;
+  const r=equipCache.find(x=>x.id===id);
+  if(r){const x=r.d||{};ds.equipamento=[x.tipo,x.marca,x.modelo,x.capacidade].filter(Boolean).join(' ')||ds.equipamento;
+    const cg=(/^sem\s+destino$/i.test(x.congDestino||'')?'':x.congDestino)||x.congOrigem||'';if(cg)ds.congregacao=cg}
+  dsRender();dsSalvarAgora();
+}
+function dsAssinar(){pmocAssinar('assinatura',url=>{ds.assinatura=url;dsRender();dsSalvarAgora()})}
+function dsFoto(){$('#dsFotoSheet').classList.remove('hide')}
+function dsFotoFecha(){$('#dsFotoSheet').classList.add('hide')}
+function dsFotoOrigem(modo){
+  dsFotoFecha();if(!dsDono())return;
+  const i=document.createElement('input');i.type='file';i.accept='image/*';if(modo==='camera')i.setAttribute('capture','environment');
+  i.onchange=async e=>{const f=e.target.files[0];if(!f)return;toast('Processando foto…');
+    try{ds.fotos.push(await pmocCompress(f));dsRender();dsSalvarAgora()}catch(x){toast('Falha ao processar a foto.')}};
+  i.click();
+}
+function dsDelFoto(i){if(!dsDono())return;if(confirm('Remover esta foto?')){ds.fotos.splice(i,1);dsRender();dsSalvar()}}
+async function dsExcluir(){
+  if(!dsDono()||!ds.id)return;if(!confirm('Excluir '+ds.id+'? Não dá para desfazer.'))return;
+  try{await deleteDoc(doc(db,'descartes',ds.id));toast('Registro excluído.');abrirDescartes()}catch(e){dsErro(e)}
+}
+function dsPdf(){
+  const td='border:1px solid #999;padding:4px 7px;';
+  $('#print').innerHTML=`<div class="pmPrint" style="font-family:Arial,sans-serif;color:#000;font-size:12px">
+   <div style="display:flex;align-items:center;gap:10px;border-bottom:2px solid #0b5cab;padding-bottom:6px">
+     <img src="icon-192.png" style="width:44px;height:44px;border-radius:8px">
+     <div style="flex:1"><div style="font-size:16px;font-weight:700;color:#0b5cab">TERMO DE DESCARTE DE EQUIPAMENTO</div><div style="font-size:10px;color:#555">Assembleia de Deus — Templo Central · Manutenção</div></div>
+     <div style="text-align:right"><b>${esc(ds.id||'Rascunho')}</b><br>${pmBR(ds.data)}</div></div>
+   <table style="width:100%;border-collapse:collapse;margin-top:10px">
+   <tr><td style="${td}background:#e7f0fa;width:26%"><b>Ficha do equipamento</b></td><td style="${td}">${esc(ds.equipId)||'—'}</td></tr>
+   <tr><td style="${td}background:#e7f0fa"><b>Equipamento</b></td><td style="${td}">${esc(ds.equipamento)||'—'}</td></tr>
+   <tr><td style="${td}background:#e7f0fa"><b>Congregação / origem</b></td><td style="${td}">${esc(ds.congregacao)||'—'}</td></tr>
+   <tr><td style="${td}background:#e7f0fa"><b>Local de descarte</b></td><td style="${td}">${esc(ds.localDescarte)||'—'}</td></tr>
+   <tr><td style="${td}background:#e7f0fa"><b>Fluido refrigerante</b></td><td style="${td}">${ds.gas?'Recuperado antes do descarte':'Não informado'}</td></tr></table>
+   <div style="margin-top:12px"><b style="color:#0b5cab">Descrição / motivo</b><div style="border:1px solid #999;min-height:60px;padding:6px;margin-top:3px;white-space:pre-wrap">${esc(ds.descricao)}</div></div>
+   ${ds.fotos.length?`<div style="margin-top:12px;break-inside:avoid"><b style="color:#0b5cab">Fotos</b><div style="display:flex;flex-wrap:wrap;gap:6px;margin-top:4px">${ds.fotos.map(f=>`<img src="${f}" style="width:31%;max-height:150px;object-fit:cover;border:1px solid #bbb">`).join('')}</div></div>`:''}
+   <div style="margin-top:34px;width:55%;text-align:center;break-inside:avoid"><div style="height:70px;display:flex;align-items:flex-end;justify-content:center;border-bottom:1px solid #000">${ds.assinatura?`<img src="${ds.assinatura}" style="max-height:66px">`:''}</div><div style="font-size:11px;margin-top:3px">${esc(ds.responsavel)}<br>Responsável pelo descarte</div></div></div>`;
+  const old=document.title;document.title='Descarte_'+(ds.id||'rascunho');
+  setTimeout(()=>{window.print();document.title=old},300);
+}
+Object.assign(window,{abrirDescartes,dsFiltra,dsNovo,dsAbrir,dsCampo,dsEquipId,dsAssinar,dsFoto,dsFotoFecha,dsFotoOrigem,dsDelFoto,dsExcluir,dsPdf});
 
 /* ========================================================
    ETIQUETA + IMPRESSORA BLUETOOTH (TSPL, 203 dpi = 8 pontos/mm)
